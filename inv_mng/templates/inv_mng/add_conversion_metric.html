@@ -1,0 +1,7 @@
+{% block content %}
+    <h2>Add item</h2>
+    <form method="POST" class="conversion-metric-form">{% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="save btn btn-secondary">Save</button>
+    </form>
+{% endblock %}

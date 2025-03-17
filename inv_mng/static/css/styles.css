@@ -1,0 +1,96 @@
+/* General styles for the form */
+.item-form {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Styling for the 'Save' button */
+.item-form button.save,
+.item-form button.btn-primary {
+    background-color: #007bff;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    transition: background-color 0.3s;
+    border: none;
+    margin-top: 20px;
+}
+
+.item-form button.save:hover,
+.item-form button.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+/* Adjustments for larger screens */
+.card {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.card-body {
+    padding: 30px;
+}
+
+h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Styling for form fields */
+.item-form p {
+    margin-bottom: 15px;
+}
+
+.item-form input, .item-form select, .item-form textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    margin-bottom: 15px; /* Ensures inputs have spacing between each other */
+    box-sizing: border-box; /* Ensures padding doesn't affect width */
+}
+
+/* Ensure consistent alignment of labels and inputs */
+.item-form label {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+    display: inline-block;
+}
+
+/* Make sure form elements align properly */
+.item-form .form-group {
+    margin-bottom: 15px;
+}
+
+/* Style inputs individually to make sure they align */
+.item-form input[type="text"],
+.item-form input[type="number"],
+.item-form textarea,
+.item-form select {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+}
+
+/* Responsive behavior */
+@media (max-width: 768px) {
+    .item-form {
+        padding: 20px;
+    }
+
+    .card-body {
+        padding: 15px;
+    }
+}

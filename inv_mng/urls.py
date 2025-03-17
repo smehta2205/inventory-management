@@ -1,0 +1,16 @@
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('', views.item_info, name='item_info'),
+    path('add_item', views.add_item, name='add_item'),
+    path('add_vendor', views.add_vendor, name='add_vendor'),
+    path('inward_stock', views.inward_stock, name='inward_stock'),
+    path('outward_stock', views.outward_stock, name='outward_stock'),
+    path('add_conversion_metric', views.add_conversion_metric, name='add_conversion_metric'),
+    path('add_department', views.add_department, name='add_department'),
+    path('get_stock_entries/', views.get_stock_entries, name='get_stock_entries'),
+
+    # path('get_items_from_stock/', views.get_items_from_stock, name='get_items_from_stock'),
+
+]
