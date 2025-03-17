@@ -6,13 +6,14 @@ from .models import Item, Vendor, Stock, InwardOutwardConv, Department, OutwardS
 class ItemForm(forms.ModelForm):
     class Meta:
         model = Item
-        fields = ('name', 'company', 'location', 'iw_unit', 'ow_unit')
+        fields = ('name', 'company', 'location', 'gst', 'iw_unit', 'ow_unit')
         labels = {
             'name': 'Item name',
             'company': 'Company',
             'location': 'Physical location',
-            'iw_unit':'Inward unit',
-            'ow_unit':'Outward unit'
+            'gst':'GST percentage',
+            'iw_unit':'Purcahse unit (inward)',
+            'ow_unit':'Consumption unit (outward)'
         }
 
 
