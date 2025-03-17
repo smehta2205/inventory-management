@@ -1,0 +1,66 @@
+{% block content %}
+    <h2>Add Inward Stock</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="id_vendor">Select Vendor:</label>
+            {{ vendor_form.vendor }}
+        </div>
+
+        {{ formset.management_form }}
+
+        <div id="form-container">
+            {% for form in formset %}
+                <div class="form-row">
+                    {{ form.as_p }}
+                    {% if not forloop.first %}
+                        <button type="button" class="remove-form">❌</button>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <button type="button" id="add-form">➕ Add More</button>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let formContainer = document.getElementById("form-container");
+            let addFormButton = document.getElementById("add-form");
+            let totalForms = document.querySelector("#id_form-TOTAL_FORMS");
+
+            addFormButton.addEventListener("click", function () {
+                let formCount = parseInt(totalForms.value);
+                let newFormHtml = formContainer.children[0].outerHTML.replace(/-0-/g, `-${formCount}-`).replace(/_0_/g, `_${formCount}_`);
+                let newFormElement = document.createElement("div");
+                newFormElement.innerHTML = newFormHtml;
+                
+                // Add the remove button only for newly added forms
+                let removeButton = document.createElement("button");
+                removeButton.type = "button";
+                removeButton.classList.add("remove-form");
+                removeButton.textContent = "❌";
+                newFormElement.appendChild(removeButton);
+
+                formContainer.appendChild(newFormElement);
+                totalForms.value = formCount + 1;
+
+                updateRemoveButtons();
+            });
+
+            function updateRemoveButtons() {
+                document.querySelectorAll(".remove-form").forEach(button => {
+                    button.addEventListener("click", function () {
+                        this.parentElement.remove();
+                        totalForms.value = parseInt(totalForms.value) - 1;
+                    });
+                });
+            }
+
+            updateRemoveButtons();
+        });
+    </script>
+{% endblock %}

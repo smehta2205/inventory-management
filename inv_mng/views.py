@@ -77,7 +77,7 @@ def inward_stock(request):
         vendor_form = VendorSelectionForm()
         formset = StockFormSet()
 
-    return render(request, 'inv_mng/add_item.html', {'vendor_form': vendor_form, 'formset': formset})
+    return render(request, 'inv_mng/inward_stock.html', {'vendor_form': vendor_form, 'formset': formset})
 
 
 
