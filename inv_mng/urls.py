@@ -10,7 +10,9 @@ urlpatterns = [
     path('add_conversion_metric', views.add_conversion_metric, name='add_conversion_metric'),
     path('add_department', views.add_department, name='add_department'),
     path('get_stock_entries/', views.get_stock_entries, name='get_stock_entries'),
-
+    path('signup/', views.signup_view, name='signup'),
+    path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
     # path('get_items_from_stock/', views.get_items_from_stock, name='get_items_from_stock'),
 
 ]

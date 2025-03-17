@@ -2,9 +2,11 @@ from django.forms import formset_factory
 from django.http import JsonResponse
 from django.shortcuts import render
 from .models import InwardStock, Item, Stock, InwardOutwardConv, Vendor, OutwardStock
-from .forms import ItemForm, VendorForm, StockForm, OutwardStockForm, ConversionMetricForm, DepartmentForm, VendorSelectionForm, DepartmentSelectionForm
+from .forms import ItemForm, LoginForm, RegisterForm, VendorForm, StockForm, OutwardStockForm, ConversionMetricForm, DepartmentForm, VendorSelectionForm, DepartmentSelectionForm
 from django.shortcuts import redirect
-
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
+from django.contrib import messages
 
 # Create your views here.
 def item_info(request):
@@ -144,12 +146,6 @@ def add_department(request):
     
     return render(request, 'inv_mng/add_department.html', {'form':form})
 
-# def get_stock_entries(request):
-#     item_id = request.GET.get('item_id')
-#     if item_id:
-#         stocks = Stock.objects.filter(item_id=item_id).values('id', 'expiry_date')  
-#         return JsonResponse(list(stocks), safe=False)
-#     return JsonResponse([], safe=False)
 
 def add_conversion_metric(request):
     if request.method == "POST":
@@ -162,3 +158,40 @@ def add_conversion_metric(request):
         form = ConversionMetricForm()
     
     return render(request, 'inv_mng/add_conversion_metric.html', {'form':form})
+
+
+def signup_view(request):
+    if request.method == "POST":
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.set_password(form.cleaned_data['password'])  # Hash password
+            user.save()
+            messages.success(request, "Account created successfully! You can now log in.")
+            return redirect('login')  # Redirect to login page
+    else:
+        form = RegisterForm()
+    return render(request, "inv_mng/signup.html", {"form": form})
+
+# User Login View
+def login_view(request):
+    if request.method == "POST":
+        form = LoginForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request, username=username, password=password)
+            if user:
+                login(request, user)
+                messages.success(request, "Login successful!")
+                return redirect('item_info')  # Redirect to home page
+        messages.error(request, "Invalid username or password.")
+    else:
+        form = LoginForm()
+    return render(request, "inv_mng/login.html", {"form": form})
+
+# User Logout View
+def logout_view(request):
+    logout(request)
+    messages.success(request, "You have been logged out.")
+    return redirect('login')

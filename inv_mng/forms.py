@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.admin import widgets
-
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import AuthenticationForm
 from .models import Item, Vendor, Stock, InwardOutwardConv, Department, OutwardStock
 
 class ItemForm(forms.ModelForm):
@@ -113,3 +114,20 @@ class DepartmentForm(forms.ModelForm):
         
 class DepartmentSelectionForm(forms.Form):
     department = forms.ModelChoiceField(queryset=Department.objects.all(), label="Department", empty_label="Select a department")
+
+class RegisterForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput)
+    confirm_password = forms.CharField(widget=forms.PasswordInput)
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password']
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if cleaned_data.get('password') != cleaned_data.get('confirm_password'):
+            self.add_error('confirm_password', "Passwords do not match.")
+
+class LoginForm(AuthenticationForm):
+    email = forms.CharField(widget=forms.TextInput())
+    password = forms.CharField(widget=forms.PasswordInput())
