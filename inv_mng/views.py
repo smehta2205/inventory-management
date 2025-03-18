@@ -1,8 +1,8 @@
 from django.forms import formset_factory
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from .models import InwardStock, Item, Stock, InwardOutwardConv, Vendor, OutwardStock
-from .forms import ItemForm, LoginForm, RegisterForm, VendorForm, StockForm, OutwardStockForm, ConversionMetricForm, DepartmentForm, VendorSelectionForm, DepartmentSelectionForm
+from .forms import ItemForm, LoginForm, RegisterForm, VendorForm, StockForm, OutwardStockForm, ConversionMetricForm, DepartmentForm, VendorSelectionForm, DepartmentSelectionForm, ConversionMetricFormWithoutId
 from django.shortcuts import redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -28,13 +28,13 @@ def add_item(request):
     if request.method == "POST":
         form = ItemForm(request.POST)
         if form.is_valid():
-            item = form.save(commit=False)
-            item.save()
-            return redirect('item_info')
+            item = form.save()  # Save the new item
+            # Redirect to the "Add Conversion Metric" page for this item
+            return redirect('add_conversion_metric_with_id', item_id=item.item_id)
     else:
         form = ItemForm()
     
-    return render(request, 'inv_mng/add_item.html', {'form':form})
+    return render(request, 'inv_mng/add_item.html', {'form': form})
 
 def add_vendor(request):
     if request.method == "POST":
@@ -152,19 +152,45 @@ def add_department(request):
     
     return render(request, 'inv_mng/add_department.html', {'form':form})
 
-
 def add_conversion_metric(request):
     if request.method == "POST":
         form = ConversionMetricForm(request.POST)
         if form.is_valid():
-            item = form.save(commit=False)
-            item.save()
-            return redirect('item_info')
+            item = form.cleaned_data.get('item')  # Get the item from the form
+            
+            # Check if a conversion metric already exists for this item
+            print(len(InwardOutwardConv.objects.filter(item_id=item))==0)
+            if (len(InwardOutwardConv.objects.filter(item_id=item))==0):
+                messages.warning(request, 'A conversion metric for this item already exists!')
+            else:
+                # Save the new conversion metric
+                conversion_metric = form.save(commit=False)
+                conversion_metric.save()
+                messages.success(request, 'Conversion metric added successfully!')
+                return redirect('item_info')
+
     else:
         form = ConversionMetricForm()
     
-    return render(request, 'inv_mng/add_conversion_metric.html', {'form':form})
+    return render(request, 'inv_mng/add_conversion_metric_without_id.html', {'form':form})
 
+def add_conversion_metric_with_id(request, item_id):
+    item = get_object_or_404(Item, item_id=item_id)  # Get the item
+    
+    if request.method == "POST":
+        form = ConversionMetricFormWithoutId(request.POST)
+        if form.is_valid():
+            conversion_metric = form.save(commit=False)
+            conversion_metric.item_id = item  # Associate the conversion metric with the item
+            conversion_metric.save()
+            return redirect('item_info')  # Redirect to item info page after saving
+    else:
+        form = ConversionMetricFormWithoutId()
+    
+    return render(request, 'inv_mng/add_conversion_metric.html', {
+        'form': form,
+        'item': item,  # Pass the item to the template
+    })
 
 def signup_view(request):
     if request.method == "POST":

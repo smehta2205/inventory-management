@@ -102,6 +102,16 @@ class ConversionMetricForm(forms.ModelForm):
             'outward_item_quantity' : 'Outward Quantity',
         }
 
+class ConversionMetricFormWithoutId(forms.ModelForm):
+    class Meta:
+        model = InwardOutwardConv
+        fields = ('inward_item_quantity', 'outward_item_quantity')
+        labels = {
+            
+            'inward_item_quantity' : 'Inward Quantity',
+            'outward_item_quantity' : 'Outward Quantity',
+        }
+
 
 class DepartmentForm(forms.ModelForm):
     class Meta:

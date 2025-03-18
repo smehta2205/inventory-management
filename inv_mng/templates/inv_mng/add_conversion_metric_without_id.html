@@ -13,7 +13,17 @@
     <div class="container d-flex justify-content-center align-items-center min-vh-100">
         <div class="card shadow-sm" style="width: 100%; max-width: 500px;">
             <div class="card-body">
-                <h2 class="text-center mb-4">Add Conversion Metric for {{ item.name }}</h2>
+                <h2 class="text-center mb-4">Add Conversion Metric</h2>
+
+                <!-- Display alert messages -->
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
                 <form method="POST" class="conversion-metric-form">
                     {% csrf_token %}
                     {{ form.as_p }}
