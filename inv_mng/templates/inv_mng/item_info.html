@@ -1,5 +1,3 @@
-{% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,228 +23,207 @@
             color: #343a40;
         }
 
-        .card {
-            margin-bottom: 30px;
-            border-radius: 12px;
-            border: none;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .card-header {
-            background-color: #007bff;
-            color: white;
-            font-size: 1.5rem;
-            font-weight: bold;
-            text-align: center;
-            padding: 15px;
-        }
-
-        .card-body {
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 250px;
             background-color: #ffffff;
-            padding: 10px;
-            display: flex;
-            justify-content: center; /* Centers content vertically */
-            align-items: center; /* Centers content horizontally */
-            height: 100%; /* Ensure the card body takes up the full height */
-            text-align: center;  /* Ensures the text inside the anchor tag is centered */
-        }
-        .card {
-            margin-bottom: 30px;
-            border-radius: 12px;
-            border: none;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            transition: transform 0.3s, box-shadow 0.3s;
+            padding-top: 20px;
             display: flex;
             flex-direction: column;
-            height: 80px;
-            /* height: 100%; Ensure the card takes up the full height */
+            align-items: center;
+            transition: width 0.3s ease;
         }
 
-        .btn-custom {
-            display: inline-block;
-            font-size: 1.1rem;
-            padding: 12px 20px;
-            margin: 0 0;
+        .sidebar .card {
+            width: 90%;
+            margin-bottom: 10px;
+            background-color: #007bff;
+            cursor: pointer;
+        }
+
+        .sidebar .card .card-body {
+            padding: 0; /* Remove padding to ensure the entire card is clickable */
+            height: 100%; /* Make sure the entire height is clickable */
+        }
+
+        .sidebar .card a {
+            display: block; /* Make anchor a block element */
+            color: white; /* Make text white */
+            text-decoration: none; /* Remove underline */
+            padding: 15px; /* Add padding to make the button bigger */
+            text-align: center; /* Center the text inside the button */
+            width: 100%; /* Ensure the anchor takes the full width of the card */
+            height: 100%; /* Ensure it takes the full height of the card */
+        }
+
+        .sidebar .card a:hover {
+            background-color: #0056b3; /* Optional: change color on hover */
+        }
+
+        .sidebar-toggle-btn {
+            position: absolute;
+            top: 20px;
+            left: 250px;
+            font-size: 1.5rem;
             background-color: #007bff;
             color: white;
-            text-decoration: none;
-            text-align: center;
-            border-radius: 8px;
-            width: 100%;
-            height: 100%;
-            transition: background-color 0.3s;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            z-index: 1000;
+            transition: left 0.3s ease;
+            border-radius: 10%;
         }
 
-        .btn-custom:hover {
-            background-color: #0056b3;
+
+
+        .collapsed-sidebar {
+            width: 0;
+            overflow: hidden;
         }
 
-        .row-cards {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 20px;
+        .collapsed-sidebar .card {
+            display: none;
         }
 
-        .row-cards .col-md-4 {
-            flex: 1 1 120px;
+        .content {
+            margin-left: 270px;
+            padding: 20px;
+            transition: margin-left 0.3s ease;
         }
 
-        .row-cards .card {
-            width: 100%;
+        .content.collapsed {
+            margin-left: 10px;
         }
 
-        .no-items {
-            color: #888;
-            font-style: italic;
+        /* Header Styling for Top-Right Links */
+        .top-right-header {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1rem;
         }
 
-        .item-list, .vendor-list {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .item-list li, .vendor-list li {
-            background-color: #f8f9fa;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .item-list li:hover, .vendor-list li:hover {
-            background-color: #e9ecef;
-        }
-
-        .list-actions {
-            display: flex;
-            align-items: center;
-        }
-
-        .list-actions a {
+        .top-right-header a {
             margin-left: 10px;
             color: #007bff;
             text-decoration: none;
         }
 
-        .list-actions a:hover {
+        .top-right-header a:hover {
             text-decoration: underline;
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
     {% if user.is_authenticated %}
-    <p>Welcome, {{ user.username }}!</p>
-    <a href="{% url 'logout' %}">Logout</a>
-
-
-<div class="container">
-
-    <!-- Page Header -->
-    <div class="page-header">
-        <h1>Item and Vendor Management</h1>
+    <div class="top-right-header">
+        <p>Welcome, {{ user.username }}! 
+        <a href="{% url 'logout' %}">Logout</a></p>
     </div>
 
-    <!-- Action Cards in Horizontal Line -->
-    <div class="row-cards">
-        <!-- Add Item Card -->
-        <div class="card col-md-4">
-            <!-- <div class="card-header">Add Item</div> -->
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar">
+        <div class="card">
             <div class="card-body">
                 <a href="{% url 'add_item' %}" class="btn-custom">Add Item</a>
             </div>
         </div>
-
-        <!-- Add Conversion Metric Card -->
-        <div class="card col-md-4">
-            <!-- <div class="card-header">Add Conversion Metric</div> -->
+        <div class="card">
             <div class="card-body">
                 <a href="{% url 'add_conversion_metric' %}" class="btn-custom">Conversion Metric</a>
             </div>
         </div>
-
-        <!-- Add Vendor Card -->
-        <div class="card col-md-4">
-            <!-- <div class="card-header">Add Vendor</div> -->
+        <div class="card">
             <div class="card-body">
                 <a href="{% url 'add_vendor' %}" class="btn-custom">Add Vendor</a>
             </div>
         </div>
-
-        <div class="card col-md-4">
-            <!-- <div class="card-header">Add Vendor</div> -->
+        <div class="card">
             <div class="card-body">
                 <a href="{% url 'add_department' %}" class="btn-custom">Add Department</a>
             </div>
         </div>
-
-        <!-- Add Inward Stock Card -->
-        <div class="card col-md-4">
-            <!-- <div class="card-header">Add Inward Stock</div> -->
+        <div class="card">
             <div class="card-body">
                 <a href="{% url 'inward_stock' %}" class="btn-custom">Add Inward Stock</a>
             </div>
         </div>
-
-        <!-- Add Outward Stock Card -->
-        <div class="card col-md-4">
-            <!-- <div class="card-header">Add Outward Stock</div> -->
+        <div class="card">
             <div class="card-body">
                 <a href="{% url 'outward_stock' %}" class="btn-custom">Add Outward Stock</a>
             </div>
         </div>
     </div>
 
-    <!-- Items Section -->
-    <div class="section-header">
-        <h3>Items</h3>
+    <!-- Sidebar Toggle Button -->
+    <button id="sidebarToggleBtn" class="sidebar-toggle-btn">
+        &#9776;
+    </button>
+
+    <!-- Main Content -->
+    <div id="content" class="content">
+        <div class="page-header">
+            <h1>Item and Vendor Management</h1>
+        </div>
+
+        <!-- Items Section -->
+        <div class="section-header">
+            <h3>Items</h3>
+        </div>
+        <ul class="item-list">
+            {% if items %}
+                {% for item in items %}
+                    <li>{{ item }}</li>
+                {% endfor %}
+            {% else %}
+                <p class="no-items">No items available</p>
+            {% endif %}
+        </ul>
+
+        <!-- Vendors Section -->
+        <div class="section-header">
+            <h3>Vendors</h3>
+        </div>
+        <ul class="vendor-list">
+            {% if vendors %}
+                {% for vendor in vendors %}
+                    <li>{{ vendor }}</li>
+                {% endfor %}
+            {% else %}
+                <p class="no-items">No vendors available</p>
+            {% endif %}
+        </ul>
     </div>
-    <ul class="item-list">
-        {% if items %}
-            {% for item in items %}
-                <li>{{ item }}</li>
-            {% endfor %}
-        {% else %}
-            <p class="no-items">No items available</p>
-        {% endif %}
-    </ul>
 
-    <!-- Vendors Section -->
-    <div class="section-header">
-        <h3>Vendors</h3>
-    </div>
-    <ul class="vendor-list">
-        {% if vendors %}
-            {% for vendor in vendors %}
-                <li>{{ vendor }}</li>
-            {% endfor %}
-        {% else %}
-            <p class="no-items">No vendors available</p>
-        {% endif %}
-    </ul>
+    {% else %}
+        <a href="{% url 'login' %}">Login</a> | 
+        <a href="{% url 'signup' %}">Sign Up</a>
+    {% endif %}
 
-</div>
-{% else %}
-    <a href="{% url 'login' %}">Login</a> | 
-    <a href="{% url 'signup' %}">Sign Up</a>
-{% endif %}
-<!-- Bootstrap JS and dependencies (optional for interactivity like dropdowns) -->
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+    <!-- Bootstrap JS and dependencies (optional for interactivity like dropdowns) -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
 
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const content = document.getElementById('content');
+        const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
+
+        sidebarToggleBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed-sidebar');
+            content.classList.toggle('collapsed');
+            // Adjust the position of the toggle button based on the sidebar state
+            if (sidebar.classList.contains('collapsed-sidebar')) {
+                sidebarToggleBtn.style.left = '10px';
+            } else {
+                sidebarToggleBtn.style.left = '250px';
+            }
+        });
+    </script>
 </body>
 </html>

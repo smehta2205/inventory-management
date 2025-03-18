@@ -65,4 +65,6 @@ class InwardStock(models.Model):
     item_id = models.ForeignKey(Item, on_delete=models.CASCADE)
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
     quantity = models.IntegerField()
+    price = models.IntegerField(default=0)
+    total_price = models.IntegerField(default=0)
     date = models.DateTimeField(default=timezone.now)

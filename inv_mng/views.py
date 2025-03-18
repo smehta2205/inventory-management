@@ -71,7 +71,9 @@ def inward_stock(request):
                         # stock=stock_entry,  # Associate with stock entry
                         vendor=vendor,
                         item_id=stock_entry.item_id,
-                        quantity=stock_entry.quantity
+                        quantity=stock_entry.quantity,
+                        price = stock_entry.price,
+                        total_price = stock_entry.quantity*stock_entry.price
                     )
                     inward_entry.save()
             return redirect('item_info')

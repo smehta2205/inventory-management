@@ -13,7 +13,7 @@ class ItemForm(forms.ModelForm):
             'company': 'Company',
             'location': 'Physical location',
             'gst':'GST percentage',
-            'iw_unit':'Purcahse unit (inward)',
+            'iw_unit':'Purchase unit (inward)',
             'ow_unit':'Consumption unit (outward)'
         }
 
