@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Item and Vendor Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <!-- Bootstrap CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -170,36 +172,213 @@
         <div class="page-header">
             <h1>Item and Vendor Management</h1>
         </div>
+        <div class="container mt-4">
+            <!-- <div class="card p-4 shadow-sm">-->
+                <!-- <h5 class="text-center mb-3">Select Date Range</h4>  -->
+        
+                <div class="row g-3 align-items-center">
+                    <!-- Start Date -->
+                    <div class="col-md-6">
+                        <label class="form-label">Start Date:</label>
+                        <input type="date" id="startDate" class="form-control">
+                    </div>
+        
+                    <!-- End Date -->
+                    <div class="col-md-6">
+                        <label class="form-label">End Date:</label>
+                        <input type="date" id="endDate" class="form-control">
+                    </div>
+                </div>
+        
+                <!-- Filter Button -->
+                <div class="text-center mt-4">
+                    <button id="filterBtn" class="btn btn-primary px-4">
+                        <i class="bi bi-funnel"></i> Filter Items
+                    </button>
+                </div>
+            <!-- </div> -->
+            <div class="card mt-4 p-4 shadow-sm">
+                <h5 class="text-center">Inward Items</h5>
+                <table id="itemsTable" class="table table-bordered mt-3">
+                    <thead>
+                        <tr>
+                            <th>Item Name</th>
+                            <th>Vendor</th>
+                            <th>Quantity</th>
+                            <th>Price/unit</th>
+                            <th>Total price</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if inwardstocks %}
+                            {% for item in inwardstocks %}
+                                <tr>
+                                    <td>{{ item.item_id.name }}</td>
+                                    <td>{{ item.vendor.vendor_name }}</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>{{item.price}}</td>
+                                    <td>{{item.total_price}}</td>
+                                    <td>{{item.date.date}}</td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="3" class="text-center text-danger">No items available</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <script>
+                document.getElementById("filterBtn").addEventListener("click", function () {
+                    const startDate = document.getElementById("startDate").value;
+                    const endDate = document.getElementById("endDate").value;
+            
+                    // AJAX request to filter items
+                    $.ajax({
+                        url: "{% url 'filter_items' %}",  // Use the correct Django URL name
+                        type: "POST",
+                        data: {
+                            start_date: startDate,
+                            end_date: endDate,
+                            csrfmiddlewaretoken: "{{ csrf_token }}"  // Required for POST requests in Django
+                        },
+                        dataType: "json",
+                        success: function (data) {
+                            const tableBody = $("#itemsTable tbody");
+                            tableBody.empty(); // Clear previous results
+            
+                            if (data.items.length === 0) {
+                                tableBody.append(`
+                                    <tr>
+                                        <td colspan="3" class="text-center text-danger">No items found</td>
+                                    </tr>
+                                `);
+                            } else {
+                                
+                                $.each(data.items, function (index, item) {
+                                    const dateObj = new Date(item.date);
 
-        <!-- Items Section -->
-        <div class="section-header">
-            <h3>Items</h3>
-        </div>
-        <ul class="item-list">
-            {% if items %}
-                {% for item in items %}
-                    <li>{{ item }}</li>
-                {% endfor %}
-            {% else %}
-                <p class="no-items">No items available</p>
-            {% endif %}
-        </ul>
+                                    const formattedDate = dateObj.toLocaleDateString("en-US", {
+                                        year: "numeric",
+                                        month: "long",
+                                        day: "numeric"
+                                    });
+                                    tableBody.append(`
+                                        <tr>
+                                            <td>${item.item_name}</td>
+                                            <td>${item.vendor_name}</td>
+                                            <td>${item.quantity}</td>
+                                            <td>${item.price}</td>
+                                            <td>${item.total_price}</td>
+                                            <td>${formattedDate}</td>
+                                        </tr>
+                                    `);
+                                });
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Error:", error);
+                            $("#itemsTable tbody").html(`
+                                <tr>
+                                    <td colspan="3" class="text-center text-danger">Error loading items</td>
+                                </tr>
+                            `);
+                        }
+                    });
+                });
+            </script>
+            <div class="card mt-4 p-4 shadow-sm">
+                <h5 class="text-center">Outward Items</h5>
+                <table id="itemsTableOut" class="table table-bordered mt-3">
+                    <thead>
+                        <tr>
+                            <th>Item Name</th>
+                            <th>Department</th>
+                            <th>Quantity</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if outwardstocks %}
+                            {% for item in outwardstocks %}
+                                <tr>
+                                    <td>{{ item.item_id.name }}</td>
+                                    <td>{{ item.department }}</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>{{item.date.date}}</td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="3" class="text-center text-danger">No items available</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <script>
+                document.getElementById("filterBtn").addEventListener("click", function () {
+                    const startDate = document.getElementById("startDate").value;
+                    const endDate = document.getElementById("endDate").value;
+            
+                    // AJAX request to filter items
+                    $.ajax({
+                        url: "{% url 'filter_items_outward' %}",  // Use the correct Django URL name
+                        type: "POST",
+                        data: {
+                            start_date: startDate,
+                            end_date: endDate,
+                            csrfmiddlewaretoken: "{{ csrf_token }}"  // Required for POST requests in Django
+                        },
+                        dataType: "json",
+                        success: function (data) {
+                            const tableBody = $("#itemsTableOut tbody");
+                            tableBody.empty(); // Clear previous results
+            
+                            if (data.items.length === 0) {
+                                tableBody.append(`
+                                    <tr>
+                                        <td colspan="3" class="text-center text-danger">No items found</td>
+                                    </tr>
+                                `);
+                            } else {
+                                
+                                $.each(data.items, function (index, item) {
+                                    const dateObj = new Date(item.date);
 
-        <!-- Vendors Section -->
-        <div class="section-header">
-            <h3>Vendors</h3>
-        </div>
-        <ul class="vendor-list">
-            {% if vendors %}
-                {% for vendor in vendors %}
-                    <li>{{ vendor }}</li>
-                {% endfor %}
-            {% else %}
-                <p class="no-items">No vendors available</p>
-            {% endif %}
-        </ul>
-    </div>
-
+                                    const formattedDate = dateObj.toLocaleDateString("en-US", {
+                                        year: "numeric",
+                                        month: "long",
+                                        day: "numeric"
+                                    });
+                                    tableBody.append(`
+                                        <tr>
+                                            <td>${item.item_name}</td>
+                                            <td>${item.department}</td>
+                                            <td>${item.quantity}</td>
+                                            <td>${formattedDate}</td>
+                                        </tr>
+                                    `);
+                                });
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Error:", error);
+                            $("#itemsTableOut tbody").html(`
+                                <tr>
+                                    <td colspan="3" class="text-center text-danger">Error loading items</td>
+                                </tr>
+                            `);
+                        }
+                    });
+                });
+            </script>
+        
+       
     {% else %}
         <a href="{% url 'login' %}">Login</a> | 
         <a href="{% url 'signup' %}">Sign Up</a>

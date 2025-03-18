@@ -12,9 +12,13 @@ from django.contrib import messages
 def item_info(request):
     items = Item.objects.all()
     vendors = Vendor.objects.all()
+    inwardstocks = InwardStock.objects.all()
+    outwardstocks = OutwardStock.objects.all()
     context = {
         'items': items,
-        'vendors': vendors
+        'vendors': vendors,
+        'inwardstocks': inwardstocks,
+        'outwardstocks': outwardstocks
     }
     print(context)
     return render(request, 'inv_mng/item_info.html', context)
@@ -197,3 +201,72 @@ def logout_view(request):
     logout(request)
     messages.success(request, "You have been logged out.")
     return redirect('login')
+
+
+# @csrf_exempt  # Remove this if using the CSRF token in AJAX
+def filter_items(request):
+    if request.method == "POST":
+        start_date = request.POST.get("start_date")
+        end_date = request.POST.get("end_date")
+
+        items = InwardStock.objects.all()
+        
+        if start_date:
+            items = items.filter(date__gte=start_date)
+        if end_date:
+            items = items.filter(date__lte=end_date)
+        items_data = []
+    
+        for item in items.values("item_id", "quantity", "vendor_id", "price", "total_price", "date"):
+            item_rec = Item.objects.get(item_id=item['item_id'])
+            item_name = item_rec.name
+            
+            # Get the related Vendor object (assuming Item has a ForeignKey to Vendor)
+            vendor = Vendor.objects.get(id=item['vendor_id'])
+            vendor_name = vendor.vendor_name
+            items_data.append({
+            "item_name": item_name,
+            "quantity": item["quantity"], 
+            "vendor_name": vendor_name,
+            "price" : item["price"],
+            "total_price" : item["total_price"],
+            "date":item["date"]
+
+            })
+        
+        return JsonResponse({"items": items_data})
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
+
+def filter_items_outward(request):
+    if request.method == "POST":
+        start_date = request.POST.get("start_date")
+        end_date = request.POST.get("end_date")
+
+        items = OutwardStock.objects.all()
+        
+        if start_date:
+            items = items.filter(date__gte=start_date)
+        if end_date:
+            items = items.filter(date__lte=end_date)
+        items_data = []
+    
+        for item in items.values("item_id", "quantity", "department", "date"):
+            item_rec = Item.objects.get(item_id=item['item_id'])
+            item_name = item_rec.name
+            
+            # Get the related Vendor object (assuming Item has a ForeignKey to Vendor)
+           
+            items_data.append({
+            "item_name": item_name,
+            "quantity": item["quantity"], 
+            "department": item["department"],
+            "date":item["date"]
+
+            })
+        
+        return JsonResponse({"items": items_data})
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
