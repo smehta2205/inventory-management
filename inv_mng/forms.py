@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.admin import widgets
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
-from .models import Item, Vendor, Stock, InwardOutwardConv, Department, OutwardStock
+from .models import Item, Vendor, Stock, InwardOutwardConv, Department, OutwardStock, InwardStock
 
 class ItemForm(forms.ModelForm):
     class Meta:
@@ -42,13 +42,14 @@ class StockForm(forms.ModelForm):
         self.fields['price'].widget.attrs.update({'class': 'form-control'})
 
     class Meta:
-        model = Stock
-        fields = ('item_id', 'expiry_date', 'quantity', 'price')
+        model = InwardStock
+        fields = ('item_id', 'expiry_date', 'quantity', 'price', 'is_paid')
         labels = {
             'item_id': 'Item ID',
             'expiry_date': 'Expiry date',
             'quantity': 'Quantity',
-            'price': 'Price'
+            'price': 'Price',
+            'is_paid': 'Paid?'
         }
 
 class VendorSelectionForm(forms.Form):

@@ -60,26 +60,27 @@ def inward_stock(request):
             vendor = vendor_form.cleaned_data['vendor']  # Get selected vendor
             for form in formset:
                 if form.cleaned_data:
-                    stock_entry = form.save(commit=False)
-                    stock_entry.vendor = vendor  # Assign the selected vendor
+                    expiry_date = form.cleaned_data.pop('expiry_date')
+                    inward_stock_entry = form.save(commit=False)
+                    inward_stock_entry.vendor = vendor  # Assign the selected vendor
 
                     try:
-                        conv_entry = InwardOutwardConv.objects.get(item_id=stock_entry.item_id)
+                        conv_entry = InwardOutwardConv.objects.get(item_id=inward_stock_entry.item_id)
                         conversion_metric = conv_entry.outward_item_quantity
                     except InwardOutwardConv.DoesNotExist:
                         conversion_metric = 1  
 
-                    stock_entry.total_quantity = stock_entry.quantity * conversion_metric
-                    stock_entry.save()
-                    inward_entry = InwardStock(
-                        # stock=stock_entry,  # Associate with stock entry
+                    inward_stock_entry.total_price = inward_stock_entry.quantity*inward_stock_entry.price
+                    inward_stock_entry.save()
+                    stock = Stock(
                         vendor=vendor,
-                        item_id=stock_entry.item_id,
-                        quantity=stock_entry.quantity,
-                        price = stock_entry.price,
-                        total_price = stock_entry.quantity*stock_entry.price
+                        item_id=inward_stock_entry.item_id,
+                        quantity=inward_stock_entry.quantity,
+                        price = inward_stock_entry.price,
+                        expiry_date = expiry_date,
+                        total_quantity = inward_stock_entry.quantity*conversion_metric
                     )
-                    inward_entry.save()
+                    stock.save()
             return redirect('item_info')
     else:
         vendor_form = VendorSelectionForm()
