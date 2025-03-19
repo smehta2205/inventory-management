@@ -33,13 +33,17 @@ class VendorForm(forms.ModelForm):
 
 class StockForm(forms.ModelForm):
     expiry_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
-
+    gst = forms.DecimalField(
+        max_digits=5, decimal_places=2, required=True, 
+        widget=forms.NumberInput(attrs={'class': 'form-control'})
+    )  #
     def __init__(self, *args, **kwargs):
         super(StockForm, self).__init__(*args, **kwargs)
-        self.fields['item_id'].widget.attrs.update({'class': 'form-control'})
+        self.fields['item_id'].widget.attrs.update({'class': 'form-control select-item'})
         self.fields['expiry_date'].widget.attrs.update({'class': 'form-control'})
         self.fields['quantity'].widget.attrs.update({'class': 'form-control'})
         self.fields['price'].widget.attrs.update({'class': 'form-control'})
+        self.fields['gst'].widget.attrs.update({'class': 'form-control gst-field'})  # Make GST editable
 
     class Meta:
         model = InwardStock

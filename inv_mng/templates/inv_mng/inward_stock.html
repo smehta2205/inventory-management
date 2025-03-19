@@ -26,18 +26,30 @@
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             let formContainer = document.getElementById("form-container");
             let addFormButton = document.getElementById("add-form");
             let totalForms = document.querySelector("#id_form-TOTAL_FORMS");
 
+            // Function to update remove buttons
+            function updateRemoveButtons() {
+                document.querySelectorAll(".remove-form").forEach(button => {
+                    button.addEventListener("click", function () {
+                        this.parentElement.remove();
+                        totalForms.value = parseInt(totalForms.value) - 1;
+                    });
+                });
+            }
+
+            // Add more form functionality
             addFormButton.addEventListener("click", function () {
                 let formCount = parseInt(totalForms.value);
                 let newFormHtml = formContainer.children[0].outerHTML.replace(/-0-/g, `-${formCount}-`).replace(/_0_/g, `_${formCount}_`);
                 let newFormElement = document.createElement("div");
                 newFormElement.innerHTML = newFormHtml;
-                
+
                 // Add the remove button only for newly added forms
                 let removeButton = document.createElement("button");
                 removeButton.type = "button";
@@ -49,18 +61,50 @@
                 totalForms.value = formCount + 1;
 
                 updateRemoveButtons();
+
+                // Initialize GST update for the new form
+                updateGST(newFormElement);
             });
 
-            function updateRemoveButtons() {
-                document.querySelectorAll(".remove-form").forEach(button => {
-                    button.addEventListener("click", function () {
-                        this.parentElement.remove();
-                        totalForms.value = parseInt(totalForms.value) - 1;
+            updateRemoveButtons();
+
+            // Function to update GST based on selected item
+            function updateGST(form) {
+                let itemSelect = form.querySelector('.select-item');
+                let gstField = form.querySelector('.gst-field');
+
+                if (itemSelect && gstField) {
+                    itemSelect.addEventListener('change', function () {
+                        let itemId = itemSelect.value;
+                        console.log("Selected Item ID:", itemId);
+
+                        if (itemId) {
+                            // AJAX request to get GST value for selected item
+                            $.ajax({
+                                url: "{% url 'get_gst' %}",
+                                data: { 'item_id': itemId },
+                                dataType: "json",
+                                success: function (data) {
+                                    console.log("Received GST:", data.gst);
+                                    gstField.value = data.gst;
+                                },
+                                error: function () {
+                                    console.error("Error fetching GST");
+                                    gstField.value = "";
+                                }
+                            });
+                        } else {
+                            console.log("No item selected");
+                            gstField.value = "";
+                        }
                     });
-                });
+                }
             }
 
-            updateRemoveButtons();
+            // Initialize GST update for existing forms
+            document.querySelectorAll('.form-row').forEach(function (form) {
+                updateGST(form);
+            });
         });
     </script>
 {% endblock %}

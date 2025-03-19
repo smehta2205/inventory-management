@@ -61,6 +61,7 @@ def inward_stock(request):
             for form in formset:
                 if form.cleaned_data:
                     expiry_date = form.cleaned_data.pop('expiry_date')
+                    gst = form.cleaned_data.pop('gst')
                     inward_stock_entry = form.save(commit=False)
                     inward_stock_entry.vendor = vendor  # Assign the selected vendor
 
@@ -70,7 +71,10 @@ def inward_stock(request):
                     except InwardOutwardConv.DoesNotExist:
                         conversion_metric = 1  
 
-                    inward_stock_entry.total_price = inward_stock_entry.quantity*inward_stock_entry.price
+                    total_price_wo_gst = inward_stock_entry.quantity*inward_stock_entry.price
+                    inward_stock_entry.gst_amount = (total_price_wo_gst*gst/100)
+                    inward_stock_entry.total_price = total_price_wo_gst + (total_price_wo_gst*gst/100)
+                    print(inward_stock_entry.total_price)
                     inward_stock_entry.save()
                     stock = Stock(
                         vendor=vendor,
@@ -297,3 +301,12 @@ def filter_items_outward(request):
 
     return JsonResponse({"error": "Invalid request"}, status=400)
 
+def get_gst(request):
+    item_id = request.GET.get('item_id')
+    print(item_id)
+    try:
+        item = Item.objects.get(item_id=item_id)
+        print(item.gst)
+        return JsonResponse({'gst': item.gst})  # Assuming `gst` is an attribute of `Item`
+    except Item.DoesNotExist:
+        return JsonResponse({'gst': 0})  

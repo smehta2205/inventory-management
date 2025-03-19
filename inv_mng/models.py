@@ -70,6 +70,6 @@ class InwardStock(models.Model):
     date = models.DateTimeField(default=timezone.now)
     is_paid = models.BooleanField(default=False)
     mrp = models.IntegerField(default=0)
-
+    gst_amount = models.IntegerField(default=0)
     def __str__(self):
         return f"{self.item_id}"
