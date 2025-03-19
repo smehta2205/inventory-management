@@ -63,8 +63,10 @@ def inward_stock(request):
             bill = bill_form.save(commit=False)
             bill.vendor = vendor  # Assign vendor to the bill
             bill_id = bill.bill_id
+            bill_image_path = bill.bill_image.name if bill.bill_image else None
             bill.save()
             print("Bill saved")
+
             for form in formset:
                 if form.cleaned_data:
                     expiry_date = form.cleaned_data.pop('expiry_date')
@@ -72,6 +74,7 @@ def inward_stock(request):
                     inward_stock_entry = form.save(commit=False)
                     inward_stock_entry.vendor = vendor  # Assign the selected vendor
                     inward_stock_entry.bill_id = bill_id
+                    inward_stock_entry.bill_image_path = f"media/bills/{bill_image_path}" if bill_image_path else None  # Ensure correct path
                     try:
                         conv_entry = InwardOutwardConv.objects.get(item_id=inward_stock_entry.item_id)
                         conversion_metric = conv_entry.outward_item_quantity

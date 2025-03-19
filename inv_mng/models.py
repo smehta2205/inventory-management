@@ -72,8 +72,7 @@ class InwardStock(models.Model):
     mrp = models.IntegerField(default=0)
     gst_amount = models.IntegerField(default=0)
     bill_id = models.CharField(max_length=50, default='')  # Bill Number
-
-
+    bill_image_path = models.CharField(max_length=200, default='')  # Bill Image location
 
     def __str__(self):
         return f"{self.item_id}"
