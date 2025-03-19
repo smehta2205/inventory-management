@@ -74,16 +74,22 @@ def inward_stock(request):
                     inward_stock_entry = form.save(commit=False)
                     inward_stock_entry.vendor = vendor  # Assign the selected vendor
                     inward_stock_entry.bill_id = bill_id
-                    inward_stock_entry.bill_image_path = f"media/bills/{bill_image_path}" if bill_image_path else None  # Ensure correct path
+                    inward_stock_entry.bill_image_path = f"media/bills/{bill_image_path}" if bill_image_path else None
                     try:
                         conv_entry = InwardOutwardConv.objects.get(item_id=inward_stock_entry.item_id)
                         conversion_metric = conv_entry.outward_item_quantity
                     except InwardOutwardConv.DoesNotExist:
                         conversion_metric = 1  
 
-                    total_price_wo_gst = inward_stock_entry.quantity*inward_stock_entry.price
-                    inward_stock_entry.gst_amount = (total_price_wo_gst*gst/100)
-                    inward_stock_entry.total_price = total_price_wo_gst + (total_price_wo_gst*gst/100)
+                    if(inward_stock_entry.price_with_gst):
+                        total_price_w_gst = inward_stock_entry.quantity*inward_stock_entry.price
+                        inward_stock_entry.total_price = total_price_w_gst / (1+(gst/100))
+                        inward_stock_entry.gst_amount = (inward_stock_entry.total_price*gst/100)
+
+                    else:
+                        total_price_wo_gst = inward_stock_entry.quantity*inward_stock_entry.price
+                        inward_stock_entry.gst_amount = (total_price_wo_gst*gst/100)
+                        inward_stock_entry.total_price = total_price_wo_gst + (total_price_wo_gst*gst/100)
 
                     print(inward_stock_entry.total_price)
                     inward_stock_entry.save()
