@@ -69,6 +69,7 @@ class InwardStock(models.Model):
     total_price = models.IntegerField(default=0)
     date = models.DateTimeField(default=timezone.now)
     is_paid = models.BooleanField(default=False)
+    mrp = models.IntegerField(default=0)
 
     def __str__(self):
         return f"{self.item_id}"
