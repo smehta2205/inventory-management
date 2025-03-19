@@ -2,7 +2,7 @@ from django.forms import formset_factory
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from .models import InwardStock, Item, Stock, InwardOutwardConv, Vendor, OutwardStock
-from .forms import ItemForm, LoginForm, RegisterForm, VendorForm, StockForm, OutwardStockForm, ConversionMetricForm, DepartmentForm, VendorSelectionForm, DepartmentSelectionForm, ConversionMetricFormWithoutId
+from .forms import ItemForm, LoginForm, RegisterForm, VendorForm, StockForm, OutwardStockForm, ConversionMetricForm, DepartmentForm, VendorSelectionForm, DepartmentSelectionForm, ConversionMetricFormWithoutId, InwardBillForm
 from django.shortcuts import redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -54,17 +54,24 @@ def inward_stock(request):
     
     if request.method == "POST":
         vendor_form = VendorSelectionForm(request.POST)
+        bill_form = InwardBillForm(request.POST, request.FILES)
         formset = StockFormSet(request.POST)
+
         
-        if vendor_form.is_valid() and formset.is_valid():
+        if vendor_form.is_valid() and formset.is_valid() and bill_form.is_valid():
             vendor = vendor_form.cleaned_data['vendor']  # Get selected vendor
+            bill = bill_form.save(commit=False)
+            bill.vendor = vendor  # Assign vendor to the bill
+            bill_id = bill.bill_id
+            bill.save()
+            print("Bill saved")
             for form in formset:
                 if form.cleaned_data:
                     expiry_date = form.cleaned_data.pop('expiry_date')
                     gst = form.cleaned_data.pop('gst')
                     inward_stock_entry = form.save(commit=False)
                     inward_stock_entry.vendor = vendor  # Assign the selected vendor
-
+                    inward_stock_entry.bill_id = bill_id
                     try:
                         conv_entry = InwardOutwardConv.objects.get(item_id=inward_stock_entry.item_id)
                         conversion_metric = conv_entry.outward_item_quantity
@@ -74,6 +81,7 @@ def inward_stock(request):
                     total_price_wo_gst = inward_stock_entry.quantity*inward_stock_entry.price
                     inward_stock_entry.gst_amount = (total_price_wo_gst*gst/100)
                     inward_stock_entry.total_price = total_price_wo_gst + (total_price_wo_gst*gst/100)
+
                     print(inward_stock_entry.total_price)
                     inward_stock_entry.save()
                     stock = Stock(
@@ -88,9 +96,10 @@ def inward_stock(request):
             return redirect('item_info')
     else:
         vendor_form = VendorSelectionForm()
+        bill_form = InwardBillForm()
         formset = StockFormSet()
 
-    return render(request, 'inv_mng/inward_stock.html', {'vendor_form': vendor_form, 'formset': formset})
+    return render(request, 'inv_mng/inward_stock.html', {'vendor_form': vendor_form, 'bill_form': bill_form, 'formset': formset})
 
 
 

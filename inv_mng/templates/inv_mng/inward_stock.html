@@ -1,14 +1,22 @@
 {% block content %}
     <h2>Add Inward Stock</h2>
 
-    <form method="POST">
+    <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         
         <div class="form-group">
             <label for="id_vendor">Select Vendor:</label>
             {{ vendor_form.vendor }}
         </div>
-
+        <!-- <h3>Bill Details</h3> -->
+        <div class="form-group">
+            <label for="id_bill_id">Bill ID:</label>
+            {{ bill_form.bill_id }}
+        </div>
+        <div class="form-group">
+            <label for="id_bill_image">Upload Bill Image:</label>
+            {{ bill_form.bill_image }}
+        </div>
         {{ formset.management_form }}
 
         <div id="form-container">

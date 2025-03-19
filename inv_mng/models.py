@@ -71,7 +71,18 @@ class InwardStock(models.Model):
     is_paid = models.BooleanField(default=False)
     mrp = models.IntegerField(default=0)
     gst_amount = models.IntegerField(default=0)
-    bill_id = models.CharField(max_length=200, default='')
+    bill_id = models.CharField(max_length=50, default='')  # Bill Number
+
+
 
     def __str__(self):
         return f"{self.item_id}"
+
+
+class InwardBill(models.Model):
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)  # Link to Vendor
+    bill_id = models.CharField(max_length=50, unique=True)  # Bill Number
+    bill_image = models.ImageField(upload_to='bills/')  # Invoice Upload
+
+    def __str__(self):
+        return f"Bill {self.bill_id} - {self.vendor.vendor_name}"

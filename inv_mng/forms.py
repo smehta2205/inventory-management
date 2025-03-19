@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.admin import widgets
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
-from .models import Item, Vendor, Stock, InwardOutwardConv, Department, OutwardStock, InwardStock
+from .models import InwardBill, Item, Vendor, Stock, InwardOutwardConv, Department, OutwardStock, InwardStock
 
 class ItemForm(forms.ModelForm):
     class Meta:
@@ -47,7 +47,7 @@ class StockForm(forms.ModelForm):
 
     class Meta:
         model = InwardStock
-        fields = ('item_id', 'expiry_date', 'quantity', 'mrp', 'price', 'is_paid', 'bill_id')
+        fields = ('item_id', 'expiry_date', 'quantity', 'mrp', 'price', 'is_paid')
         labels = {
             'item_id': 'Item ID',
             'expiry_date': 'Expiry date',
@@ -55,13 +55,16 @@ class StockForm(forms.ModelForm):
             'price': 'Price',
             'is_paid': 'Paid?',
             'mrp': 'MRP',
-            'bill_id': 'Bill ID (Purchase order)'
         }
 
 class VendorSelectionForm(forms.Form):
     vendor = forms.ModelChoiceField(queryset=Vendor.objects.all(), label="Vendor", empty_label="Select a Vendor")
 
-
+class InwardBillForm(forms.ModelForm):
+    class Meta:
+        model = InwardBill
+        fields = ['bill_id', 'bill_image']
+        
 class OutwardStockForm(forms.Form):
     # department = forms.ModelChoiceField(
     #     queryset=Department.objects.all(),
