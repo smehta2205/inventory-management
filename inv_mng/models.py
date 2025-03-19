@@ -71,5 +71,7 @@ class InwardStock(models.Model):
     is_paid = models.BooleanField(default=False)
     mrp = models.IntegerField(default=0)
     gst_amount = models.IntegerField(default=0)
+    bill_id = models.CharField(max_length=200, default='')
+
     def __str__(self):
         return f"{self.item_id}"

@@ -47,14 +47,15 @@ class StockForm(forms.ModelForm):
 
     class Meta:
         model = InwardStock
-        fields = ('item_id', 'expiry_date', 'quantity', 'mrp', 'price', 'is_paid')
+        fields = ('item_id', 'expiry_date', 'quantity', 'mrp', 'price', 'is_paid', 'bill_id')
         labels = {
             'item_id': 'Item ID',
             'expiry_date': 'Expiry date',
             'quantity': 'Quantity',
             'price': 'Price',
             'is_paid': 'Paid?',
-            'mrp': 'MRP'
+            'mrp': 'MRP',
+            'bill_id': 'Bill ID (Purchase order)'
         }
 
 class VendorSelectionForm(forms.Form):
