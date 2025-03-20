@@ -8,7 +8,6 @@
             <label for="id_vendor">Select Vendor:</label>
             {{ vendor_form.vendor }}
         </div>
-        <!-- <h3>Bill Details</h3> -->
         <div class="form-group">
             <label for="id_bill_id">Bill ID:</label>
             {{ bill_form.bill_id }}
@@ -19,16 +18,40 @@
         </div>
         {{ formset.management_form }}
 
-        <div id="form-container">
-            {% for form in formset %}
-                <div class="form-row">
-                    {{ form.as_p }}
-                    {% if not forloop.first %}
-                        <button type="button" class="remove-form">❌</button>
-                    {% endif %}
-                </div>
-            {% endfor %}
-        </div>
+        <table id="form-container">
+            <thead>
+                <tr>
+                    <th>Item ID</th>
+                    <th>Expiry Date</th>
+                    <th>Quantity</th>
+                    <th>MRP</th>
+                    <th>Price</th>
+                    <th>Price with GST</th>
+                    <th>Paid?</th>
+                    <th>GST</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for form in formset %}
+                    <tr class="form-row">
+                        <td>{{ form.item_id }}</td>
+                        <td>{{ form.expiry_date }}</td>
+                        <td>{{ form.quantity }}</td>
+                        <td>{{ form.mrp }}</td>
+                        <td>{{ form.price }}</td>
+                        <td>{{ form.price_with_gst }}</td>
+                        <td>{{ form.is_paid }}</td>
+                        <td>{{ form.gst }}</td>
+                        <td>
+                            {% if not forloop.first %}
+                                <button type="button" class="remove-form">❌</button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
         <button type="button" id="add-form">➕ Add More</button>
         <button type="submit" class="btn btn-primary">Submit</button>
@@ -37,7 +60,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            let formContainer = document.getElementById("form-container");
+            let formContainer = document.getElementById("form-container").getElementsByTagName('tbody')[0];
             let addFormButton = document.getElementById("add-form");
             let totalForms = document.querySelector("#id_form-TOTAL_FORMS");
 
@@ -45,7 +68,7 @@
             function updateRemoveButtons() {
                 document.querySelectorAll(".remove-form").forEach(button => {
                     button.addEventListener("click", function () {
-                        this.parentElement.remove();
+                        this.closest('tr').remove();
                         totalForms.value = parseInt(totalForms.value) - 1;
                     });
                 });
@@ -55,15 +78,22 @@
             addFormButton.addEventListener("click", function () {
                 let formCount = parseInt(totalForms.value);
                 let newFormHtml = formContainer.children[0].outerHTML.replace(/-0-/g, `-${formCount}-`).replace(/_0_/g, `_${formCount}_`);
-                let newFormElement = document.createElement("div");
+                let newFormElement = document.createElement("tr");
                 newFormElement.innerHTML = newFormHtml;
+
+                // Clear input values in the new row
+                newFormElement.querySelectorAll('input, select').forEach(input => {
+                    if (input.type !== 'hidden') {
+                        input.value = '';
+                    }
+                });
 
                 // Add the remove button only for newly added forms
                 let removeButton = document.createElement("button");
                 removeButton.type = "button";
                 removeButton.classList.add("remove-form");
                 removeButton.textContent = "❌";
-                newFormElement.appendChild(removeButton);
+                newFormElement.querySelector('td:last-child').appendChild(removeButton);
 
                 formContainer.appendChild(newFormElement);
                 totalForms.value = formCount + 1;
