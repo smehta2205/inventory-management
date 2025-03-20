@@ -8,17 +8,31 @@
         </div>
         {{ formset.management_form }}
 
-        <!-- Separate Department Field -->
-        
-
         <!-- Formset Container -->
-        <div id="form-container">
-            {% for form in formset %}
-                <div class="outward-stock-form">
-                    {{ form.as_p }}
-                </div>
-            {% endfor %}
-        </div>
+        <table id="form-container">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Stock Entry</th>
+                    <th>Quantity</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for form in formset %}
+                    <tr class="outward-stock-form">
+                        <td>{{ form.item }}</td>
+                        <td>{{ form.stock_entry }}</td>
+                        <td>{{ form.quantity }}</td>
+                        <td>
+                            {% if not forloop.first %}
+                                <button type="button" class="remove-form">❌</button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
         <button type="button" id="add-form">Add Another Item</button>
         <button type="submit">Submit</button>
@@ -26,41 +40,53 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        // JavaScript for adding new forms
         document.addEventListener("DOMContentLoaded", function () {
-            let formContainer = document.getElementById("form-container");
+            let formContainer = document.getElementById("form-container").getElementsByTagName('tbody')[0];
             let addFormButton = document.getElementById("add-form");
             let totalForms = document.querySelector("#id_form-TOTAL_FORMS");
             let departmentDropdown = document.getElementById("id_department");
 
+            // Function to update remove buttons
+            function updateRemoveButtons() {
+                document.querySelectorAll(".remove-form").forEach(button => {
+                    button.addEventListener("click", function () {
+                        this.closest('tr').remove();
+                        totalForms.value = parseInt(totalForms.value) - 1;
+                    });
+                });
+            }
+
+            // Add more form functionality
             addFormButton.addEventListener("click", function () {
                 let formCount = parseInt(totalForms.value);
                 let newFormHtml = formContainer.children[0].outerHTML
                     .replace(/-\d+-/g, `-${formCount}-`)  // Update form indices
                     .replace(/_\d+_/g, `_${formCount}_`); // Update form indices
 
-                let newFormElement = document.createElement("div");
+                let newFormElement = document.createElement("tr");
                 newFormElement.innerHTML = newFormHtml;
 
-                // Add remove button only for newly created forms
+                // Clear input values in the new row
+                newFormElement.querySelectorAll('input, select').forEach(input => {
+                    if (input.type !== 'hidden') {
+                        input.value = '';
+                    }
+                });
+
+                // Add the remove button only for newly added forms
                 let removeButton = document.createElement("button");
                 removeButton.type = "button";
                 removeButton.classList.add("remove-form");
                 removeButton.textContent = "❌";
-
-                // Insert remove button after the form
-                newFormElement.appendChild(removeButton);
+                newFormElement.querySelector('td:last-child').appendChild(removeButton);
 
                 formContainer.appendChild(newFormElement);
                 totalForms.value = formCount + 1;
 
-                // Copy the selected department value to the new form
-                let newFormDepartment = newFormElement.querySelector("select[id^='id_form-'][id$='department']");
-                if (newFormDepartment && departmentDropdown.value) {
-                    newFormDepartment.value = departmentDropdown.value;
-                }
-
                 updateRemoveButtons();
+
+                // Initialize stock entry dropdown for the new form
+                initializeStockEntryDropdown(newFormElement);
             });
 
             // Update all department fields when the main department dropdown changes
@@ -71,46 +97,43 @@
                 });
             });
 
-            function updateRemoveButtons() {
-                document.querySelectorAll(".remove-form").forEach(button => {
-                    button.removeEventListener("click", removeForm); // Prevent multiple bindings
-                    button.addEventListener("click", removeForm);
-                });
-            }
+            // Function to initialize stock entry dropdown for a form
+            function initializeStockEntryDropdown(form) {
+                let itemSelect = form.querySelector("select[id^='id_form-'][id$='item']");
+                let stockEntrySelect = form.querySelector("select[id^='id_form-'][id$='stock_entry']");
 
-            function removeForm() {
-                this.parentElement.remove();
-                totalForms.value = parseInt(totalForms.value) - 1;
-            }
+                if (itemSelect && stockEntrySelect) {
+                    itemSelect.addEventListener("change", function () {
+                        let formIndex = itemSelect.id.match(/id_form-(\d+)-item/)[1];
+                        let itemId = itemSelect.value;
 
-            updateRemoveButtons();
-        });
+                        console.log(`Form Index: ${formIndex}, Selected Item: ${itemId}`);
 
-        // JavaScript for dynamically updating stock_entry dropdown
-        $(document).ready(function () {
-            $(document).on("change", "select[id^='id_form-'][id$='item']", function () {
-                let formIndex = $(this).attr("id").match(/id_form-(\d+)-item/)[1];
-                let itemId = $(this).val();
-
-                console.log(`Form Index: ${formIndex}, Selected Item: ${itemId}`);
-
-                let stockEntryDropdown = $(`#id_form-${formIndex}-stock_entry`); // Get correct stock entry dropdown
-                stockEntryDropdown.empty(); // Clear previous options
-
-                if (itemId) {
-                    $.ajax({
-                        url: "{% url 'get_stock_entries' %}",  // Use your actual Django view URL
-                        data: { item_id: itemId },
-                        dataType: "json",
-                        success: function (data) {
-                            stockEntryDropdown.append('<option value="">Select Stock Entry</option>');
-                            $.each(data, function (index, stock) {
-                                stockEntryDropdown.append(`<option value="${stock.id}">${stock.expiry_date}</option>`);
+                        if (itemId) {
+                            $.ajax({
+                                url: "{% url 'get_stock_entries' %}",  // Use your actual Django view URL
+                                data: { item_id: itemId },
+                                dataType: "json",
+                                success: function (data) {
+                                    stockEntrySelect.innerHTML = '<option value="">Select Stock Entry</option>';
+                                    data.forEach(stock => {
+                                        stockEntrySelect.innerHTML += `<option value="${stock.id}">${stock.expiry_date}</option>`;
+                                    });
+                                }
                             });
+                        } else {
+                            stockEntrySelect.innerHTML = '<option value="">Select Stock Entry</option>';
                         }
                     });
                 }
+            }
+
+            // Initialize stock entry dropdown for existing forms
+            document.querySelectorAll('.outward-stock-form').forEach(function (form) {
+                initializeStockEntryDropdown(form);
             });
+
+            updateRemoveButtons();
         });
     </script>
 {% endblock %}
