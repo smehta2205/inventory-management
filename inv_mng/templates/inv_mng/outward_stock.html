@@ -13,7 +13,7 @@
             <thead>
                 <tr>
                     <th>Item</th>
-                    <th>Stock Entry</th>
+                    <th>Vendor and Expiry date</th>
                     <th>Quantity</th>
                     <th></th>
                 </tr>
@@ -116,8 +116,9 @@
                                 dataType: "json",
                                 success: function (data) {
                                     stockEntrySelect.innerHTML = '<option value="">Select Stock Entry</option>';
+                                    data = data.items
                                     data.forEach(stock => {
-                                        stockEntrySelect.innerHTML += `<option value="${stock.id}">${stock.expiry_date}</option>`;
+                                        stockEntrySelect.innerHTML += `<option value="${stock.id}">${stock.vendor_name} ${stock.expiry_date} </option>`;
                                     });
                                 }
                             });

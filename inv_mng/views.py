@@ -156,10 +156,26 @@ def outward_stock(request):
 def get_stock_entries(request):
     item_id = request.GET.get("item_id")
     print(item_id)
-    if item_id:
-        stock_entries = Stock.objects.filter(item_id=item_id).values("id", "expiry_date")
-        return JsonResponse(list(stock_entries), safe=False)
-    return JsonResponse([], safe=False)
+    items_data = []
+    if not item_id:
+        return JsonResponse({"items": []})
+
+    # Use select_related to optimize vendor fetching
+    stock_entries = Stock.objects.filter(item_id=item_id).select_related("vendor").values("id", "expiry_date", "vendor__vendor_name")
+
+    items_data = []
+    for item in stock_entries:
+        try:
+            items_data.append({
+                "id": item["id"],  # Include ID for the frontend dropdown
+                "expiry_date": item["expiry_date"].strftime("%Y-%m-%d"),
+                "vendor_name": item["vendor__vendor_name"],
+            })
+        except Exception as e:
+            print(f"Error processing stock entry {item}: {e}")
+
+    print(f"Returning stock entries: {items_data}")  # Debugging log
+    return JsonResponse({"items": items_data})
 
 
 
