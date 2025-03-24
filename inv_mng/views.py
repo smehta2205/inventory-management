@@ -269,6 +269,12 @@ def logout_view(request):
     messages.success(request, "You have been logged out.")
     return redirect('login')
 
+def filter_items(items, start_date, end_date):
+    if start_date:
+        items = items.filter(date__gte=start_date)
+    if end_date:
+        items = items.filter(date__lte=end_date)
+    return items
 
 # @csrf_exempt  # Remove this if using the CSRF token in AJAX
 def filter_items_inward(request):
@@ -277,11 +283,7 @@ def filter_items_inward(request):
         end_date = request.POST.get("end_date")
 
         items = InwardStock.objects.all()
-        
-        if start_date:
-            items = items.filter(date__gte=start_date)
-        if end_date:
-            items = items.filter(date__lte=end_date)
+        items = filter_items(items, start_date, end_date)
         items_data = []
     
         for item in items.values("item_id", "quantity", "vendor_id", "price", "total_price", "date"):
@@ -313,10 +315,7 @@ def filter_items_outward(request):
 
         items = OutwardStock.objects.all()
         
-        if start_date:
-            items = items.filter(date__gte=start_date)
-        if end_date:
-            items = items.filter(date__lte=end_date)
+        items = filter_items(items, start_date, end_date)
         items_data = []
     
         for item in items.values("item_id", "quantity", "department", "date"):
