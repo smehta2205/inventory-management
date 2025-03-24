@@ -92,3 +92,4 @@ class WastageStock(models.Model):
     item_id = models.ForeignKey(Item, on_delete=models.CASCADE)
     quantity = models.IntegerField()
     date = models.DateTimeField(default=timezone.now)
+    wastage_amount = models.IntegerField(default=0)

@@ -358,12 +358,13 @@ def log_wastage(request):
                     item = form.cleaned_data['item']
                     stock_entry = form.cleaned_data['stock_entry']
                     quantity = form.cleaned_data['quantity']
-
+                    
                     if quantity <= stock_entry.total_quantity:
                         # Create an OutwardStock record
                         wastage_stock = WastageStock(
                             item_id=item,
-                            quantity=quantity
+                            quantity=quantity,
+                            wastage_amount = stock_entry.price * quantity,
                         )
                         wastage_stock.save()
 
