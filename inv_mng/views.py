@@ -7,6 +7,8 @@ from django.shortcuts import redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.db.models import Sum
+
 
 # Create your views here.
 def item_info(request):
@@ -269,7 +271,7 @@ def logout_view(request):
 
 
 # @csrf_exempt  # Remove this if using the CSRF token in AJAX
-def filter_items(request):
+def filter_items_inward(request):
     if request.method == "POST":
         start_date = request.POST.get("start_date")
         end_date = request.POST.get("end_date")

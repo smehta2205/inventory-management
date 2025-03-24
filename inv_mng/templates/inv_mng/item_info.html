@@ -243,7 +243,7 @@
             
                     // AJAX request to filter items
                     $.ajax({
-                        url: "{% url 'filter_items' %}",  // Use the correct Django URL name
+                        url: "{% url 'filter_items_inward' %}",  // Use the correct Django URL name
                         type: "POST",
                         data: {
                             start_date: startDate,
