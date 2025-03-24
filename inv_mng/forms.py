@@ -152,3 +152,33 @@ class RegisterForm(forms.ModelForm):
 class LoginForm(AuthenticationForm):
     email = forms.CharField(widget=forms.TextInput())
     password = forms.CharField(widget=forms.PasswordInput())
+
+
+class WastageForm(forms.Form):
+    item = forms.ModelChoiceField(
+        queryset=Item.objects.all(),
+        label="Item",
+        empty_label="Select an Item",
+        required=True
+    )
+
+    stock_entry = forms.ModelChoiceField(
+        queryset=Stock.objects.none(),  # Initially empty
+        label="Stock Entry",
+        required=True
+    )
+
+    quantity = forms.IntegerField(label="Quantity")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        # Check if the form is bound (i.e., has data)
+        if self.is_bound:
+            try:
+                item_id = int(self.data.get(self.prefix + '-item'))  # Use the form's prefix to get the item ID
+                self.fields['stock_entry'].queryset = Stock.objects.filter(item_id=item_id)
+            except (ValueError, TypeError):
+                self.fields['stock_entry'].queryset = Stock.objects.none()  # Fallback to empty queryset
+        else:
+            self.fields['stock_entry'].queryset = Stock.objects.none()

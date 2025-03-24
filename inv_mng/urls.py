@@ -17,6 +17,7 @@ urlpatterns = [
     path('filter_items/', views.filter_items, name='filter_items'),
     path('filter_items_outward/', views.filter_items_outward, name='filter_items_outward'), 
     path('get_gst/', views.get_gst, name='get_gst'),
+    path('log_wastage/', views.log_wastage, name='log_wastage'),
 
     # path('get_items_from_stock/', views.get_items_from_stock, name='get_items_from_stock'),
 

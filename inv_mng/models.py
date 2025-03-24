@@ -86,3 +86,9 @@ class InwardBill(models.Model):
 
     def __str__(self):
         return f"Bill {self.bill_id} - {self.vendor.vendor_name}"
+    
+
+class WastageStock(models.Model):
+    item_id = models.ForeignKey(Item, on_delete=models.CASCADE)
+    quantity = models.IntegerField()
+    date = models.DateTimeField(default=timezone.now)

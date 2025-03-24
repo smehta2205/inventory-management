@@ -1,8 +1,8 @@
 from django.forms import formset_factory
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
-from .models import InwardStock, Item, Stock, InwardOutwardConv, Vendor, OutwardStock
-from .forms import ItemForm, LoginForm, RegisterForm, VendorForm, StockForm, OutwardStockForm, ConversionMetricForm, DepartmentForm, VendorSelectionForm, DepartmentSelectionForm, ConversionMetricFormWithoutId, InwardBillForm
+from .models import InwardStock, Item, Stock, InwardOutwardConv, Vendor, OutwardStock, WastageStock
+from .forms import ItemForm, LoginForm, RegisterForm, VendorForm, StockForm, OutwardStockForm, ConversionMetricForm, DepartmentForm, VendorSelectionForm, DepartmentSelectionForm, ConversionMetricFormWithoutId, InwardBillForm, WastageForm
 from django.shortcuts import redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -344,3 +344,39 @@ def get_gst(request):
         return JsonResponse({'gst': item.gst})  # Assuming `gst` is an attribute of `Item`
     except Item.DoesNotExist:
         return JsonResponse({'gst': 0})  
+    
+
+def log_wastage(request):
+    WastageStockFormSet = formset_factory(WastageForm, extra=1)  # Allows adding multiple forms
+    formset = WastageStockFormSet(request.POST or None)
+
+    if request.method == "POST":
+        if formset.is_valid():
+            for form in formset:
+                if form.cleaned_data:  # Check if the form has data
+                    # Extract cleaned data from the form
+                    item = form.cleaned_data['item']
+                    stock_entry = form.cleaned_data['stock_entry']
+                    quantity = form.cleaned_data['quantity']
+
+                    if quantity <= stock_entry.total_quantity:
+                        # Create an OutwardStock record
+                        wastage_stock = WastageStock(
+                            item_id=item,
+                            quantity=quantity
+                        )
+                        wastage_stock.save()
+
+                        # Deduct the quantity from the Stock entry
+                        print(stock_entry.total_quantity)
+                        stock_entry.total_quantity -= quantity
+                        print(stock_entry.total_quantity)
+                        stock_entry.save()
+
+            return redirect('item_info')  # Redirect after successful submission
+        else:
+            print("Form errors:", formset.errors)
+
+    return render(request, "inv_mng/log_wastage.html", {
+        "formset": formset,
+    })    
