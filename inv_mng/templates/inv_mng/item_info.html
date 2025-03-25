@@ -178,6 +178,7 @@
             <h1>Item and Vendor Management</h1>
         </div>
         <div class="container mt-4">
+            <div class="card mt-4 p-4 shadow-sm">
             <!-- <div class="card p-4 shadow-sm">-->
                 <!-- <h5 class="text-center mb-3">Select Date Range</h4>  -->
         
@@ -203,7 +204,7 @@
                 </div>
                 
             <!-- </div> -->
-            <div class="row">
+            <div class="row mt-4">
                 <div class="col-md-3">
                     <div class="card bg-primary text-white shadow">
                         <div class="card-body">
@@ -531,8 +532,8 @@
                     });
                 });
             </script>
-        
-       
+        </div>
+    </div>
     {% else %}
         <a href="{% url 'login' %}">Login</a> | 
         <a href="{% url 'signup' %}">Sign Up</a>
