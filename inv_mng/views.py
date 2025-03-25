@@ -143,7 +143,8 @@ def outward_stock(request):
                             department=department,
                             item_id=item,
                             # stock_entry=stock_entry,
-                            quantity=quantity
+                            quantity=quantity,
+                            outward_spent_amount = stock_entry.price * quantity
                         )
                         outward_stock.save()
 
