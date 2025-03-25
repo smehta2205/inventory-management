@@ -402,3 +402,17 @@ def get_total_wastage(request):
         print(total_wastage)
         return JsonResponse({"total_wastage": total_wastage})
     # return JsonResponse({"error": "Invalid request"}, status=400)
+
+
+def get_total_purchase(request):
+    if request.method == "POST":
+        start_date = request.POST.get("start_date")
+        end_date = request.POST.get("end_date")
+
+        items = InwardStock.objects.all()
+        
+        items = filter_items(items, start_date, end_date)
+        total_purchase = items.annotate(difference=F('total_price') - F('gst_amount')).aggregate(total_difference=Sum('difference'))
+        print("total_purchase")
+        print(total_purchase)
+        return JsonResponse({"total_purchase": total_purchase})

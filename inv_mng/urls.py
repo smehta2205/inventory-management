@@ -19,6 +19,7 @@ urlpatterns = [
     path('get_gst/', views.get_gst, name='get_gst'),
     path('log_wastage/', views.log_wastage, name='log_wastage'),
     path('get_total_wastage/', views.get_total_wastage, name='get_total_wastage'),
+    path('get_total_purchase/', views.get_total_purchase, name='get_total_purchase'),
 
     # path('get_items_from_stock/', views.get_items_from_stock, name='get_items_from_stock'),
 
