@@ -60,6 +60,7 @@ class OutwardStock(models.Model):
     department = models.ForeignKey(Department, on_delete=models.CASCADE)
     quantity = models.IntegerField()
     date = models.DateTimeField(default=timezone.now)
+    outward_spent_amount = models.IntegerField(default=0)
 
 class InwardStock(models.Model):
     item_id = models.ForeignKey(Item, on_delete=models.CASCADE)
