@@ -249,7 +249,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            <!-- </div> -->
             <script>
                     document.getElementById("filterBtn").addEventListener("click", function () {
                     const startDate = document.getElementById("startDate").value;
@@ -276,6 +276,42 @@
                         }
                     });
                 });
+            </script>
+
+            <div class="col-md-4">
+                <div class="card bg-primary text-white shadow">
+                    <div class="card-body">
+                        <h5 class="card-title">Total GST paid</h5>
+                        <p id="gstCard" class="card-text display-6">Rs. {{ total_gst.gst_amount__sum }} </p>
+                    </div>
+                </div>
+            </div>
+            <script>
+                document.getElementById("filterBtn").addEventListener("click", function () {
+                const startDate = document.getElementById("startDate").value;
+                const endDate = document.getElementById("endDate").value;
+
+                $.ajax({
+                    url: "{% url 'get_total_gst' %}", // Use the correct Django URL name
+                    type: "POST",
+                    data: {
+                        start_date: startDate,
+                        end_date: endDate,
+                        csrfmiddlewaretoken: "{{ csrf_token }}" // Required for POST requests in Django
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        console.log(data);
+                        const gstAmount = data.total_gst['gst_amount__sum'] ? data.total_gst['gst_amount__sum'] : 0;
+
+                        $("#gstCard").text(`Rs. ${gstAmount}`);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error:", error);
+                        $("#gstCard").text("Error loading value");
+                    }
+                });
+            });
             </script>
             
             <div class="card mt-4 p-4 shadow-sm">
