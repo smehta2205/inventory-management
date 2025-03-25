@@ -7,7 +7,7 @@ from django.shortcuts import redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
-from django.db.models import Sum
+from django.db.models import F, Sum
 
 
 # Create your views here.
@@ -16,13 +16,18 @@ def item_info(request):
     vendors = Vendor.objects.all()
     inwardstocks = InwardStock.objects.all()
     outwardstocks = OutwardStock.objects.all()
+    total_wastage = WastageStock.objects.aggregate(Sum('wastage_amount'))
+    total_purchase = InwardStock.objects.annotate(difference=F('total_price') - F('gst_amount')).aggregate(total_difference=Sum('difference'))
+    print(total_purchase)
     context = {
         'items': items,
         'vendors': vendors,
         'inwardstocks': inwardstocks,
-        'outwardstocks': outwardstocks
+        'outwardstocks': outwardstocks,
+        'total_wastage':total_wastage,
+        'total_purchase':total_purchase
     }
-    print(context)
+    # print(context)
     return render(request, 'inv_mng/item_info.html', context)
     
 
@@ -93,7 +98,7 @@ def inward_stock(request):
                         inward_stock_entry.gst_amount = (total_price_wo_gst*gst/100)
                         inward_stock_entry.total_price = total_price_wo_gst + (total_price_wo_gst*gst/100)
 
-                    print(inward_stock_entry.total_price)
+                    # print(inward_stock_entry.total_price)
                     inward_stock_entry.save()
                     stock = Stock(
                         vendor=vendor,
@@ -200,7 +205,7 @@ def add_conversion_metric(request):
             item = form.cleaned_data.get('item')  # Get the item from the form
             
             # Check if a conversion metric already exists for this item
-            print(len(InwardOutwardConv.objects.filter(item_id=item))==0)
+            # print(len(InwardOutwardConv.objects.filter(item_id=item))==0)
             if (len(InwardOutwardConv.objects.filter(item_id=item))==0):
                 messages.warning(request, 'A conversion metric for this item already exists!')
             else:
@@ -382,3 +387,18 @@ def log_wastage(request):
     return render(request, "inv_mng/log_wastage.html", {
         "formset": formset,
     })    
+
+
+def get_total_wastage(request):
+    if request.method == "POST":
+        start_date = request.POST.get("start_date")
+        end_date = request.POST.get("end_date")
+
+        items = WastageStock.objects.all()
+        
+        items = filter_items(items, start_date, end_date)
+        total_wastage = items.aggregate(Sum('wastage_amount'))
+        print("total_wastage")
+        print(total_wastage)
+        return JsonResponse({"total_wastage": total_wastage})
+    # return JsonResponse({"error": "Invalid request"}, status=400)
