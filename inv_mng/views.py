@@ -19,6 +19,7 @@ def item_info(request):
     total_wastage = WastageStock.objects.aggregate(Sum('wastage_amount'))
     total_purchase = InwardStock.objects.annotate(difference=F('total_price') - F('gst_amount')).aggregate(total_difference=Sum('difference'))
     total_gst = InwardStock.objects.aggregate(Sum('gst_amount'))
+    total_expenditure = OutwardStock.objects.aggregate(Sum('outward_spent_amount'))
     print(total_purchase)
     context = {
         'items': items,
@@ -27,7 +28,8 @@ def item_info(request):
         'outwardstocks': outwardstocks,
         'total_wastage' : total_wastage,
         'total_purchase' : total_purchase,
-        "total_gst" : total_gst
+        "total_gst" : total_gst,
+        "total_expenditure" : total_expenditure
     }
     # print(context)
     return render(request, 'inv_mng/item_info.html', context)
@@ -433,3 +435,17 @@ def get_total_gst(request):
         print("total_gst")
         print(total_gst)
         return JsonResponse({"total_gst": total_gst})
+    
+
+def get_total_expense(request):
+    if request.method == "POST":
+        start_date = request.POST.get("start_date")
+        end_date = request.POST.get("end_date")
+
+        items = OutwardStock.objects.all()
+        
+        items = filter_items(items, start_date, end_date)
+        total_expense = items.aggregate(Sum('outward_spent_amount'))
+        print("total_expense")
+        print(total_expense)
+        return JsonResponse({"total_expense": total_expense})

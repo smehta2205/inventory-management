@@ -204,7 +204,7 @@
                 
             <!-- </div> -->
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="card bg-primary text-white shadow">
                         <div class="card-body">
                             <h5 class="card-title">Total Wastage</h5>
@@ -241,7 +241,7 @@
             </script>
 
             <!-- <div class="row"> -->
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="card bg-primary text-white shadow">
                         <div class="card-body">
                             <h5 class="card-title">Purchase made</h5>
@@ -278,7 +278,7 @@
                 });
             </script>
 
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="card bg-primary text-white shadow">
                     <div class="card-body">
                         <h5 class="card-title">Total GST paid</h5>
@@ -309,6 +309,43 @@
                     error: function (xhr, status, error) {
                         console.error("Error:", error);
                         $("#gstCard").text("Error loading value");
+                    }
+                });
+            });
+            </script>
+
+
+            <div class="col-md-3">
+                <div class="card bg-primary text-white shadow">
+                    <div class="card-body">
+                        <h5 class="card-title">Total cost of goods used</h5>
+                        <p id="expenseCard" class="card-text display-6">Rs. {{ total_expenditure.outward_spent_amount__sum }} </p>
+                    </div>
+                </div>
+            </div>
+            <script>
+                document.getElementById("filterBtn").addEventListener("click", function () {
+                const startDate = document.getElementById("startDate").value;
+                const endDate = document.getElementById("endDate").value;
+
+                $.ajax({
+                    url: "{% url 'get_total_expense' %}", // Use the correct Django URL name
+                    type: "POST",
+                    data: {
+                        start_date: startDate,
+                        end_date: endDate,
+                        csrfmiddlewaretoken: "{{ csrf_token }}" // Required for POST requests in Django
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        console.log(data);
+                        const expenseAmount = data.total_expense['outward_spent_amount__sum'] ? data.total_expense['outward_spent_amount__sum']: 0;
+
+                        $("#expenseCard").text(`Rs. ${expenseAmount}`);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error:", error);
+                        $("#expenseCard").text("Error loading value");
                     }
                 });
             });

@@ -21,6 +21,8 @@ urlpatterns = [
     path('get_total_wastage/', views.get_total_wastage, name='get_total_wastage'),
     path('get_total_purchase/', views.get_total_purchase, name='get_total_purchase'),
     path('get_total_gst/', views.get_total_gst, name='get_total_gst'),
+    path('get_total_expense/', views.get_total_expense, name='get_total_expense'),
+
 
     # path('get_items_from_stock/', views.get_items_from_stock, name='get_items_from_stock'),
 
