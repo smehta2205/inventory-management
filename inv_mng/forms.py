@@ -47,13 +47,12 @@ class StockForm(forms.ModelForm):
 
     class Meta:
         model = InwardStock
-        fields = ('item_id', 'expiry_date', 'quantity', 'mrp', 'price', 'price_with_gst', 'is_paid')
+        fields = ('item_id', 'expiry_date', 'quantity', 'mrp', 'price', 'price_with_gst')
         labels = {
             'item_id': 'Item ID',
             'expiry_date': 'Expiry date',
             'quantity': 'Quantity',
             'price': 'Price',
-            'is_paid': 'Paid?',
             'mrp': 'MRP',
             'price_with_gst': 'Price with GST?'
         }
@@ -64,7 +63,7 @@ class VendorSelectionForm(forms.Form):
 class InwardBillForm(forms.ModelForm):
     class Meta:
         model = InwardBill
-        fields = ['bill_id', 'bill_image']
+        fields = ['bill_id', 'bill_image', 'is_paid']
         
 class OutwardStockForm(forms.Form):
     # department = forms.ModelChoiceField(

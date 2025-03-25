@@ -84,6 +84,8 @@ class InwardBill(models.Model):
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)  # Link to Vendor
     bill_id = models.CharField(max_length=50, unique=True)  # Bill Number
     bill_image = models.ImageField(upload_to='bills/')  # Invoice Upload
+    is_paid = models.BooleanField(default=False)
+
 
     def __str__(self):
         return f"Bill {self.bill_id} - {self.vendor.vendor_name}"
