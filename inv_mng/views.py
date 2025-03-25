@@ -1,13 +1,15 @@
 from django.forms import formset_factory
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
-from .models import InwardStock, Item, Stock, InwardOutwardConv, Vendor, OutwardStock, WastageStock
+from .models import InwardStock, Item, Stock, InwardOutwardConv, Vendor, OutwardStock, WastageStock, InwardBill
 from .forms import ItemForm, LoginForm, RegisterForm, VendorForm, StockForm, OutwardStockForm, ConversionMetricForm, DepartmentForm, VendorSelectionForm, DepartmentSelectionForm, ConversionMetricFormWithoutId, InwardBillForm, WastageForm
 from django.shortcuts import redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
-from django.db.models import F, Sum
+from django.db.models import F, Sum, Count, Case, When
+from django.core.serializers.json import DjangoJSONEncoder
+import json
 
 
 # Create your views here.
@@ -20,6 +22,18 @@ def item_info(request):
     total_purchase = InwardStock.objects.annotate(difference=F('total_price') - F('gst_amount')).aggregate(total_difference=Sum('difference'))
     total_gst = InwardStock.objects.aggregate(Sum('gst_amount'))
     total_expenditure = OutwardStock.objects.aggregate(Sum('outward_spent_amount'))
+    pending_payments = InwardBill.objects.aggregate(bool_col=Count(Case(When(is_paid=False, then=1))))
+    results = Stock.objects.values('item_id__name').annotate(count=Sum('total_quantity'))
+    item_names = [entry['item_id__name'] for entry in results]
+    item_quantities = [entry['count'] for entry in results]
+    items_json = json.dumps(item_names, cls=DjangoJSONEncoder)
+    quantities_json = json.dumps(item_quantities, cls=DjangoJSONEncoder)
+    total_stock_worth = (
+        Stock.objects.filter(total_quantity__gt=0)
+        .annotate(product=F('price') * F('quantity'))
+        .aggregate(total_product=Sum('product'))
+    )
+
     print(total_purchase)
     context = {
         'items': items,
@@ -29,7 +43,11 @@ def item_info(request):
         'total_wastage' : total_wastage,
         'total_purchase' : total_purchase,
         "total_gst" : total_gst,
-        "total_expenditure" : total_expenditure
+        "total_expenditure" : total_expenditure,
+        "pending_payments":pending_payments,
+         "items_json": items_json,  # JSON for pie chart labels
+        "quantities_json": quantities_json,  # JSON for pie chart data
+        "total_stock_worth": total_stock_worth
     }
     # print(context)
     return render(request, 'inv_mng/item_info.html', context)

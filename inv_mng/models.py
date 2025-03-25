@@ -35,7 +35,7 @@ class Stock(models.Model):
     price = models.IntegerField()
 
     def __str__(self):
-        return f"{self.vendor} ({self.expiry_date})"
+        return f"{self.item_id} {self.vendor} ({self.expiry_date})"
 
 
 class InwardOutwardConv(models.Model):
