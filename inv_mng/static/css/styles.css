@@ -1,5 +1,5 @@
 /* General styles for the form */
-.item-form, .vendor-form, .department-form, .conversion-metric-form {
+.item-form, .vendor-form, .department-form, .conversion-metric-form, .inward-form {
     background-color: #ffffff;
     padding: 30px;
     border-radius: 8px;
@@ -16,7 +16,9 @@
 .department-form button.save,
 .department-form button.btn-primary,
 .conversion-metric-form button.save,
-.conversion-metric-form button.btn-primary {
+.conversion-metric-form button.btn-primary,
+.inward-form button.save,
+.inward-form button.btn-primary {
     background-color: #007bff;
     color: white;
     padding: 12px 20px;
@@ -34,7 +36,9 @@
 .department-form button.save:hover,
 .department-form button.btn-primary:hover,
 .conversion-metric-form button.save:hover,
-.conversion-metric-form button.btn-primary:hover {
+.conversion-metric-form button.btn-primary:hover,
+.inward-form button.save:hover,
+.inward-form button.btn-primary:hover {
     background-color: #0056b3;
 }
 
@@ -55,14 +59,15 @@ h2 {
 }
 
 /* Styling for form fields */
-.item-form p, .vendor-form p, .department-form p, .conversion-metric-form p{
+.item-form p, .vendor-form p, .department-form p, .conversion-metric-form p, .inward-form p{
     margin-bottom: 15px;
 }
 
 .item-form input, .item-form select, .item-form textarea,
 .vendor-form input, .vendor-form select, .vendor-form textarea,
 .department-form input, .department-form select, .department-form textarea,
-.conversion-metric-form input, .conversion-metric-form select, .conversion-metric-form textarea {
+.conversion-metric-form input, .conversion-metric-form select, .conversion-metric-form textarea,
+.inward-form input, .inward-form select, .inward-form textarea {
     width: 100%;
     padding: 12px;
     border: 1px solid #ccc;
@@ -73,7 +78,7 @@ h2 {
 }
 
 /* Ensure consistent alignment of labels and inputs */
-.item-form label, .vendor-form label, .department-form label, .conversion-metric-form label {
+.item-form label, .vendor-form label, .department-form label, .conversion-metric-form label, .inward-form label {
     font-size: 1.1rem;
     font-weight: bold;
     margin-bottom: 8px;
@@ -81,7 +86,7 @@ h2 {
 }
 
 /* Make sure form elements align properly */
-.item-form .form-group, .vendor-form .form-group, .department-form .form-group, .conversion-metric-form .form-group {
+.item-form .form-group, .vendor-form .form-group, .department-form .form-group, .conversion-metric-form .form-group, .inward-form .form-group {
     margin-bottom: 20px; /* Make sure the spacing between form groups is even */
 }
 
@@ -101,7 +106,11 @@ h2 {
 .conversion-metric-form input[type="text"],
 .conversion-metric-form input[type="number"],
 .conversion-metric-form textarea,
-.conversion-metric-form select {
+.conversion-metric-form select,
+.inward-form input[type="text"],
+.inward-form input[type="number"],
+.inward-form textarea,
+.inward-form select {
     width: 100%;
     padding: 12px;
     font-size: 1rem;
@@ -113,7 +122,7 @@ h2 {
 
 /* Responsive behavior */
 @media (max-width: 768px) {
-    .item-form, .vendor-form, .department-form, .conversion-metric-form {
+    .item-form, .vendor-form, .department-form, .conversion-metric-form, .inward-form {
         padding: 20px;
     }
 
