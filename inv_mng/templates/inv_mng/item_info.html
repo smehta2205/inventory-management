@@ -176,33 +176,75 @@
     <!-- Main Content -->
     <div id="content" class="content">
         <div class="page-header">
-            <h1>Item and Vendor Management</h1>
+            <h1 class="text-center text-primary fw-bold">Item and Vendor Management</h1>
         </div>
-        <div class="container mt-4">
-            <div class="row mt-4">
-                <div class="col-md-3">
-                    <div class="card shadow mt-3">
+        <div class="container mt-5">
+            <div class="row g-4 justify-content-center">
+    
+                <!-- Start and End Date Filters -->
+                <div class="col-lg-4 col-md-6 d-flex flex-column">
+                    <div class="card shadow-sm border-0 p-4">
                         <div class="card-body">
-                            <h5 class="card-title">Payments pending</h5>
-                            <p id="pendingCard" class="card-text display-6">{{pending_payments.bool_col}}</p>
-                        </div>
-                    </div>
-                    <div class="card shadow mt-4">
-                        <div class="card-body">
-                            <h5 class="card-title">Current stock worth</h5>
-                            <p id="pendingCard" class="card-text display-6">{{total_stock_worth.total_product}}</p>
+                            <h5 class="card-title text-center text-dark fw-bold mb-4">Filter Items</h5>
+                            
+                            <!-- Start Date -->
+                            <div class="mb-3">
+                                <label for="startDate" class="form-label">Start Date:</label>
+                                <input type="date" id="startDate" class="form-control">
+                            </div>
+    
+                            <!-- End Date -->
+                            <div class="mb-3">
+                                <label for="endDate" class="form-label">End Date:</label>
+                                <input type="date" id="endDate" class="form-control">
+                            </div>
+    
+                            <!-- Filter Button -->
+                            <div class="d-flex justify-content-center">
+                                <button id="filterBtn" class="btn btn-primary px-4 mt-3">
+                                    <i class="bi bi-funnel"></i> Filter Items
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <div class="card shadow">
-                        <div class="card-body">
-                            <h5 class="card-title">Current Stock</h5>
-                            <canvas id="itemsPieChart"></canvas>
-
+    
+                <!-- Left Column: Payments Pending & Stock Worth -->
+                <div class="col-lg-4 col-md-6 d-flex flex-column">
+                    <div class="card shadow-sm border-0 p-4 flex-fill">
+                        <div class="card-body text-center">
+                            <h5 class="card-title text-danger fw-bold">Payments Pending</h5>
+                            <p id="pendingCard" class="card-text display-5 fw-bold text-primary">
+                                {{ pending_payments.bool_col }}
+                            </p>
+                        </div>
+                    </div>
+    
+                    <div class="card shadow-sm border-0 p-4 flex-fill mt-4">
+                        <div class="card-body text-center">
+                            <h5 class="card-title text-success fw-bold">Stock Worth</h5>
+                            <p id="stockWorthCard" class="card-text display-5 fw-bold text-primary">
+                                ₹ {{ total_stock_worth.total_product }}
+                            </p>
                         </div>
                     </div>
                 </div>
+    
+                <!-- Pie Chart Card: Stock Distribution -->
+                <div class="col-lg-4 col-md-6 d-flex align-items-stretch">
+                    <div class="card shadow-sm border-0 p-4 flex-fill h-100">
+                        <div class="card-body text-center d-flex flex-column">
+                            <h5 class="card-title text-dark fw-bold">Stock Distribution</h5>
+                            <!-- Chart Container with Fixed Height -->
+                            <div class="d-flex justify-content-center align-items-center flex-grow-1">
+                                <canvas id="itemsPieChart" style="max-width: 100%; max-height: 200px; object-fit: contain;"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+    
                 <script>
                     document.addEventListener("DOMContentLoaded", function () {
                         const items = JSON.parse('{{ items_json|escapejs }}');
@@ -233,26 +275,7 @@
             <!-- <div class="card p-4 shadow-sm">-->
                 <!-- <h5 class="text-center mb-3">Select Date Range</h4>  -->
         
-                <div class="row g-3 align-items-center">
-                    <!-- Start Date -->
-                    <div class="col-md-6">
-                        <label class="form-label">Start Date:</label>
-                        <input type="date" id="startDate" class="form-control">
-                    </div>
-        
-                    <!-- End Date -->
-                    <div class="col-md-6">
-                        <label class="form-label">End Date:</label>
-                        <input type="date" id="endDate" class="form-control">
-                    </div>
-                </div>
-        
-                <!-- Filter Button -->
-                <div class="text-center mt-4">
-                    <button id="filterBtn" class="btn btn-primary px-4">
-                        <i class="bi bi-funnel"></i> Filter Items
-                    </button>
-                </div>
+                
                 
             <!-- </div> -->
             <div class="row mt-4">
@@ -403,39 +426,42 @@
             });
             </script>
             
-            <div class="card mt-4 p-4 shadow-sm">
-                <h5 class="text-center">Inward Items</h5>
-                <table id="itemsTable" class="table table-bordered mt-3">
-                    <thead>
-                        <tr>
-                            <th>Item Name</th>
-                            <th>Vendor</th>
-                            <th>Quantity</th>
-                            <th>Price/unit</th>
-                            <th>Total price</th>
-                            <th>Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% if inwardstocks %}
-                            {% for item in inwardstocks %}
-                                <tr>
-                                    <td>{{ item.item_id.name }}</td>
-                                    <td>{{ item.vendor.vendor_name }}</td>
-                                    <td>{{ item.quantity }}</td>
-                                    <td>{{item.price}}</td>
-                                    <td>{{item.total_price}}</td>
-                                    <td>{{item.date.date}}</td>
-                                </tr>
-                            {% endfor %}
-                        {% else %}
+            <div class="card mt-4 p-4 shadow-lg border-0 rounded">
+                <h4 class="text-center text-primary fw-bold">Inward Items</h4>
+                <div class="table-responsive mt-3">
+                    <table id="itemsTable" class="table table-hover table-striped align-middle text-center">
+                        <thead class="table-dark">
                             <tr>
-                                <td colspan="3" class="text-center text-danger">No items available</td>
+                                <th>Item Name</th>
+                                <th>Vendor</th>
+                                <th>Quantity</th>
+                                <th>Price/Unit (₹)</th>
+                                <th>Total Price (₹)</th>
+                                <th>Date</th>
                             </tr>
-                        {% endif %}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {% if inwardstocks %}
+                                {% for item in inwardstocks %}
+                                    <tr>
+                                        <td class="fw-semibold">{{ item.item_id.name }}</td>
+                                        <td>{{ item.vendor.vendor_name }}</td>
+                                        <td class="fw-bold text-success">{{ item.quantity }}</td>
+                                        <td>₹ {{ item.price }}</td>
+                                        <td class="text-primary fw-bold">₹ {{ item.total_price }}</td>
+                                        <td><span class="badge bg-info text-dark">{{ item.date.date }}</span></td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="6" class="text-center text-danger fw-bold">No items available</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
+            
             
             <script>
                 document.getElementById("filterBtn").addEventListener("click", function () {
@@ -459,7 +485,7 @@
                             if (data.items.length === 0) {
                                 tableBody.append(`
                                     <tr>
-                                        <td colspan="3" class="text-center text-danger">No items found</td>
+                                        <td colspan="6" class="text-center text-danger">No items found</td>
                                     </tr>
                                 `);
                             } else {
@@ -496,34 +522,36 @@
                     });
                 });
             </script>
-            <div class="card mt-4 p-4 shadow-sm">
-                <h5 class="text-center">Outward Items</h5>
-                <table id="itemsTableOut" class="table table-bordered mt-3">
-                    <thead>
-                        <tr>
-                            <th>Item Name</th>
-                            <th>Department</th>
-                            <th>Quantity</th>
-                            <th>Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% if outwardstocks %}
-                            {% for item in outwardstocks %}
-                                <tr>
-                                    <td>{{ item.item_id.name }}</td>
-                                    <td>{{ item.department }}</td>
-                                    <td>{{ item.quantity }}</td>
-                                    <td>{{item.date.date}}</td>
-                                </tr>
-                            {% endfor %}
-                        {% else %}
+            <div class="card mt-4 p-4 shadow-lg border-0 rounded">
+                <h4 class="text-center text-primary fw-bold"> Outward Items</h4>
+                <div class="table-responsive mt-3">
+                    <table id="itemsTableOut" class="table table-hover table-striped align-middle text-center">
+                        <thead class="table-dark">
                             <tr>
-                                <td colspan="3" class="text-center text-danger">No items available</td>
+                                <th>Item Name</th>
+                                <th>Department</th>
+                                <th>Quantity</th>
+                                <th>Date</th>
                             </tr>
-                        {% endif %}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {% if outwardstocks %}
+                                {% for item in outwardstocks %}
+                                    <tr>
+                                        <td class="fw-semibold">{{ item.item_id.name }}</td>
+                                        <td class="text-primary">{{ item.department }}</td>
+                                        <td class="fw-bold text-success">{{ item.quantity }}</td>
+                                        <td><span class="badge bg-info text-dark">{{ item.date.date }}</span></td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="4" class="text-center text-danger fw-bold">No items available</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
             
             <script>
@@ -548,7 +576,7 @@
                             if (data.items.length === 0) {
                                 tableBody.append(`
                                     <tr>
-                                        <td colspan="3" class="text-center text-danger">No items found</td>
+                                        <td colspan="4" class="text-center text-danger">No items found</td>
                                     </tr>
                                 `);
                             } else {
