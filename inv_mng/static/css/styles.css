@@ -1,5 +1,5 @@
 /* General styles for the form */
-.item-form {
+.item-form, .vendor-form {
     background-color: #ffffff;
     padding: 30px;
     border-radius: 8px;
@@ -10,7 +10,9 @@
 
 /* Styling for the 'Save' button */
 .item-form button.save,
-.item-form button.btn-primary {
+.item-form button.btn-primary,
+.vendor-form button.save,
+.vendor-form button.btn-primary {
     background-color: #007bff;
     color: white;
     padding: 12px 20px;
@@ -22,7 +24,9 @@
 }
 
 .item-form button.save:hover,
-.item-form button.btn-primary:hover {
+.item-form button.btn-primary:hover,
+.vendor-form button.save:hover,
+.vendor-form button.btn-primary:hover {
     background-color: #0056b3;
 }
 
@@ -43,11 +47,12 @@ h2 {
 }
 
 /* Styling for form fields */
-.item-form p {
+.item-form p, .vendor-form p {
     margin-bottom: 15px;
 }
 
-.item-form input, .item-form select, .item-form textarea {
+.item-form input, .item-form select, .item-form textarea,
+.vendor-form input, .vendor-form select, .vendor-form textarea {
     width: 100%;
     padding: 12px;
     border: 1px solid #ccc;
@@ -58,7 +63,7 @@ h2 {
 }
 
 /* Ensure consistent alignment of labels and inputs */
-.item-form label {
+.item-form label, .vendor-form label {
     font-size: 1.1rem;
     font-weight: bold;
     margin-bottom: 8px;
@@ -66,15 +71,19 @@ h2 {
 }
 
 /* Make sure form elements align properly */
-.item-form .form-group {
-    margin-bottom: 15px;
+.item-form .form-group, .vendor-form .form-group {
+    margin-bottom: 20px; /* Make sure the spacing between form groups is even */
 }
 
 /* Style inputs individually to make sure they align */
 .item-form input[type="text"],
 .item-form input[type="number"],
 .item-form textarea,
-.item-form select {
+.item-form select,
+.vendor-form input[type="text"],
+.vendor-form input[type="number"],
+.vendor-form textarea,
+.vendor-form select {
     width: 100%;
     padding: 12px;
     font-size: 1rem;
@@ -86,7 +95,7 @@ h2 {
 
 /* Responsive behavior */
 @media (max-width: 768px) {
-    .item-form {
+    .item-form, .vendor-form {
         padding: 20px;
     }
 

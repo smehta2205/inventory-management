@@ -19,7 +19,7 @@
         {% block content %}
         <div class="card shadow-sm" style="width: 100%; max-width: 500px;">
             <div class="card-body">
-                <h2 class="text-center mb-4">Add Item</h2>
+                <h2 class="text-center fw-bold mb-4 text-primary">Add Item</h2>
                 <form method="POST" class="item-form">
                     {% csrf_token %}
                     {{ form.as_p }}
