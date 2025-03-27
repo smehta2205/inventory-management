@@ -187,17 +187,20 @@
                         <div class="card-body">
                             <h5 class="card-title text-center text-dark fw-bold mb-4">Filter Items</h5>
                             
-                            <!-- Start Date -->
+                           <!-- Start Date -->
                             <div class="mb-3">
                                 <label for="startDate" class="form-label">Start Date:</label>
-                                <input type="date" id="startDate" class="form-control">
+                                <input type="date" id="startDate" class="form-control"
+                                    value="{{ default_start_date}}">
                             </div>
-    
+
                             <!-- End Date -->
                             <div class="mb-3">
                                 <label for="endDate" class="form-label">End Date:</label>
-                                <input type="date" id="endDate" class="form-control">
+                                <input type="date" id="endDate" class="form-control"
+                                    value="{{ default_end_date}}">
                             </div>
+
     
                             <!-- Filter Button -->
                             <div class="d-flex justify-content-center">

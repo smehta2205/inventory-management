@@ -10,18 +10,18 @@ from django.contrib import messages
 from django.db.models import F, Sum, Count, Case, When
 from django.core.serializers.json import DjangoJSONEncoder
 import json
-
+from datetime import date, timedelta
 
 # Create your views here.
 def item_info(request):
     items = Item.objects.all()
     vendors = Vendor.objects.all()
-    inwardstocks = InwardStock.objects.all()
-    outwardstocks = OutwardStock.objects.all()
-    total_wastage = WastageStock.objects.aggregate(Sum('wastage_amount'))
-    total_purchase = InwardStock.objects.annotate(difference=F('total_price') - F('gst_amount')).aggregate(total_difference=Sum('difference'))
-    total_gst = InwardStock.objects.aggregate(Sum('gst_amount'))
-    total_expenditure = OutwardStock.objects.aggregate(Sum('outward_spent_amount'))
+    # inwardstocks = InwardStock.objects.all()
+    # outwardstocks = OutwardStock.objects.all()
+    # total_wastage = WastageStock.objects.aggregate(Sum('wastage_amount'))
+    # total_purchase = InwardStock.objects.annotate(difference=F('total_price') - F('gst_amount')).aggregate(total_difference=Sum('difference'))
+    # total_gst = InwardStock.objects.aggregate(Sum('gst_amount'))
+    # total_expenditure = OutwardStock.objects.aggregate(Sum('outward_spent_amount'))
     pending_payments = InwardBill.objects.aggregate(bool_col=Count(Case(When(is_paid=False, then=1))))
     results = Stock.objects.values('item_id__name').annotate(count=Sum('total_quantity'))
     item_names = [entry['item_id__name'] for entry in results]
@@ -33,8 +33,35 @@ def item_info(request):
         .annotate(product=F('price') * F('quantity'))
         .aggregate(total_product=Sum('product'))
     )
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    print(start_date)
+    print(end_date)
+    print(not start_date or not end_date)
+    if not start_date or not end_date:
+        # Default to 30 days ago and today if not provided
+        start_date = (date.today() - timedelta(days=7)).strftime('%Y-%m-%d')
+        end_date = date.today().strftime('%Y-%m-%d')
+        print(start_date)
+        print(end_date)
 
-    print(total_purchase)
+    # Filter using these dates
+    items = InwardStock.objects.all()
+    inwardstocks = filter_items(items, start_date, end_date)
+    items = OutwardStock.objects.all()
+    outwardstocks = filter_items(items, start_date, end_date)
+    items = WastageStock.objects.all()
+    items = filter_items(items, start_date, end_date)
+    total_wastage = items.aggregate(Sum('wastage_amount'))
+    items = InwardStock.objects.all()    
+    items = filter_items(items, start_date, end_date)
+    total_purchase = items.annotate(difference=F('total_price') - F('gst_amount')).aggregate(total_difference=Sum('difference'))
+    items = InwardStock.objects.all()
+    items = filter_items(items, start_date, end_date)
+    total_gst = items.aggregate(Sum('gst_amount'))
+    items = OutwardStock.objects.all()
+    items = filter_items(items, start_date, end_date)
+    total_expense = items.aggregate(Sum('outward_spent_amount'))
     context = {
         'items': items,
         'vendors': vendors,
@@ -43,11 +70,14 @@ def item_info(request):
         'total_wastage' : total_wastage,
         'total_purchase' : total_purchase,
         "total_gst" : total_gst,
-        "total_expenditure" : total_expenditure,
+        "total_expenditure" : total_expense,
         "pending_payments":pending_payments,
-         "items_json": items_json,  # JSON for pie chart labels
+        "items_json": items_json,  # JSON for pie chart labels
         "quantities_json": quantities_json,  # JSON for pie chart data
-        "total_stock_worth": total_stock_worth
+        "total_stock_worth": total_stock_worth,
+        "default_start_date": start_date, 
+        "default_end_date": end_date
+        
     }
     # print(context)
     return render(request, 'inv_mng/item_info.html', context)
@@ -310,10 +340,11 @@ def filter_items(items, start_date, end_date):
 
 # @csrf_exempt  # Remove this if using the CSRF token in AJAX
 def filter_items_inward(request):
+    print("Inward")
     if request.method == "POST":
         start_date = request.POST.get("start_date")
         end_date = request.POST.get("end_date")
-
+        print(start_date)
         items = InwardStock.objects.all()
         items = filter_items(items, start_date, end_date)
         items_data = []
@@ -420,7 +451,7 @@ def get_total_wastage(request):
     if request.method == "POST":
         start_date = request.POST.get("start_date")
         end_date = request.POST.get("end_date")
-
+        print(start_date)
         items = WastageStock.objects.all()
         
         items = filter_items(items, start_date, end_date)
