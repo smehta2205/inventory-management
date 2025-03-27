@@ -1,0 +1,199 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Inventory management{% endblock %}</title>
+    <!-- Include CSS for the sidebar, etc. -->
+     
+    <!-- <link rel="stylesheet" href="{% static 'css/style.css' %}"> -->
+    <style>
+        body {
+            background-color: #f4f6f9;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #343a40;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 250px;
+            background-color: #ffffff;
+            padding-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: width 0.3s ease;
+        }
+
+        .sidebar .card {
+            width: 90%;
+            margin-bottom: 10px;
+            background-color: #007bff;
+            cursor: pointer;
+        }
+
+        .sidebar .card .card-body {
+            padding: 0; /* Remove padding to ensure the entire card is clickable */
+            height: 100%; /* Make sure the entire height is clickable */
+        }
+
+        .sidebar .card a {
+            display: block; /* Make anchor a block element */
+            color: white; /* Make text white */
+            text-decoration: none; /* Remove underline */
+            padding: 15px; /* Add padding to make the button bigger */
+            text-align: center; /* Center the text inside the button */
+            width: 100%; /* Ensure the anchor takes the full width of the card */
+            height: 100%; /* Ensure it takes the full height of the card */
+        }
+
+        .sidebar .card a:hover {
+            background-color: #0056b3; /* Optional: change color on hover */
+        }
+
+        .sidebar-toggle-btn {
+            position: absolute;
+            top: 20px;
+            left: 250px;
+            font-size: 1.5rem;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            z-index: 1000;
+            transition: left 0.3s ease;
+            border-radius: 10%;
+        }
+
+
+
+        .collapsed-sidebar {
+            width: 0;
+            overflow: hidden;
+            transition: margin-left 0.3s ease;
+        }
+
+        .collapsed-sidebar .card {
+            display: none;
+        }
+
+        .content {
+            margin-left: 300px;
+            margin-top: 10px;
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .content.collapsed {
+            margin-left: 60px;
+        }
+
+        /* Header Styling for Top-Right Links */
+        .top-right-header {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1rem;
+        }
+
+        .top-right-header a {
+            margin-left: 10px;
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .top-right-header a:hover {
+            text-decoration: underline;
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top-right header -->
+    <div class="top-right-header">
+        <p>Welcome, {{ user.username }}! 
+        <a href="{% url 'logout' %}">Logout</a></p>
+    </div>
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar">
+        <div class="card">
+            <div class="card-body">
+                <a href="{% url 'add_item' %}" class="btn-custom">Add Item</a>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <a href="{% url 'add_conversion_metric' %}" class="btn-custom">Conversion Metric</a>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <a href="{% url 'add_vendor' %}" class="btn-custom">Add Vendor</a>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <a href="{% url 'add_department' %}" class="btn-custom">Add Department</a>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <a href="{% url 'inward_stock' %}" class="btn-custom">Add Inward Stock</a>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <a href="{% url 'outward_stock' %}" class="btn-custom">Add Outward Stock</a>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <a href="{% url 'log_wastage' %}" class="btn-custom">Log wastage</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar Toggle Button -->
+    <button id="sidebarToggleBtn" class="sidebar-toggle-btn">
+        &#9776;
+    </button>
+
+
+    <div id="content" class="content">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Include JS for sidebar toggle -->
+    <script src="{% static 'js/sidebar.js' %}"></script>
+</body>
+<script>
+    const sidebar = document.getElementById('sidebar');
+    const content = document.getElementById('content');
+    const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
+
+    sidebarToggleBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('collapsed-sidebar');
+        content.classList.toggle('collapsed');
+        // Adjust the position of the toggle button based on the sidebar state
+        if (sidebar.classList.contains('collapsed-sidebar')) {
+            sidebarToggleBtn.style.left = '10px';
+        } else {
+            sidebarToggleBtn.style.left = '250px';
+        }
+    });
+</script>
+</html>

@@ -1,3 +1,5 @@
+{% extends 'inv_mng/base.html' %}
+{% block content %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -130,7 +132,7 @@
     </div>
 
     <!-- Sidebar -->
-    <div id="sidebar" class="sidebar">
+    <!-- <div id="sidebar" class="sidebar">
         <div class="card">
             <div class="card-body">
                 <a href="{% url 'add_item' %}" class="btn-custom">Add Item</a>
@@ -166,15 +168,15 @@
                 <a href="{% url 'log_wastage' %}" class="btn-custom">Log wastage</a>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <!-- Sidebar Toggle Button -->
-    <button id="sidebarToggleBtn" class="sidebar-toggle-btn">
+    <!-- <button id="sidebarToggleBtn" class="sidebar-toggle-btn">
         &#9776;
-    </button>
+    </button> -->
 
     <!-- Main Content -->
-    <div id="content" class="content">
+    <!-- <div id="content" class="content"> -->
         <div class="page-header">
             <h1 class="text-center text-primary fw-bold">Item and Vendor Management</h1>
         </div>
@@ -615,7 +617,7 @@
                 });
             </script>
         </div>
-    </div>
+    <!-- </div> -->
     {% else %}
         <a href="{% url 'login' %}">Login</a> | 
         <a href="{% url 'signup' %}">Sign Up</a>
@@ -643,3 +645,4 @@
     </script>
 </body>
 </html>
+{% endblock %}
