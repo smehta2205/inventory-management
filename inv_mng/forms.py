@@ -63,7 +63,7 @@ class VendorSelectionForm(forms.Form):
 class InwardBillForm(forms.ModelForm):
     class Meta:
         model = InwardBill
-        fields = ['bill_id', 'bill_image', 'is_paid']
+        fields = ['bill_id', 'bill_image', 'is_paid', 'price_with_gst']
         
 class OutwardStockForm(forms.Form):
     # department = forms.ModelChoiceField(

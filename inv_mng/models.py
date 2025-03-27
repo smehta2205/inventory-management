@@ -85,6 +85,7 @@ class InwardBill(models.Model):
     bill_id = models.CharField(max_length=50, unique=True)  # Bill Number
     bill_image = models.ImageField(upload_to='bills/')  # Invoice Upload
     is_paid = models.BooleanField(default=False)
+    price_with_gst = models.BooleanField(default=False)
 
 
     def __str__(self):

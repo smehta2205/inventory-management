@@ -36,6 +36,10 @@
             <label for="id_paid">Paid?:</label>
             {{ bill_form.is_paid }}
         </div>
+        <div class="form-group">
+            <label for="id_bill_with_gst">Price with GST?:</label>
+            {{ bill_form.is_paid }}
+        </div>
         {{ formset.management_form }}
 
         <table id="form-container">
@@ -46,7 +50,7 @@
                     <th>Quantity</th>
                     <th>MRP</th>
                     <th>Price</th>
-                    <th>Price with GST</th>
+                    <!-- <th>Price with GST</th> -->
                     <th>GST</th>
                     <th></th>
                 </tr>
@@ -59,7 +63,7 @@
                         <td>{{ form.quantity }}</td>
                         <td>{{ form.mrp }}</td>
                         <td>{{ form.price }}</td>
-                        <td>{{ form.price_with_gst }}</td> 
+                        <!-- <td>{{ form.price_with_gst }}</td>  -->
                         <td>{{ form.gst }}</td>
                         <td>
                             {% if not forloop.first %}

@@ -94,6 +94,7 @@ def inward_stock(request):
             bill_id = bill.bill_id
             bill_image_path = bill.bill_image.name if bill.bill_image else None
             bill_paid_status = bill.is_paid
+            bill_price_with_gst = bill.price_with_gst
             bill.save()
             print("Bill saved")
 
@@ -106,6 +107,7 @@ def inward_stock(request):
                     inward_stock_entry.bill_id = bill_id
                     inward_stock_entry.bill_image_path = f"media/bills/{bill_image_path}" if bill_image_path else None
                     inward_stock_entry.is_paid = bill_paid_status
+                    inward_stock_entry.price_with_gst = bill_price_with_gst
                     try:
                         conv_entry = InwardOutwardConv.objects.get(item_id=inward_stock_entry.item_id)
                         conversion_metric = conv_entry.outward_item_quantity
