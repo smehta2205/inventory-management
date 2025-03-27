@@ -75,7 +75,7 @@ class InwardStock(models.Model):
     bill_id = models.CharField(max_length=50, default='')  # Bill Number
     bill_image_path = models.CharField(max_length=200, default='')  # Bill Image location
     price_with_gst = models.BooleanField(default=False)
-
+    
     def __str__(self):
         return f"{self.item_id}"
 
@@ -86,7 +86,7 @@ class InwardBill(models.Model):
     bill_image = models.ImageField(upload_to='bills/')  # Invoice Upload
     is_paid = models.BooleanField(default=False)
     price_with_gst = models.BooleanField(default=False)
-
+    bill_date = models.DateField(default=timezone.now)
 
     def __str__(self):
         return f"Bill {self.bill_id} - {self.vendor.vendor_name}"

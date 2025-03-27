@@ -3,6 +3,7 @@ from django.contrib.admin import widgets
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
 from .models import InwardBill, Item, Vendor, Stock, InwardOutwardConv, Department, OutwardStock, InwardStock
+import datetime
 
 class ItemForm(forms.ModelForm):
     class Meta:
@@ -63,7 +64,16 @@ class VendorSelectionForm(forms.Form):
 class InwardBillForm(forms.ModelForm):
     class Meta:
         model = InwardBill
-        fields = ['bill_id', 'bill_image', 'is_paid', 'price_with_gst']
+        fields = ['bill_id', 'bill_image', 'is_paid', 'price_with_gst', 'bill_date']
+        widgets = {
+            'bill_date': forms.DateInput(attrs={'type': 'date'})
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.instance.pk: 
+            self.fields['bill_date'].initial = datetime.date.today()
+
         
 class OutwardStockForm(forms.Form):
     # department = forms.ModelChoiceField(
