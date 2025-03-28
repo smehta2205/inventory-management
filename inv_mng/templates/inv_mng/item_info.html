@@ -430,7 +430,96 @@
                 });
             });
             </script>
+            <div class="card mt-4 p-4 shadow-lg border-0 rounded">
+                <h4 class="text-center text-primary fw-bold">Bill details</h4>
+                <div class="table-responsive mt-3">
+                    <table id="billTable" class="table table-hover table-striped align-middle text-center">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Bill ID</th>
+                                <th>Vendor</th>
+                                <th>Paid?</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if billdetails %}
+                                {% for item in billdetails %}
+                                    <tr>
+                                        <td class="fw-semibold">{{ item.bill_id }}</td>
+                                        <td>{{ item.vendor.vendor_name }}</td>
+                                        <td class="fw-bold">{{ item.is_paid }}</td>
+                                        <td><span class="badge bg-info text-dark">{{ item.bill_date }}</span></td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="6" class="text-center text-danger fw-bold">No items available</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
             
+            <script>
+                document.getElementById("filterBtn").addEventListener("click", function () {
+                    const startDate = document.getElementById("startDate").value;
+                    const endDate = document.getElementById("endDate").value;
+            
+                    // AJAX request to filter items
+                    $.ajax({
+                        url: "{% url 'filter_bills' %}",  // Use the correct Django URL name
+                        type: "POST",
+                        data: {
+                            start_date: startDate,
+                            end_date: endDate,
+                            csrfmiddlewaretoken: "{{ csrf_token }}"  // Required for POST requests in Django
+                        },
+                        dataType: "json",
+                        success: function (data) {
+                            const tableBody = $("#billTable tbody");
+                            tableBody.empty(); // Clear previous results
+            
+                            if (data.items.length === 0) {
+                                tableBody.append(`
+                                    <tr>
+                                        <td colspan="4" class="text-center text-danger">No items found</td>
+                                    </tr>
+                                `);
+                            } else {
+                                
+                                $.each(data.items, function (index, item) {
+                                    const dateObj = new Date(item.bill_date);
+                                    console.log(dateObj);
+                                    const formattedDate = dateObj.toLocaleDateString("en-US", {
+                                        year: "numeric",
+                                        month: "long",
+                                        day: "numeric",
+                                        timeZone: "UTC"
+                                    });
+                                    tableBody.append(`
+                                        <tr>
+                                            <td class="fw-semibold"> ${item.bill_id}</td>
+                                            <td>${item.vendor}</td>
+                                            <td class="fw-bold">${item.is_paid}</td>
+                                            <td><span class="badge bg-info text-dark">${formattedDate}</span></td>
+                                        </tr>
+                                    `);
+                                });
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Error:", error);
+                            $("#itemsTable tbody").html(`
+                                <tr>
+                                    <td colspan="3" class="text-center text-danger">Error loading items</td>
+                                </tr>
+                            `);
+                        }
+                    });
+                });
+            </script>
             <div class="card mt-4 p-4 shadow-lg border-0 rounded">
                 <h4 class="text-center text-primary fw-bold">Inward Items</h4>
                 <div class="table-responsive mt-3">
@@ -505,12 +594,12 @@
                                     });
                                     tableBody.append(`
                                         <tr>
-                                            <td>${item.item_name}</td>
+                                            <td  class="fw-semibold">${item.item_name}</td>
                                             <td>${item.vendor_name}</td>
-                                            <td>${item.quantity}</td>
+                                            <td  class="fw-bold text-success">${item.quantity}</td>
                                             <td>${item.price}</td>
-                                            <td>${item.total_price}</td>
-                                            <td>${formattedDate}</td>
+                                            <td class="text-primary fw-bold">${item.total_price}</td>
+                                            <td><span class="badge bg-info text-dark">${formattedDate}</span></td>
                                         </tr>
                                     `);
                                 });
@@ -596,10 +685,10 @@
                                     });
                                     tableBody.append(`
                                         <tr>
-                                            <td>${item.item_name}</td>
-                                            <td>${item.department}</td>
-                                            <td>${item.quantity}</td>
-                                            <td>${formattedDate}</td>
+                                            <td class="fw-semibold">${item.item_name}</td>
+                                            <td class="text-primary">${item.department}</td>
+                                            <td class="fw-bold text-success">${item.quantity}</td>
+                                            <td><span class="badge bg-info text-dark">${formattedDate}</span></td>
                                         </tr>
                                     `);
                                 });

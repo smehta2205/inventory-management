@@ -1,7 +1,7 @@
 from django.forms import formset_factory
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
-from .models import InwardStock, Item, Stock, InwardOutwardConv, Vendor, OutwardStock, WastageStock, InwardBill
+from .models import InwardStock, Item, Stock, InwardOutwardConv, Vendor, OutwardStock, WastageStock, InwardBill, Department
 from .forms import ItemForm, LoginForm, RegisterForm, VendorForm, StockForm, OutwardStockForm, ConversionMetricForm, DepartmentForm, VendorSelectionForm, DepartmentSelectionForm, ConversionMetricFormWithoutId, InwardBillForm, WastageForm
 from django.shortcuts import redirect
 from django.contrib.auth import authenticate, login, logout
@@ -50,6 +50,9 @@ def item_info(request):
     inwardstocks = filter_items(items, start_date, end_date)
     items = OutwardStock.objects.all()
     outwardstocks = filter_items(items, start_date, end_date)
+    items = InwardBill.objects.all()
+    billdetails = items.filter(bill_date__gte=start_date)
+    billdetails = billdetails.filter(bill_date__lte=end_date)
     items = WastageStock.objects.all()
     items = filter_items(items, start_date, end_date)
     total_wastage = items.aggregate(Sum('wastage_amount'))
@@ -76,7 +79,8 @@ def item_info(request):
         "quantities_json": quantities_json,  # JSON for pie chart data
         "total_stock_worth": total_stock_worth,
         "default_start_date": start_date, 
-        "default_end_date": end_date
+        "default_end_date": end_date,
+        "billdetails": billdetails
         
     }
     # print(context)
@@ -387,13 +391,14 @@ def filter_items_outward(request):
         for item in items.values("item_id", "quantity", "department", "date"):
             item_rec = Item.objects.get(item_id=item['item_id'])
             item_name = item_rec.name
-            
+            department_rec = Department.objects.get(department_id=item['department'])
+            department_name = department_rec.department_name
             # Get the related Vendor object (assuming Item has a ForeignKey to Vendor)
            
             items_data.append({
             "item_name": item_name,
             "quantity": item["quantity"], 
-            "department": item["department"],
+            "department": department_name, 
             "date":item["date"]
 
             })
@@ -505,3 +510,32 @@ def get_total_expense(request):
         print("total_expense")
         print(total_expense)
         return JsonResponse({"total_expense": total_expense})
+    
+def filter_bills(request):
+    if request.method == "POST":
+        start_date = request.POST.get("start_date")
+        end_date = request.POST.get("end_date")
+
+        items = InwardBill.objects.all()
+        
+        if start_date:
+            items = items.filter(bill_date__gte=start_date)
+        if end_date:
+            items = items.filter(bill_date__lte=end_date)
+        print(items)
+        items_data = []
+    
+        for item in items.values("bill_id", "vendor", "is_paid", "bill_date"):
+            vendor_rec = Vendor.objects.get(id=item['vendor'])
+            vendor_name = vendor_rec.vendor_name
+            items_data.append({
+            "bill_id": item['bill_id'],
+            "vendor": vendor_name, 
+            "is_paid": item["is_paid"],
+            "bill_date":item["bill_date"]
+
+            })
+        
+        return JsonResponse({"items": items_data})
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
