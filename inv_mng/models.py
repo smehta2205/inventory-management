@@ -66,12 +66,12 @@ class InwardStock(models.Model):
     item_id = models.ForeignKey(Item, on_delete=models.CASCADE)
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
     quantity = models.IntegerField()
-    price = models.IntegerField(default=0)
-    total_price = models.IntegerField(default=0)
+    price = models.FloatField(default=0.0)
+    total_price = models.FloatField(default=0.0)
     date = models.DateTimeField(default=timezone.now)
     is_paid = models.BooleanField(default=False)
     mrp = models.IntegerField(default=0)
-    gst_amount = models.IntegerField(default=0)
+    gst_amount = models.FloatField(default=0.0)
     bill_id = models.CharField(max_length=50, default='')  # Bill Number
     bill_image_path = models.CharField(max_length=200, default='')  # Bill Image location
     price_with_gst = models.BooleanField(default=False)
