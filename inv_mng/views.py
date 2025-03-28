@@ -145,9 +145,10 @@ def inward_stock(request):
                         conversion_metric = 1  
 
                     if(inward_stock_entry.price_with_gst):
-                        total_price_w_gst = inward_stock_entry.quantity*inward_stock_entry.price
-                        inward_stock_entry.total_price = total_price_w_gst / (1+(gst/100))
-                        inward_stock_entry.gst_amount = (inward_stock_entry.total_price*gst/100)
+                        total_price_w_gst = inward_stock_entry.quantity*(inward_stock_entry.price/ (1+(gst/100)))
+                        inward_stock_entry.gst_amount = (total_price_w_gst*gst/100)
+                        inward_stock_entry.total_price = total_price_w_gst + inward_stock_entry.gst_amount
+
 
                     else:
                         total_price_wo_gst = inward_stock_entry.quantity*inward_stock_entry.price

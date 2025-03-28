@@ -38,13 +38,23 @@ class StockForm(forms.ModelForm):
         max_digits=5, decimal_places=2, required=True, 
         widget=forms.NumberInput(attrs={'class': 'form-control'})
     )  #
+    gst_amount = forms.DecimalField(
+        max_digits=6, decimal_places=2, required=True, 
+        widget=forms.NumberInput(attrs={'class': 'form-control'})
+    )
+    total_price = forms.DecimalField(
+        max_digits=10, decimal_places=2, required=True, 
+        widget=forms.NumberInput(attrs={'class': 'form-control'})
+    )
     def __init__(self, *args, **kwargs):
         super(StockForm, self).__init__(*args, **kwargs)
         self.fields['item_id'].widget.attrs.update({'class': 'form-control select-item'})
         self.fields['expiry_date'].widget.attrs.update({'class': 'form-control'})
-        self.fields['quantity'].widget.attrs.update({'class': 'form-control'})
-        self.fields['price'].widget.attrs.update({'class': 'form-control'})
+        self.fields['quantity'].widget.attrs.update({'class': 'form-control quantity-field'})
+        self.fields['price'].widget.attrs.update({'class': 'form-control price-field'})
         self.fields['gst'].widget.attrs.update({'class': 'form-control gst-field'})  # Make GST editable
+        self.fields['gst_amount'].widget.attrs.update({'class': 'form-control gst-amount-field', 'readonly': 'readonly'})
+        self.fields['total_price'].widget.attrs.update({'class': 'form-control net-amount-field', 'readonly': 'readonly'})
 
     class Meta:
         model = InwardStock
@@ -55,7 +65,8 @@ class StockForm(forms.ModelForm):
             'quantity': 'Quantity',
             'price': 'Price',
             'mrp': 'MRP',
-            'price_with_gst': 'Price with GST?'
+            'price_with_gst': 'Price with GST?',
+            
         }
 
 class VendorSelectionForm(forms.Form):

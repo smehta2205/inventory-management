@@ -45,7 +45,7 @@
         </div>
         <div class="form-group">
             <label for="id_bill_with_gst">Price with GST?:</label>
-            {{ bill_form.is_paid }}
+            {{ bill_form.price_with_gst }}
         </div>
         {{ formset.management_form }}
 
@@ -59,6 +59,8 @@
                     <th>Price/unit</th>
                     <!-- <th>Price with GST</th> -->
                     <th>GST (%)</th>
+                    <th>GST amount</th>
+                    <th>Net amount</th>
                     <th></th>
                 </tr>
             </thead>
@@ -72,6 +74,8 @@
                         <td>{{ form.price }}</td>
                         <!-- <td>{{ form.price_with_gst }}</td>  -->
                         <td>{{ form.gst }}</td>
+                        <td>{{ form.gst_amount }}</td>
+                        <td>{{ form.total_price }}</td>
                         <td>
                             {% if not forloop.first %}
                                 <button type="button" class="remove-form">❌</button>
@@ -132,6 +136,8 @@
 
                 // Initialize GST update for the new form
                 updateGST(newFormElement);
+                updateGSTAmount(form);
+                updateNetAmount(form);
             });
 
             updateRemoveButtons();
@@ -169,9 +175,82 @@
                 }
             }
 
+            function updateGSTAmount(form){
+                let itemSelect = form.querySelector('.select-item');
+                let gstField = form.querySelector('.gst-field');
+                let gstAmountField = form.querySelector('.gst-amount-field');
+                let quantityField = form.querySelector('.quantity-field');
+                let priceField = form.querySelector('.price-field');
+                let priceWithGst = document.querySelector('#id_price_with_gst');
+
+                if (itemSelect && quantityField && priceField) {
+                    // itemSelect.addEventListener('change', function () {
+                    //     console.log("Item ID changed: ", itemSelect.value);
+                    //     updateCalculations();
+                    // });
+
+                    // quantityField.addEventListener('input', function () {
+                    //     console.log("Quantity changed: ", quantityField.value);
+                    //     updateCalculations();
+                    // });
+                    priceField.addEventListener('input', function () {
+                        console.log("Quantity changed: ", priceField.value);
+                        updateCalculations(form);
+                    });
+                    
+                    if (priceWithGst) {
+                        priceWithGst.addEventListener('change', function () {
+                            console.log("Price with GST changed:", this.value);
+                            updateCalculations(form);
+                        });
+                    }
+                }
+            }
+            function updateCalculations(form) {
+                let priceField = form.querySelector('.price-field');
+                let gstField = form.querySelector('.gst-field');
+                let totalPriceField = form.querySelector('.net-amount-field');
+                let gstAmountField = form.querySelector('.gst-amount-field');
+                let quantityField = form.querySelector('.quantity-field');
+                let gst = parseFloat(gstField.value);
+                let quantity = parseInt(quantityField.value) ; 
+                let priceWithGst = document.querySelector('#id_price_with_gst');
+                
+                let price = priceField.value
+                let gstAmount = 0;
+                let totalPrice = 0;
+                console.log(priceWithGst.value);
+                if(priceWithGst.checked){
+                    let total_price_w_gst = quantity*(price/ (1+(gst/100)));
+                    gstAmount = (total_price_w_gst*gst/100);
+                    totalPrice = total_price_w_gst + gstAmount;
+
+                }
+                        
+
+                else{
+                    let total_price_wo_gst = quantity*price;
+                    console.log(total_price_wo_gst);
+                    gstAmount = (total_price_wo_gst*gst/100);
+                    totalPrice = total_price_wo_gst +gstAmount;
+                }
+
+                gstAmountField.value = gstAmount.toFixed(2);
+                totalPriceField.value = totalPrice.toFixed(2);
+            }
+
+            function updateNetAmount(form){
+                let itemSelect = form.querySelector('.select-item');
+                let gstField = form.querySelector('.gst-field');
+                let netAmountField = form.querySelector('.net-amount-field');
+                let quantityField = form.querySelector('.quantity-field');
+            }
+
             // Initialize GST update for existing forms
             document.querySelectorAll('.form-row').forEach(function (form) {
                 updateGST(form);
+                updateGSTAmount(form);
+                updateNetAmount(form);
             });
         });
     </script>
