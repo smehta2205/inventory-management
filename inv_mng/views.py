@@ -550,3 +550,40 @@ def generate_reports(request):
     vendors = Vendor.objects.all()  # Fetch all vendors
 
     return render(request, 'inv_mng/generate_reports.html', {"vendors": vendors})
+
+
+def get_vendor_report(request):
+    if request.method == "POST":
+        start_date = request.POST.get("start_date")
+        end_date = request.POST.get("end_date")
+        vendor = request.POST.get("vendor")
+        print(start_date)
+        items = InwardStock.objects.all()
+        items = filter_items(items, start_date, end_date)
+        # items = items.filter(vendor=vendor)
+        items_data = []
+    
+        for item in items.values("item_id", "quantity", "vendor_id", "price", "total_price", "date", "bill_id"):
+            item_rec = Item.objects.get(item_id=item['item_id'])
+            item_name = item_rec.name
+            # Get the related Vendor object (assuming Item has a ForeignKey to Vendor)
+            vendor_rec = Vendor.objects.get(id=item['vendor_id'])
+            vendor_name = vendor_rec.vendor_name
+            # print(type(vendor_rec))
+            # print(type(vendor))
+            # print(str(vendor_rec)==vendor)
+            if(str(vendor_rec)==vendor):
+                items_data.append({
+                "item_name": item_name,
+                "quantity": item["quantity"], 
+                "vendor_name": vendor_name,
+                "price" : item["price"],
+                "total_price" : item["total_price"],
+                "date":item["date"],
+                "bill_id":item["bill_id"]
+
+                })
+        # print(items_data)
+        return JsonResponse({"items": items_data})
+
+    return JsonResponse({"error": "Invalid request"}, status=400)

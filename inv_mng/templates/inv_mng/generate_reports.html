@@ -50,7 +50,7 @@
                         <input type="text" id="vendor" list="vendor-list">
                             <datalist id="vendor-list">
                                 {% for vendor in vendors %}
-                                    <option value="{{ vendor }}">{{ vendor }}</option>
+                                    <option data-id="{{ vendor.id }}" value="{{ vendor }}">{{ vendor }}</option>
                                 {% endfor %}
                             </datalist>
                            
@@ -77,14 +77,14 @@
                 </div>
             </div>
             <div class="card mt-4 p-4 border-0 rounded">
-                {% if inwardstocks %}
-                <h4 class="text-center text-primary fw-bold">Inward Items</h4>
+                
+                <!-- <h4 class="text-center text-primary fw-bold">Inward Items</h4> -->
                 <div class="table-responsive mt-3">
                     <table id="itemsTable" class="table table-hover table-striped align-middle text-center">
                        
                         <tbody>
                             
-                            <thead class="table-dark">
+                            <!-- <thead class="table-dark">
                                 <tr>
                                     <th>Item Name</th>
                                     <th>Vendor</th>
@@ -93,7 +93,8 @@
                                     <th>Total Price (₹)</th>
                                     <th>Date</th>
                                 </tr>
-                            </thead>
+                            </thead> -->
+                            <!-- {% if inwardstocks %}
                                 {% for item in inwardstocks %}
                                     <tr>
                                         <td class="fw-semibold">{{ item.item_id.name }}</td>
@@ -104,55 +105,181 @@
                                         <td><span class="badge bg-info text-dark">{{ item.date.date }}</span></td>
                                     </tr>
                                 {% endfor %}
-                            {% else %}
+                            {% else %} -->
                                 <!-- <tr>
                                     <td colspan="6" class="text-center text-danger fw-bold">No items available</td>
                                 </tr> -->
-                            {% endif %}
+                            <!-- {% endif %} -->
                         </tbody>
                     </table>
                 </div>
             </div>
             <div class="card mt-4 p-4 border-0 rounded">
-                {% if vendorReports %}
-                <h4 class="text-center text-primary fw-bold">Vendor report</h4>
+                <!-- <h4 class="text-center text-primary fw-bold">Vendor report</h4> -->
                 <div class="table-responsive mt-3">
-                    <table id="itemsTable" class="table table-hover table-striped align-middle text-center">
+                    <table id="vendorTable" class="table table-hover table-striped align-middle text-center">
                        
                         <tbody>
-                            
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>Item Name</th>
-                                    <th>Vendor</th>
-                                    <th>Quantity</th>
-                                    <th>Price/Unit (₹)</th>
-                                    <th>Total Price (₹)</th>
-                                    <th>Date</th>
-                                </tr>
-                            </thead>
-                                {% for item in vendorreports %}
-                                    <tr>
-                                        <td class="fw-semibold">{{ item.item_id.name }}</td>
-                                        <td>{{ item.vendor.vendor_name }}</td>
-                                        <td class="fw-bold text-success">{{ item.quantity }}</td>
-                                        <td>₹ {{ item.price }}</td>
-                                        <td class="text-primary fw-bold">₹ {{ item.total_price }}</td>
-                                        <td><span class="badge bg-info text-dark">{{ item.date.date }}</span></td>
-                                    </tr>
-                                {% endfor %}
-                            {% else %}
-                                <!-- <tr>
-                                    <td colspan="6" class="text-center text-danger fw-bold">No items available</td>
-                                </tr> -->
-                            {% endif %}
+                          
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
     </div>
+    <script>
+        document.getElementById("inwardReport").addEventListener("click", function () {
+            const startDate = document.getElementById("startDate").value;
+            const endDate = document.getElementById("endDate").value;
+    
+            // AJAX request to filter items
+            $.ajax({
+                url: "{% url 'filter_items_inward' %}",  // Use the correct Django URL name
+                type: "POST",
+                data: {
+                    start_date: startDate,
+                    end_date: endDate,
+                    csrfmiddlewaretoken: "{{ csrf_token }}"  // Required for POST requests in Django
+                },
+                dataType: "json",
+                success: function (data) {
+                    const table = $("#itemsTable");
+                    table.empty(); // Clear previous results
 
+                    // Append the correct table structure
+                    table.append(`
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Item Name</th>
+                                <th>Vendor</th>
+                                <th>Quantity</th>
+                                <th>Price/Unit (₹)</th>
+                                <th>Total Price (₹)</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemsTableBody"></tbody>
+                    `);
+
+                    const tableBody = $("#itemsTableBody");
+                    if (data.items.length === 0) {
+                        tableBody.append(`
+                            <tr>
+                                <td colspan="6" class="text-center text-danger">No items found</td>
+                            </tr>
+                        `);
+                    } else {
+                        
+                        $.each(data.items, function (index, item) {
+                            const dateObj = new Date(item.date);
+
+                            const formattedDate = dateObj.toLocaleDateString("en-US", {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric"
+                            });
+                            tableBody.append(`
+                                <tr>
+                                    <td  class="fw-semibold">${item.item_name}</td>
+                                    <td>${item.vendor_name}</td>
+                                    <td  class="fw-bold text-success">${item.quantity}</td>
+                                    <td>${item.price}</td>
+                                    <td class="text-primary fw-bold">${item.total_price}</td>
+                                    <td><span class="badge bg-info text-dark">${formattedDate}</span></td>
+                                </tr>
+                            `);
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error:", error);
+                    $("#itemsTable tbody").html(`
+                        <tr>
+                            <td colspan="3" class="text-center text-danger">Error loading items</td>
+                        </tr>
+                    `);
+                }
+            });
+        });
+
+        
+        document.getElementById("vendorReport").addEventListener("click", function () {
+            const startDate = document.getElementById("startDate").value;
+            const endDate = document.getElementById("endDate").value;
+            const vendorName = document.getElementById("vendor").value;
+            // AJAX request to filter items
+            $.ajax({
+                url: "{% url 'get_vendor_report' %}",  // Use the correct Django URL name
+                type: "POST",
+                data: {
+                    start_date: startDate,
+                    end_date: endDate,
+                    vendor: vendorName,
+                    csrfmiddlewaretoken: "{{ csrf_token }}"  // Required for POST requests in Django
+                },
+                dataType: "json",
+                success: function (data) {
+                    const table = $("#vendorTable");
+                    table.empty(); // Clear previous results
+
+                    // Append the correct table structure
+                    table.append(`
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Item Name</th>
+                                <th>Quantity</th>
+                                <th>Price/Unit (₹)</th>
+                                <th>Total Price (₹)</th>
+                                <th>Bill ID</th> 
+                                <th>Date</th>
+
+                            </tr>
+
+                        </thead>
+                        <tbody id="vendorTableBody"></tbody>
+                    `);
+
+                    const tableBody = $("#vendorTableBody");
+                    if (data.items.length === 0) {
+                        tableBody.append(`
+                            <tr>
+                                <td colspan="6" class="text-center text-danger">No items found</td>
+                            </tr>
+                        `);
+                    } else {
+                        
+                        $.each(data.items, function (index, item) {
+                            const dateObj = new Date(item.date);
+
+                            const formattedDate = dateObj.toLocaleDateString("en-US", {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric"
+                            });
+                            tableBody.append(`
+                                <tr>
+                                    <td  class="fw-semibold">${item.item_name}</td>
+                                    <td  class="fw-bold text-success">${item.quantity}</td>
+                                    <td>${item.price}</td>
+                                    <td class="text-primary fw-bold">${item.total_price}</td>
+                                    <td class="text-primary fw-bold">${item.bill_id}</td>
+                                    <td><span class="badge bg-info text-dark">${formattedDate}</span></td>
+                                </tr>
+                            `);
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error:", error);
+                    $("#vendorTable tbody").html(`
+                        <tr>
+                            <td colspan="3" class="text-center text-danger">Error loading items</td>
+                        </tr>
+                    `);
+                }
+            });
+        });
+    </script>
 </body>
 </html>
 {% endblock %}
