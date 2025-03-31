@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.forms import formset_factory
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
@@ -11,6 +12,12 @@ from django.db.models import F, Sum, Count, Case, When
 from django.core.serializers.json import DjangoJSONEncoder
 import json
 from datetime import date, timedelta
+from django.http import HttpResponse
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from reportlab.lib import colors
+
 
 # Create your views here.
 def item_info(request):
@@ -587,3 +594,52 @@ def get_vendor_report(request):
         return JsonResponse({"items": items_data})
 
     return JsonResponse({"error": "Invalid request"}, status=400)
+
+# @csrf_exempt
+def download_report(request):
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="inward_report.pdf"'
+
+    # Load JSON data from AJAX request
+    data = json.loads(request.body)
+    items = data.get("items", [])
+
+    # Create PDF document
+    doc = SimpleDocTemplate(response, pagesize=letter)
+    elements = []
+
+    # Table header
+    table_data = [
+        ["Item Name", "Vendor", "Quantity", "Price (Rs.)", "Total Price (Rs.)", "Date"]
+    ]
+
+    # Add table rows
+    for item in items:
+        date_str = item['date']  # Example: "2024-03-31 15:30:00"
+        date_only = datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S.%fZ").date() 
+        table_data.append([
+            str(item['item_name']),
+            str(item['vendor_name']),
+            str(item['quantity']),
+            f"{item['price']}",
+            f"{item['total_price']}",
+            date_only,
+        ])
+
+    # Create table and apply styling
+    table = Table(table_data, colWidths=[100, 120, 80, 80, 100, 100])
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 10),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+    ]))
+
+    elements.append(table)
+    doc.build(elements)
+
+    return response

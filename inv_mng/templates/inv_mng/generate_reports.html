@@ -77,7 +77,8 @@
                 </div>
             </div>
             <div class="card mt-4 p-4 border-0 rounded">
-                
+                <div id="downloadButtonContainer"></div>
+
                 <!-- <h4 class="text-center text-primary fw-bold">Inward Items</h4> -->
                 <div class="table-responsive mt-3">
                     <table id="itemsTable" class="table table-hover table-striped align-middle text-center">
@@ -190,6 +191,14 @@
                             `);
                         });
                     }
+                    $("#downloadButtonContainer").html(`
+                    <button id="downloadReport" class="btn btn-primary mt-3">Download PDF</button>
+                `);
+
+                // Add event listener for download
+                document.getElementById("downloadReport").addEventListener("click", function () {
+                    downloadPDF(data.items);
+                });
                 },
                 error: function (xhr, status, error) {
                     console.error("Error:", error);
@@ -279,6 +288,32 @@
                 }
             });
         });
+        function downloadPDF(items) {
+    $.ajax({
+        type: "POST",
+        url: "/download-report/",
+        data: JSON.stringify({ items: items }),
+         // Required for POST requests in Django
+         headers: {
+            "X-CSRFToken": "{{ csrf_token }}" // Correctly include CSRF token in headers
+        },
+        contentType: "application/json",
+        xhrFields: {
+            responseType: 'blob' // Set response type to blob to handle PDF
+        },
+        success: function (response, status, xhr) {
+            const filename = "filtered_report.pdf";
+            const blob = new Blob([response], { type: "application/pdf" });
+
+            const link = document.createElement("a");
+            link.href = window.URL.createObjectURL(blob);
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    });
+}
     </script>
 </body>
 </html>
