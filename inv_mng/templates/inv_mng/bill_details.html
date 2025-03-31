@@ -1,0 +1,82 @@
+{% extends 'inv_mng/base.html' %}
+{% block content %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item and Vendor Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="page-header">
+        <h1 class="text-center text-primary fw-bold">Bill information</h1>
+    </div>
+    <div class="container mt-5">
+        <div class="row g-4 justify-content-center">
+            <div class="card shadow-sm border-0 p-4">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="billId" class="form-label"></label>
+                        <p><b>Bill ID:</b> {{bill.bill_id}}</p>
+                    </div>
+                    <div class="mb-3">
+                        <label for="vendor" class="form-label"></label>
+                        <p><b>Vendor:</b> {{bill.vendor}}</p>
+                    </div>
+                    <div class="mb-3">
+                        <label for="paidStatus" class="form-label"></label>
+                        <p><b>Is paid?:</b> {{bill.is_paid}}</p>
+                    </div>
+                    <div class="mb-3">
+                        <label for="billImage" class="form-label"></label>
+                        <p><b>Bill image:</b> <img src=" http://localhost:8000/media/{{bill.bill_image}}"></p>
+                    </div>
+                </div>
+            </div>  
+            <div class="card mt-4 p-4 shadow-lg border-0 rounded">
+                <h4 class="text-center text-primary fw-bold">Inward Items</h4>
+                <div class="table-responsive mt-3">
+                    <table id="itemsTable" class="table table-hover table-striped align-middle text-center">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Item Name</th>
+                                <th>Vendor</th>
+                                <th>Quantity</th>
+                                <th>Price/Unit (₹)</th>
+                                <th>Total Price (₹)</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if inwardstocks %}
+                                {% for item in inwardstocks %}
+                                    <tr>
+                                        <td class="fw-semibold">{{ item.item_id.name }}</td>
+                                        <td>{{ item.vendor.vendor_name }}</td>
+                                        <td class="fw-bold text-success">{{ item.quantity }}</td>
+                                        <td>₹ {{ item.price }}</td>
+                                        <td class="text-primary fw-bold">₹ {{ item.total_price }}</td>
+                                        <td><span class="badge bg-info text-dark">{{ item.date.date }}</span></td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="6" class="text-center text-danger fw-bold">No items available</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+{% endblock %}

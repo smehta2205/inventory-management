@@ -539,3 +539,8 @@ def filter_bills(request):
         return JsonResponse({"items": items_data})
 
     return JsonResponse({"error": "Invalid request"}, status=400)
+
+def bill_details(request, bill_id):
+    bill = get_object_or_404(InwardBill, bill_id=bill_id)  # Fetch the bill by ID
+    inwardstocks = InwardStock.objects.filter(bill_id=bill.bill_id)
+    return render(request, 'inv_mng/bill_details.html', {'bill': bill, 'inwardstocks':inwardstocks})

@@ -445,12 +445,13 @@
                         <tbody>
                             {% if billdetails %}
                                 {% for item in billdetails %}
-                                    <tr>
-                                        <td class="fw-semibold">{{ item.bill_id }}</td>
-                                        <td>{{ item.vendor.vendor_name }}</td>
-                                        <td class="fw-bold">{{ item.is_paid }}</td>
-                                        <td><span class="badge bg-info text-dark">{{ item.bill_date }}</span></td>
-                                    </tr>
+                                
+                                <tr>
+                                    <td class="fw-semibold"><a href="{% url 'bill_details' bill_id=item.bill_id|urlencode %}">{{ item.bill_id }}</a></td>
+                                    <td>{{ item.vendor.vendor_name }}</td>
+                                    <td class="fw-bold">{{ item.is_paid }}</td>
+                                    <td><span class="badge bg-info text-dark">{{ item.bill_date }}</span></td>
+                                </tr>
                                 {% endfor %}
                             {% else %}
                                 <tr>

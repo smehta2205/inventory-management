@@ -23,6 +23,7 @@ urlpatterns = [
     path('get_total_gst/', views.get_total_gst, name='get_total_gst'),
     path('get_total_expense/', views.get_total_expense, name='get_total_expense'),
     path('filter_bills/', views.filter_bills, name='filter_bills'),
+    path('bill_details/<path:bill_id>/', views.bill_details, name='bill_details'),
 
 
     # path('get_items_from_stock/', views.get_items_from_stock, name='get_items_from_stock'),
