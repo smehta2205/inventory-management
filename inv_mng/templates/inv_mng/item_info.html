@@ -288,7 +288,7 @@
                     <div class="card bg-primary text-white shadow">
                         <div class="card-body">
                             <h5 class="card-title">Total Wastage</h5>
-                            <p id="wastageCard" class="card-text display-6">Rs. {{ total_wastage.wastage_amount__sum }} </p>
+                            <p id="wastageCard" class="card-text display-6">Rs. {{ total_wastage.wastage_amount__sum|floatformat:2 }} </p>
                         </div>
                     </div>
                 </div>
@@ -310,7 +310,7 @@
                             console.log(data);
                             const wastageAmount = data.total_wastage['wastage_amount__sum'] ? data.total_wastage['wastage_amount__sum'] : 0;
                 
-                            $("#wastageCard").text(`Rs. ${wastageAmount}`);
+                            $("#wastageCard").text(`Rs. ${wastageAmount.toFixed(2)}`);
                         },
                         error: function (xhr, status, error) {
                             console.error("Error:", error);
@@ -325,7 +325,7 @@
                     <div class="card bg-primary text-white shadow">
                         <div class="card-body">
                             <h5 class="card-title">Purchase made</h5>
-                            <p id="purchaseCard" class="card-text display-6">Rs. {{ total_purchase.total_difference }} </p>
+                            <p id="purchaseCard" class="card-text display-6">Rs. {{ total_purchase.total_difference|floatformat:2}} </p>
                         </div>
                     </div>
                 </div>
@@ -348,7 +348,7 @@
                             console.log(data);
                             const purchaseAmount = data.total_purchase['total_difference'] ? data.total_purchase['total_difference'] : 0;
                 
-                            $("#purchaseCard").text(`Rs. ${purchaseAmount}`);
+                            $("#purchaseCard").text(`Rs. ${purchaseAmount.toFixed(2)}`);
                         },
                         error: function (xhr, status, error) {
                             console.error("Error:", error);
@@ -362,7 +362,7 @@
                 <div class="card bg-primary text-white shadow">
                     <div class="card-body">
                         <h5 class="card-title">Total GST paid</h5>
-                        <p id="gstCard" class="card-text display-6">Rs. {{ total_gst.gst_amount__sum }} </p>
+                        <p id="gstCard" class="card-text display-6">Rs. {{ total_gst.gst_amount__sum |floatformat:2}} </p>
                     </div>
                 </div>
             </div>
@@ -384,7 +384,7 @@
                         console.log(data);
                         const gstAmount = data.total_gst['gst_amount__sum'] ? data.total_gst['gst_amount__sum'] : 0;
 
-                        $("#gstCard").text(`Rs. ${gstAmount}`);
+                        $("#gstCard").text(`Rs. ${gstAmount.toFixed(2)}`);
                     },
                     error: function (xhr, status, error) {
                         console.error("Error:", error);
@@ -399,7 +399,7 @@
                 <div class="card bg-primary text-white shadow">
                     <div class="card-body">
                         <h5 class="card-title">Total cost of goods used</h5>
-                        <p id="expenseCard" class="card-text display-6">Rs. {{ total_expenditure.outward_spent_amount__sum }} </p>
+                        <p id="expenseCard" class="card-text display-6">Rs. {{ total_expenditure.outward_spent_amount__sum |floatformat:2}} </p>
                     </div>
                 </div>
             </div>
@@ -421,7 +421,7 @@
                         console.log(data);
                         const expenseAmount = data.total_expense['outward_spent_amount__sum'] ? data.total_expense['outward_spent_amount__sum']: 0;
 
-                        $("#expenseCard").text(`Rs. ${expenseAmount}`);
+                        $("#expenseCard").text(`Rs. ${expenseAmount.toFixed(2)}`);
                     },
                     error: function (xhr, status, error) {
                         console.error("Error:", error);
