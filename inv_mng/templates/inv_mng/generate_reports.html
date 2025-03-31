@@ -47,7 +47,13 @@
                     <h5 class="card-title text-center text-dark fw-bold mb-4">Select vendor</h5>
                     <div class="mb-3">
                         <label for="vendor" class="form-label">Select Vendor:</label>
-                        <input type="text" id="vendor" class="form-control">
+                        <input type="text" id="vendor" list="vendor-list">
+                            <datalist id="vendor-list">
+                                {% for vendor in vendors %}
+                                    <option value="{{ vendor }}">{{ vendor }}</option>
+                                {% endfor %}
+                            </datalist>
+                           
                     </div>
                 </div>
             </div>

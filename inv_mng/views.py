@@ -547,4 +547,6 @@ def bill_details(request, bill_id):
 
 
 def generate_reports(request):
-    return render(request, 'inv_mng/generate_reports.html', {})
+    vendors = Vendor.objects.all()  # Fetch all vendors
+
+    return render(request, 'inv_mng/generate_reports.html', {"vendors": vendors})
