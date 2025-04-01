@@ -667,3 +667,15 @@ def download_report(request):
 
     return response
 
+
+def get_stock_quantity(request):
+    stock_entry_id = request.GET.get('stock_entry_id')
+
+    if stock_entry_id:
+        try:
+            stock_entry = Stock.objects.get(id=stock_entry_id)
+            return JsonResponse({'total_quantity': stock_entry.total_quantity})
+        except Stock.DoesNotExist:
+            return JsonResponse({'total_quantity': 0})
+    
+    return JsonResponse({'total_quantity': 0})

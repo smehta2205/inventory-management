@@ -188,7 +188,11 @@ class WastageForm(forms.Form):
         label="Stock Entry",
         required=True
     )
-
+    total_quantity = forms.IntegerField(
+        label="Current total quantity", 
+        required=False,
+        widget=forms.NumberInput(attrs={'readonly': 'readonly'})  # Make it read-only
+    )
     quantity = forms.IntegerField(label="Quantity")
 
     def __init__(self, *args, **kwargs):

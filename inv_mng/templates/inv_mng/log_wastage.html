@@ -29,6 +29,7 @@
                 <tr>
                     <th>Item</th>
                     <th>Vendor and Expiry date</th>
+                    <th>Current total quantity</th>
                     <th>Quantity</th>
                     <th></th>
                 </tr>
@@ -38,7 +39,12 @@
                     <tr class="outward-stock-form">
                         <td>{{ form.item }}</td>
                         <td>{{ form.stock_entry }}</td>
+                        <td>
+                            <input type="text" class="total-quantity" id="totalQuantityInput" readonly>
+                        </td>
+
                         <td>{{ form.quantity }}</td>
+
                         <td>
                             {% if not forloop.first %}
                                 <button type="button" class="remove-form">❌</button>
@@ -134,6 +140,22 @@
                             stockEntrySelect.innerHTML = '<option value="">Select Stock Entry</option>';
                         }
                     });
+                    stockEntrySelect.addEventListener("change", function () {
+                    let stockEntryId = stockEntrySelect.value;
+
+                    if (stockEntryId) {
+                        $.ajax({
+                            url: "{% url 'get_stock_quantity' %}",
+                            data: { stock_entry_id: stockEntryId },
+                            dataType: "json",
+                            success: function (data) {
+                                totalQuantityInput.value = data.total_quantity;  // Update total quantity
+                            }
+                        });
+                    } else {
+                        totalQuantityInput.value = "";  // Reset total quantity
+                    }
+                });
                 }
             }
 
