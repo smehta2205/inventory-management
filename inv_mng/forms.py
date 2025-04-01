@@ -8,14 +8,15 @@ import datetime
 class ItemForm(forms.ModelForm):
     class Meta:
         model = Item
-        fields = ('name', 'company', 'location', 'gst', 'iw_unit', 'ow_unit')
+        fields = ('name', 'company', 'location', 'gst', 'iw_unit', 'ow_unit', 'minimum_quantity')
         labels = {
             'name': 'Item name',
             'company': 'Company',
             'location': 'Physical location',
             'gst':'GST percentage',
             'iw_unit':'Purchase unit (inward)',
-            'ow_unit':'Consumption unit (outward)'
+            'ow_unit':'Consumption unit (outward)',
+            'minimum_quantity':'Minimum quantity for notification'
         }
 
 

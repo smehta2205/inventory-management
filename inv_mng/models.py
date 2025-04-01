@@ -19,6 +19,7 @@ class Item(models.Model):
     company = models.CharField(max_length=200)
     location = models.CharField(max_length=200)
     gst = models.IntegerField(default=0)
+    minimum_quantity = models.IntegerField(default=0)
     iw_unit = models.CharField(max_length=200)
     ow_unit = models.CharField(max_length=200)
 
