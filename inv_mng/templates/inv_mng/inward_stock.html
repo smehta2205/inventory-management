@@ -197,6 +197,10 @@
                         console.log("Quantity changed: ", priceField.value);
                         updateCalculations(form);
                     });
+                    gstField.addEventListener('input', function () {
+                        console.log("GST changed: ", priceField.value);
+                        updateCalculations(form);
+                    });
                     
                     if (priceWithGst) {
                         priceWithGst.addEventListener('change', function () {
