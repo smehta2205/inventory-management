@@ -596,50 +596,74 @@ def get_vendor_report(request):
     return JsonResponse({"error": "Invalid request"}, status=400)
 
 # @csrf_exempt
+from django.http import HttpResponse
+import json
+from datetime import datetime
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
+
 def download_report(request):
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="inward_report.pdf"'
+    response['Content-Disposition'] = 'attachment; filename="report.pdf"'
 
-    # Load JSON data from AJAX request
+    # 🔹 Load JSON data from AJAX request
     data = json.loads(request.body)
     items = data.get("items", [])
+    report_type = data.get("reportType", "inward").lower()  # Default to "inward"
 
-    # Create PDF document
-    doc = SimpleDocTemplate(response, pagesize=letter)
-    elements = []
+    # 🔹 Define column headers and data keys
+    columns = {
+        "inward": ["Item Name", "Vendor", "Quantity", "Price (Rs.)", "Total Price (Rs.)", "Date"],
+        "vendor": ["Item Name", "Quantity", "Price (Rs.)", "Total Price (Rs.)", "Bill ID", "Date"],
+    }
 
-    # Table header
-    table_data = [
-        ["Item Name", "Vendor", "Quantity", "Price (Rs.)", "Total Price (Rs.)", "Date"]
-    ]
+    data_keys = {
+        "inward": ["item_name", "vendor_name", "quantity", "price", "total_price", "date"],
+        "vendor": ["item_name", "quantity", "price", "total_price", "bill_id", "date"],
+    }
 
-    # Add table rows
+    headers = columns.get(report_type, ["Column 1", "Column 2"])  # Default headers
+    keys = data_keys.get(report_type, [])
+
+    # 🔹 Create PDF document
+    pdf = SimpleDocTemplate(response, pagesize=letter)
+    content = []
+
+    # 🔹 Report Title
+    styles = getSampleStyleSheet()
+    title = Paragraph(f"<b>{report_type.replace('_', ' ').title()} Report</b>", styles["Title"])
+    content.append(title)
+
+    # 🔹 Prepare Table Data (Headers + Data Rows)
+    table_data = [headers]  # Start with column headers
+
     for item in items:
-        date_str = item['date']  # Example: "2024-03-31 15:30:00"
-        date_only = datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S.%fZ").date() 
-        table_data.append([
-            str(item['item_name']),
-            str(item['vendor_name']),
-            str(item['quantity']),
-            f"{item['price']}",
-            f"{item['total_price']}",
-            date_only,
-        ])
+        row = []
+        for key in keys:
+            value = item.get(key, "")
+            if key == "date" and value:
+                value = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%fZ").strftime("%Y-%m-%d")  # Convert datetime to date
+            row.append(str(value))
+        table_data.append(row)
 
-    # Create table and apply styling
-    table = Table(table_data, colWidths=[100, 120, 80, 80, 100, 100])
+    # 🔹 Create Table with Styling
+    table = Table(table_data, colWidths=[100] * len(headers))  # Adjust column width as needed
     table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, -1), 10),
-        ('BOTTOMPADDING', (0, 0), (-1, 0), 10),
-        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ("BACKGROUND", (0, 0), (-1, 0), colors.grey),  # Header background color
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),  # Header text color
+        ("ALIGN", (0, 0), (-1, -1), "CENTER"),  # Center align all text
+        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),  # Bold font for headers
+        ("BOTTOMPADDING", (0, 0), (-1, 0), 8),  # Padding for headers
+        ("GRID", (0, 0), (-1, -1), 1, colors.black),  # Table grid
     ]))
 
-    elements.append(table)
-    doc.build(elements)
+    # 🔹 Add Table to Content
+    content.append(table)
+
+    # 🔹 Build PDF
+    pdf.build(content)
 
     return response
+
