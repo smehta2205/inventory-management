@@ -2,7 +2,7 @@ from datetime import datetime
 from django.forms import formset_factory
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
-from .models import InwardStock, Item, Stock, InwardOutwardConv, Vendor, OutwardStock, WastageStock, InwardBill, Department
+from .models import InwardStock, Item, Notification, Stock, InwardOutwardConv, Vendor, OutwardStock, WastageStock, InwardBill, Department
 from .forms import ItemForm, LoginForm, RegisterForm, VendorForm, StockForm, OutwardStockForm, ConversionMetricForm, DepartmentForm, VendorSelectionForm, DepartmentSelectionForm, ConversionMetricFormWithoutId, InwardBillForm, WastageForm
 from django.shortcuts import redirect
 from django.contrib.auth import authenticate, login, logout
@@ -20,6 +20,7 @@ from reportlab.lib import colors
 
 
 # Create your views here.
+
 def item_info(request):
     items = Item.objects.all()
     vendors = Vendor.objects.all()
@@ -72,6 +73,7 @@ def item_info(request):
     items = OutwardStock.objects.all()
     items = filter_items(items, start_date, end_date)
     total_expense = items.aggregate(Sum('outward_spent_amount'))
+    unread_count = Notification.objects.filter(is_read=False).count
     context = {
         'items': items,
         'vendors': vendors,
@@ -87,7 +89,8 @@ def item_info(request):
         "total_stock_worth": total_stock_worth,
         "default_start_date": start_date, 
         "default_end_date": end_date,
-        "billdetails": billdetails
+        "billdetails": billdetails,
+        "unread_count":unread_count
         
     }
     # print(context)
@@ -679,3 +682,17 @@ def get_stock_quantity(request):
             return JsonResponse({'total_quantity': 0})
     
     return JsonResponse({'total_quantity': 0})
+
+
+
+def notifications_list(request):
+    """Fetch unread notifications for the logged-in user."""
+    notifications = Notification.objects.filter(user=request.user, is_read=False)
+    return render(request, 'inv_mng/notification_list.html', {'notifications': notifications})
+
+def mark_as_read(request, notification_id):
+    """Mark a notification as read."""
+    notification = get_object_or_404(Notification, id=notification_id, user=request.user)
+    notification.is_read = True
+    notification.save()
+    return JsonResponse({'status': 'success'})

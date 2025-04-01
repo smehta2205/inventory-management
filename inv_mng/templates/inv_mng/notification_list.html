@@ -1,0 +1,8 @@
+{% for notification in notifications %}
+    <div class="notification">
+        <p>{{ notification.message }}</p>
+        <button onclick="">Mark as Read</button>
+    </div>
+{% empty %}
+    <p>No new notifications.</p>
+{% endfor %}

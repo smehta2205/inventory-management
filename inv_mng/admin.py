@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Vendor, Item, Stock, InwardOutwardConv, Department, InwardStock, OutwardStock, InwardBill, WastageStock
+from .models import Vendor, Item, Stock, InwardOutwardConv, Department, InwardStock, OutwardStock, InwardBill, WastageStock, Notification
 # Register your models here.
 admin.site.register(Vendor)
 admin.site.register(Item)
@@ -10,3 +10,4 @@ admin.site.register(InwardStock)
 admin.site.register(OutwardStock)
 admin.site.register(InwardBill)
 admin.site.register(WastageStock)
+admin.site.register(Notification)
