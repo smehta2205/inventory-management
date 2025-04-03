@@ -690,9 +690,13 @@ def notifications_list(request):
     notifications = Notification.objects.filter(user=request.user, is_read=False)
     return render(request, 'inv_mng/notification_list.html', {'notifications': notifications})
 
+
 def mark_as_read(request, notification_id):
-    """Mark a notification as read."""
-    notification = get_object_or_404(Notification, id=notification_id, user=request.user)
-    notification.is_read = True
-    notification.save()
-    return JsonResponse({'status': 'success'})
+    try:
+        notification = Notification.objects.get(id=notification_id)
+        notification.is_read = True
+        notification.save()
+
+        return JsonResponse({'status': 'success'})
+    except Notification.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Notification not found'}, status=404)

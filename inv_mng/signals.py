@@ -13,11 +13,11 @@ def check_stock_threshold(sender, instance, **kwargs):
     min_threshold = item.minimum_quantity  # Fetch the correct threshold
     print(min_threshold)
 
-    if instance.quantity < min_threshold:
+    if instance.total_quantity < min_threshold:
         staff_users = User.objects.filter(is_staff=True)
         for user in staff_users:
             Notification.objects.get_or_create(
                 user=user,
                 stock_entry=instance,
-                message=f"Warning: Stock for {instance.item_id} (Vendor: {instance.vendor}, Expiry: {instance.expiry_date}) is below the threshold ({instance.quantity} left)."
+                message=f"Warning: Stock for {instance.item_id} (Vendor: {instance.vendor}, Expiry: {instance.expiry_date}) is below the threshold ({instance.total_quantity} left)."
             )
