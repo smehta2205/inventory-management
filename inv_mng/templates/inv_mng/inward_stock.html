@@ -85,8 +85,16 @@
                 {% endfor %}
             </tbody>
         </table>
-
-        <button type="button" id="add-form">➕ Add More</button>
+        <!-- <div style="float: right; padding-bottom: 10px;"> -->
+            <div style="float: right; padding-bottom: 10px;">
+                <button type="button" id="calculate-total" style="float: right;">Total amount > </button>
+            </div>
+            <div style="float: right; padding-bottom: 10px;">
+                <p style="float: right; padding-bottom: 10px;" id="totalAmount">0.00</p>
+            </div>
+        <!-- </div> -->
+        
+        <button type="button" id="add-form" class="btn btn-primary">➕ Add More</button>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 </body>
@@ -97,6 +105,7 @@
             let formContainer = document.getElementById("form-container").getElementsByTagName('tbody')[0];
             let addFormButton = document.getElementById("add-form");
             let totalForms = document.querySelector("#id_form-TOTAL_FORMS");
+            let calculateTotalButton = document.getElementById("calculate-total");
 
             // Function to update remove buttons
             function updateRemoveButtons() {
@@ -107,12 +116,13 @@
                     });
                 });
             }
-
+            
             // Add more form functionality
             addFormButton.addEventListener("click", function () {
                 let formCount = parseInt(totalForms.value);
                 let newFormHtml = formContainer.children[0].outerHTML.replace(/-0-/g, `-${formCount}-`).replace(/_0_/g, `_${formCount}_`);
                 let newFormElement = document.createElement("tr");
+                newFormElement.className = "form-row";
                 newFormElement.innerHTML = newFormHtml;
 
                 // Clear input values in the new row
@@ -141,7 +151,50 @@
             });
 
             updateRemoveButtons();
+            
+            document.getElementById('calculate-total').addEventListener("click", function () {
+                // console.log("hello");
+                let totalAmount = 0;
+                const priceWithGst = document.querySelector('#id_price_with_gst').checked;
+                const formRows = document.querySelectorAll('.form-row');
+                            console.log(formRows.length);
+                formRows.forEach((row, index) => {
+                    // Get all the input fields from the current row
+                    const quantity = parseFloat(row.querySelector('input[name$="-quantity"]').value) || 0;
+                    const price = parseFloat(row.querySelector('input[name$="-price"]').value) || 0;
+                    const gst = parseFloat(row.querySelector('input[name$="-gst"]').value) || 0;
 
+                    if (price <= 0 || quantity <= 0) {
+                        return; // Skip invalid rows
+                    }
+
+                    let itemTotal, gstAmount;
+
+                    if (priceWithGst) {
+                        // Price includes GST - calculate base price first
+                        const basePrice = price / (1 + (gst / 100));
+                        gstAmount = (basePrice * quantity) * (gst / 100);
+                        itemTotal = (basePrice * quantity) + gstAmount;
+                    } else {
+                        // Price doesn't include GST
+                        const subtotal = price * quantity;
+                        gstAmount = subtotal * (gst / 100);
+                        itemTotal = subtotal + gstAmount;
+                    }
+
+                    totalAmount += itemTotal;
+                    console.log(itemTotal);
+                    // Update the GST amount and total price fields in the row if they exist
+                    const gstAmountField = row.querySelector('input[name$="-gst_amount"]');
+                    const totalPriceField = row.querySelector('input[name$="-total_price"]');
+                    
+                    if (gstAmountField) gstAmountField.value = gstAmount.toFixed(2);
+                    if (totalPriceField) totalPriceField.value = itemTotal.toFixed(2);
+                });
+
+                // Update the total amount display
+                document.getElementById('totalAmount').textContent = totalAmount.toFixed(2);
+            });
             // Function to update GST based on selected item
             function updateGST(form) {
                 let itemSelect = form.querySelector('.select-item');
