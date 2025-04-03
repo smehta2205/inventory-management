@@ -15,13 +15,18 @@ from datetime import date, timedelta
 from django.http import HttpResponse
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from django.utils import timezone
+from django.http import HttpResponse
+import json
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
 from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
 
 
 # Create your views here.
 
 def item_info(request):
+    check_expiring_products()
     items = Item.objects.all()
     vendors = Vendor.objects.all()
     # inwardstocks = InwardStock.objects.all()
@@ -98,6 +103,7 @@ def item_info(request):
     
 
 def add_item(request):
+    check_expiring_products()
     if request.method == "POST":
         form = ItemForm(request.POST)
         if form.is_valid():
@@ -110,6 +116,7 @@ def add_item(request):
     return render(request, 'inv_mng/add_item.html', {'form': form})
 
 def add_vendor(request):
+    check_expiring_products()
     if request.method == "POST":
         form = VendorForm(request.POST)
         if form.is_valid():
@@ -123,6 +130,7 @@ def add_vendor(request):
 
 
 def inward_stock(request):
+    check_expiring_products()
     StockFormSet = formset_factory(StockForm, extra=1)
     
     if request.method == "POST":
@@ -193,6 +201,7 @@ def inward_stock(request):
 
 
 def outward_stock(request):
+    check_expiring_products()
     OutwardStockFormSet = formset_factory(OutwardStockForm, extra=1)  # Allows adding multiple forms
     formset = OutwardStockFormSet(request.POST or None)
     department_form = DepartmentSelectionForm(request.POST or None)  # Define department_form for both GET and POST requests
@@ -261,6 +270,7 @@ def get_stock_entries(request):
 
 
 def add_department(request):
+    check_expiring_products()
     if request.method == "POST":
         form = DepartmentForm(request.POST)
         if form.is_valid():
@@ -295,6 +305,7 @@ def add_conversion_metric(request):
     return render(request, 'inv_mng/add_conversion_metric_without_id.html', {'form':form})
 
 def add_conversion_metric_with_id(request, item_id):
+    check_expiring_products()
     item = get_object_or_404(Item, item_id=item_id)  # Get the item
     
     if request.method == "POST":
@@ -429,6 +440,7 @@ def get_gst(request):
     
 
 def log_wastage(request):
+    check_expiring_products()
     WastageStockFormSet = formset_factory(WastageForm, extra=1)  # Allows adding multiple forms
     formset = WastageStockFormSet(request.POST or None)
 
@@ -598,14 +610,6 @@ def get_vendor_report(request):
 
     return JsonResponse({"error": "Invalid request"}, status=400)
 
-# @csrf_exempt
-from django.http import HttpResponse
-import json
-from datetime import datetime
-from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
-from reportlab.lib import colors
-from reportlab.lib.styles import getSampleStyleSheet
 
 def download_report(request):
     response = HttpResponse(content_type='application/pdf')
@@ -700,3 +704,20 @@ def mark_as_read(request, notification_id):
         return JsonResponse({'status': 'success'})
     except Notification.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'Notification not found'}, status=404)
+    
+
+def check_expiring_products():
+    today = timezone.now().date()
+    expiry_threshold = today + timedelta(days=7)
+
+    expiring_stocks = Stock.objects.filter(expiry_date__lte=expiry_threshold, expiry_date__gte=today)
+
+    for stock in expiring_stocks:
+        message = f"Stock of {stock.item_id} from {stock.vendor} is expiring on {stock.expiry_date}."
+
+        # Create notifications for all users (modify as needed)
+        for user in User.objects.all():
+            Notification.objects.get_or_create(user=user, 
+                                               stock_entry=stock,
+                                               message=message)
+
