@@ -87,7 +87,7 @@
         </table>
         <!-- <div style="float: right; padding-bottom: 10px;"> -->
             <div style="float: right; padding-bottom: 10px;">
-                <button type="button" id="calculate-total" style="float: right;">Total amount > </button>
+                <!-- <button type="button" id="calculate-total" style="float: right;">Total amount > </button> -->
             </div>
             <div style="float: right; padding-bottom: 10px;">
                 <p style="float: right; padding-bottom: 10px;" id="totalAmount">0.00</p>
@@ -105,7 +105,7 @@
             let formContainer = document.getElementById("form-container").getElementsByTagName('tbody')[0];
             let addFormButton = document.getElementById("add-form");
             let totalForms = document.querySelector("#id_form-TOTAL_FORMS");
-            let calculateTotalButton = document.getElementById("calculate-total");
+            // let calculateTotalButton = document.getElementById("calculate-total");
 
             // Function to update remove buttons
             function updateRemoveButtons() {
@@ -152,49 +152,49 @@
 
             updateRemoveButtons();
             
-            document.getElementById('calculate-total').addEventListener("click", function () {
-                // console.log("hello");
-                let totalAmount = 0;
-                const priceWithGst = document.querySelector('#id_price_with_gst').checked;
-                const formRows = document.querySelectorAll('.form-row');
-                            console.log(formRows.length);
-                formRows.forEach((row, index) => {
-                    // Get all the input fields from the current row
-                    const quantity = parseFloat(row.querySelector('input[name$="-quantity"]').value) || 0;
-                    const price = parseFloat(row.querySelector('input[name$="-price"]').value) || 0;
-                    const gst = parseFloat(row.querySelector('input[name$="-gst"]').value) || 0;
+            // document.getElementById('calculate-total').addEventListener("click", function () {
+            //     // console.log("hello");
+            //     let totalAmount = 0;
+            //     const priceWithGst = document.querySelector('#id_price_with_gst').checked;
+            //     const formRows = document.querySelectorAll('.form-row');
+            //                 console.log(formRows.length);
+            //     formRows.forEach((row, index) => {
+            //         // Get all the input fields from the current row
+            //         const quantity = parseFloat(row.querySelector('input[name$="-quantity"]').value) || 0;
+            //         const price = parseFloat(row.querySelector('input[name$="-price"]').value) || 0;
+            //         const gst = parseFloat(row.querySelector('input[name$="-gst"]').value) || 0;
 
-                    if (price <= 0 || quantity <= 0) {
-                        return; // Skip invalid rows
-                    }
+            //         if (price <= 0 || quantity <= 0) {
+            //             return; // Skip invalid rows
+            //         }
 
-                    let itemTotal, gstAmount;
+            //         let itemTotal, gstAmount;
 
-                    if (priceWithGst) {
-                        // Price includes GST - calculate base price first
-                        const basePrice = price / (1 + (gst / 100));
-                        gstAmount = (basePrice * quantity) * (gst / 100);
-                        itemTotal = (basePrice * quantity) + gstAmount;
-                    } else {
-                        // Price doesn't include GST
-                        const subtotal = price * quantity;
-                        gstAmount = subtotal * (gst / 100);
-                        itemTotal = subtotal + gstAmount;
-                    }
+            //         if (priceWithGst) {
+            //             // Price includes GST - calculate base price first
+            //             const basePrice = price / (1 + (gst / 100));
+            //             gstAmount = (basePrice * quantity) * (gst / 100);
+            //             itemTotal = (basePrice * quantity) + gstAmount;
+            //         } else {
+            //             // Price doesn't include GST
+            //             const subtotal = price * quantity;
+            //             gstAmount = subtotal * (gst / 100);
+            //             itemTotal = subtotal + gstAmount;
+            //         }
 
-                    totalAmount += itemTotal;
-                    console.log(itemTotal);
-                    // Update the GST amount and total price fields in the row if they exist
-                    const gstAmountField = row.querySelector('input[name$="-gst_amount"]');
-                    const totalPriceField = row.querySelector('input[name$="-total_price"]');
+            //         totalAmount += itemTotal;
+            //         console.log(itemTotal);
+            //         // Update the GST amount and total price fields in the row if they exist
+            //         const gstAmountField = row.querySelector('input[name$="-gst_amount"]');
+            //         const totalPriceField = row.querySelector('input[name$="-total_price"]');
                     
-                    if (gstAmountField) gstAmountField.value = gstAmount.toFixed(2);
-                    if (totalPriceField) totalPriceField.value = itemTotal.toFixed(2);
-                });
+            //         if (gstAmountField) gstAmountField.value = gstAmount.toFixed(2);
+            //         if (totalPriceField) totalPriceField.value = itemTotal.toFixed(2);
+            //     });
 
-                // Update the total amount display
-                document.getElementById('totalAmount').textContent = totalAmount.toFixed(2);
-            });
+            //     // Update the total amount display
+            //     document.getElementById('totalAmount').textContent = totalAmount.toFixed(2);
+            // });
             // Function to update GST based on selected item
             function updateGST(form) {
                 let itemSelect = form.querySelector('.select-item');
@@ -235,6 +235,8 @@
                 let quantityField = form.querySelector('.quantity-field');
                 let priceField = form.querySelector('.price-field');
                 let priceWithGst = document.querySelector('#id_price_with_gst');
+                let totalPriceField = form.querySelector('.net-amount-field');
+
 
                 if (itemSelect && quantityField && priceField) {
                     // itemSelect.addEventListener('change', function () {
@@ -249,20 +251,75 @@
                     priceField.addEventListener('input', function () {
                         console.log("Quantity changed: ", priceField.value);
                         updateCalculations(form);
+                        updateTotalAmount(form);
+
                     });
                     gstField.addEventListener('input', function () {
                         console.log("GST changed: ", priceField.value);
                         updateCalculations(form);
+                        updateTotalAmount(form);
+
                     });
                     
                     if (priceWithGst) {
                         priceWithGst.addEventListener('change', function () {
                             console.log("Price with GST changed:", this.value);
                             updateCalculations(form);
+                            updateTotalAmount(form);
+
                         });
                     }
+                    totalPriceField.addEventListener('change', function () {
+                            console.log("Price with GST changed:", this.value);
+                            updateTotalAmount(form);
+                });
                 }
+                
             }
+
+            function updateTotalAmount(form){
+                let totalAmount = 0;
+                const priceWithGstBool = document.querySelector('#id_price_with_gst').checked;
+                const formRows = document.querySelectorAll('.form-row');
+                            console.log(formRows.length);
+                formRows.forEach((row, index) => {
+                    // Get all the input fields from the current row
+                    const quantity = parseFloat(row.querySelector('input[name$="-quantity"]').value) || 0;
+                    const price = parseFloat(row.querySelector('input[name$="-price"]').value) || 0;
+                    const gst = parseFloat(row.querySelector('input[name$="-gst"]').value) || 0;
+
+                    if (price <= 0 || quantity <= 0) {
+                        return; // Skip invalid rows
+                    }
+
+                    let itemTotal, gstAmount;
+
+                    if (priceWithGstBool) {
+                        // Price includes GST - calculate base price first
+                        const basePrice = price / (1 + (gst / 100));
+                        gstAmount = (basePrice * quantity) * (gst / 100);
+                        itemTotal = (basePrice * quantity) + gstAmount;
+                    } else {
+                        // Price doesn't include GST
+                        const subtotal = price * quantity;
+                        gstAmount = subtotal * (gst / 100);
+                        itemTotal = subtotal + gstAmount;
+                    }
+
+                    totalAmount += itemTotal;
+                    console.log(itemTotal);
+                    // Update the GST amount and total price fields in the row if they exist
+                    const gstAmountField = row.querySelector('input[name$="-gst_amount"]');
+                    const totalPriceField = row.querySelector('input[name$="-total_price"]');
+                    
+                    if (gstAmountField) gstAmountField.value = gstAmount.toFixed(2);
+                    if (totalPriceField) totalPriceField.value = itemTotal.toFixed(2);
+                });
+
+                // Update the total amount display
+                document.getElementById('totalAmount').textContent = totalAmount.toFixed(2);
+            }
+
             function updateCalculations(form) {
                 let priceField = form.querySelector('.price-field');
                 let gstField = form.querySelector('.gst-field');
