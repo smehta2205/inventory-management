@@ -19,7 +19,7 @@
 </head>
 <body>
     <h2>Outward Stock Entry</h2>
-    <form class = "outward-form" method="POST">
+    <form class = "outward-form" method="POST" style="padding: 20px;">
         {% csrf_token %}
         <div class="form-group">
             <label for="id_department">Select Department:</label>
@@ -53,7 +53,7 @@
             </tbody>
         </table>
 
-        <button type="button" id="add-form" class="btn btn-primary">➕ Add Another Item</button>
+        <button type="button" id="add-form" class="btn btn-outline-secondary" style="padding-top: 10px;">➕ Add More</button>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 </body>

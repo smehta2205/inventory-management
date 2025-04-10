@@ -1,4 +1,45 @@
-/* General styles for the form */
+.form-container {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 5px 5px; /* Adds spacing between columns and rows */
+    max-width: 100%; /* Prevents table from overflowing */
+}
+body {
+    padding-left:60px; /* Add padding to the left side of the body when sidebar is open */
+    padding-top: 50px;
+    transition: padding-left 0.3s ease; /* Smooth transition when the sidebar opens/closes */
+}
+/* .card {
+    
+    box-shadow: 20px 20px 40px rgba(0, 0, 0, 0.3);
+  } */
+
+
+.form-row td {
+    padding: 8px; /* Adjust padding to ensure space isn't too large */
+}
+
+#form-container th, #form-container td {
+    padding: 9px 8px;
+    text-align: center;
+    font-size: 14px;
+    max-width: 200px; /* Limiting the cell width */
+    word-wrap: break-word; /* Ensures text wrapping in case of long content */
+}
+
+#form-container th {
+    white-space: nowrap;
+}
+
+#form-container td input,
+#form-container td select {
+    width: 100%; /* Ensures inputs and selects fill the cell */
+    padding: 4px; /* Padding for input and select */
+    box-sizing: border-box; /* Ensures padding is included in the width */
+    max-width: 100%; /* Prevents input/select from overflowing */
+}
+
+
 .item-form, .vendor-form, .department-form, .conversion-metric-form, .inward-form, .outward-form, .wastage-form {
     background-color: #ffffff;
     padding: 30px;

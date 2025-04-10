@@ -1,105 +1,187 @@
 {% load static %}
 {% load notification_tags %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Inventory management{% endblock %}</title>
-    <!-- Include CSS for the sidebar, etc. -->
-     
-    <!-- <link rel="stylesheet" href="{% static 'css/style.css' %}"> -->
     <style>
         body {
-            background-color: #f4f6f9;
-            font-family: 'Arial', sans-serif;
+            background-color: #c2c4c8;
+            font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        * {
+            font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 900;
+            display: none;
+        }
+
+        /* Mobile view styles */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: -250px;
+                top: 0;
+                height: 100%;
+                width: 250px;
+                background-color: #6c6969;
+                padding-top: 20px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                transition: transform 0.3s ease;
+                z-index: 1000;
+                margin-left: 0;
+            }
+
+            .sidebar.open {
+                transform: translateX(250px);
+                position: fixed;
+                left: -250px;
+                top: 0;
+                height: 100%;
+                width: 250px;
+                background-color: #6c6969;
+                padding-top: 20px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                transition: transform 0.3s ease;
+                z-index: 1000;
+                margin-left: 0;
+            }
+
+            #content {
+                margin-left: 0 !important;
+                transition: none;
+            }
+
+            .sidebar-toggle-btn {
+                position: fixed;
+                top: 20px;
+                left: 20px;
+                font-size: 1.5rem;
+                background-color: #6c6969;
+                color: white;
+                border: none;
+                padding: 10px;
+                cursor: pointer;
+                z-index: 1001;
+                border-radius: 10%;
+            }
+        }
+
+        /* Desktop view styles */
+        @media (min-width: 769px) {
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                height: 100%;
+                width: 250px;
+                background-color: #6c6969;
+                padding-top: 20px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                transition: width 0.3s ease;
+                margin-left: -10px;
+                z-index: 1000;
+            }
+
+            .sidebar.collapsed-sidebar {
+                width: 0;
+                overflow: hidden;
+                margin-left: -250px;
+            }
+
+            #content {
+                margin-left: 250px;
+                transition: margin-left 0.3s ease;
+            }
+
+            #content.collapsed {
+                margin-left: 0;
+            }
+
+            .sidebar-toggle-btn {
+                position: fixed;
+                top: 20px;
+                left: 250px;
+                font-size: 1.5rem;
+                background-color: #6c6969;
+                color: white;
+                border: none;
+                padding: 10px;
+                cursor: pointer;
+                z-index: 1001;
+                transition: left 0.3s ease;
+                border-radius: 10%;
+            }
+
+            .sidebar-toggle-btn.collapsed {
+                left: 20px;
+            }
         }
 
         .page-header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 20px;
             font-size: 2.5rem;
             font-weight: 700;
             color: #343a40;
         }
 
-        .sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 250px;
-            background-color: #ffffff;
-            padding-top: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            transition: width 0.3s ease;
-        }
-
         .sidebar .card {
             width: 90%;
             margin-bottom: 10px;
-            background-color: #007bff;
+            background-color: #6c6969;
+            border: none;
             cursor: pointer;
         }
 
         .sidebar .card .card-body {
-            padding: 0; /* Remove padding to ensure the entire card is clickable */
-            height: 100%; /* Make sure the entire height is clickable */
+            padding: 0;
+            height: 100%;
         }
 
         .sidebar .card a {
-            display: block; /* Make anchor a block element */
-            color: white; /* Make text white */
-            text-decoration: none; /* Remove underline */
-            padding: 15px; /* Add padding to make the button bigger */
-            text-align: center; /* Center the text inside the button */
-            width: 100%; /* Ensure the anchor takes the full width of the card */
-            height: 100%; /* Ensure it takes the full height of the card */
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 15px;
+            text-align: center;
+            width: 100%;
+            height: 100%;
+            font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
         }
 
         .sidebar .card a:hover {
-            background-color: #0056b3; /* Optional: change color on hover */
+            background-color: #008080;
         }
 
-        .sidebar-toggle-btn {
-            position: absolute;
-            top: 20px;
-            left: 250px;
-            font-size: 1.5rem;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px;
-            cursor: pointer;
-            z-index: 1000;
-            transition: left 0.3s ease;
-            border-radius: 10%;
+        .flex-grow-1 {
+            min-width: 0;
+            overflow-x: auto;
         }
 
-
-
-        .collapsed-sidebar {
-            width: 0;
-            overflow: hidden;
-            transition: margin-left 0.3s ease;
-        }
-
-        .collapsed-sidebar .card {
-            display: none;
-        }
-
-        .content {
-            margin-left: 300px;
-            margin-top: 10px;
-            padding: 20px;
-            transition: margin-left 0.3s ease;
-        }
-
-        .content.collapsed {
-            margin-left: 60px;
+        .card-text {
+            word-break: break-word;
+            white-space: normal;
+            font-size: clamp(1rem, 2.5vw, 1.25rem);
         }
 
         /* Header Styling for Top-Right Links */
@@ -112,13 +194,13 @@
 
         .top-right-header a {
             margin-left: 10px;
-            color: #007bff;
+            color: #6c6969;
             text-decoration: none;
         }
 
         .top-right-header a:hover {
             text-decoration: underline;
-            background-color: #0056b3;
+            background-color: #6c6969;
         }
     </style>
 </head>
@@ -128,54 +210,60 @@
         <p>Welcome, {{ user.username }}! 
         <a href="{% url 'logout' %}">Logout</a></p>
         <a href="{% url 'notification_list' %}">Notifications ({% unread_notifications_count request.user %})</a>
-
     </div>
 
     <!-- Sidebar -->
-    <div id="sidebar" class="sidebar">
-        <div class="card">
-            <div class="card-body">
-                <a href="{% url 'item_info' %}" class="btn-custom">Home</a>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-body">
-                <a href="{% url 'add_item' %}" class="btn-custom">Add Item</a>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-body">
-                <a href="{% url 'add_conversion_metric' %}" class="btn-custom">Conversion Metric</a>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-body">
-                <a href="{% url 'add_vendor' %}" class="btn-custom">Add Vendor</a>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-body">
-                <a href="{% url 'add_department' %}" class="btn-custom">Add Department</a>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-body">
-                <a href="{% url 'inward_stock' %}" class="btn-custom">Add Inward Stock</a>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-body">
-                <a href="{% url 'outward_stock' %}" class="btn-custom">Add Outward Stock</a>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-body">
-                <a href="{% url 'log_wastage' %}" class="btn-custom">Closing stock</a>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-body">
-                <a href="{% url 'generate_reports' %}" class="btn-custom">Generate reports</a>
+    <div class="d-flex">
+        <div id="sidebar" class="sidebar">
+            <div class="flex-grow-1">
+                <div class="page-header">
+                    <h3 class="text-center text-white"> Inventory Management</h3>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <a href="{% url 'item_info' %}" class="btn-custom">Home</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <a href="{% url 'add_item' %}" class="btn-custom">Add Item</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <a href="{% url 'add_conversion_metric' %}" class="btn-custom">Conversion Metric</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <a href="{% url 'add_vendor' %}" class="btn-custom">Add Vendor</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <a href="{% url 'add_department' %}" class="btn-custom">Add Department</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <a href="{% url 'inward_stock' %}" class="btn-custom">Add Inward Stock</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <a href="{% url 'outward_stock' %}" class="btn-custom">Add Outward Stock</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <a href="{% url 'log_wastage' %}" class="btn-custom">Closing stock</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <a href="{% url 'generate_reports' %}" class="btn-custom">Generate reports</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -185,15 +273,67 @@
         &#9776;
     </button>
 
+    <div id="overlay"></div>
 
     <div id="content" class="content">
         {% block content %}{% endblock %}
     </div>
+<!-- 
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const toggleBtn = document.getElementById('toggleBtn');
+        const overlay = document.getElementById('overlay');
+        const mainContent = document.getElementById('mainContent');
 
-    <!-- Include JS for sidebar toggle -->
-    <script src="{% static 'js/sidebar.js' %}"></script>
-</body>
-<script>
+        function toggleSidebar() {
+            sidebar.classList.toggle('open');
+            toggleBtn.classList.toggle('open');
+            
+            if (window.innerWidth <= 768) {
+                if (sidebar.classList.contains('open')) {
+                    overlay.style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    overlay.style.display = 'none';
+                    document.body.style.overflow = '';
+                }
+            }
+        }
+
+        // Toggle sidebar when button is clicked
+        toggleBtn.addEventListener('click', toggleSidebar);
+
+        // Close sidebar when overlay is clicked (mobile only)
+        overlay.addEventListener('click', function() {
+            if (window.innerWidth <= 768) {
+                toggleSidebar();
+            }
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                // Desktop view - ensure sidebar is open
+                sidebar.classList.add('open');
+                toggleBtn.classList.remove('open');
+                overlay.style.display = 'none';
+                document.body.style.overflow = '';
+            } else {
+                // Mobile view - ensure sidebar is closed
+                sidebar.classList.remove('open');
+                toggleBtn.classList.remove('open');
+                overlay.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+        });
+
+        // Initialize based on screen size
+        if (window.innerWidth > 768) {
+            sidebar.classList.add('open');
+        } -->
+
+
+        <script>
     const sidebar = document.getElementById('sidebar');
     const content = document.getElementById('content');
     const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
@@ -209,4 +349,5 @@
         }
     });
 </script>
+</body>
 </html>

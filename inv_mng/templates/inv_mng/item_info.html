@@ -14,115 +14,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- Custom CSS -->
-    <style>
-        body {
-            background-color: #f4f6f9;
-            font-family: 'Arial', sans-serif;
-        }
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        .page-header {
-            text-align: center;
-            margin-bottom: 40px;
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #343a40;
-        }
-
-        .sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 250px;
-            background-color: #ffffff;
-            padding-top: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            transition: width 0.3s ease;
-        }
-
-        .sidebar .card {
-            width: 90%;
-            margin-bottom: 10px;
-            background-color: #007bff;
-            cursor: pointer;
-        }
-
-        .sidebar .card .card-body {
-            padding: 0; /* Remove padding to ensure the entire card is clickable */
-            height: 100%; /* Make sure the entire height is clickable */
-        }
-
-        .sidebar .card a {
-            display: block; /* Make anchor a block element */
-            color: white; /* Make text white */
-            text-decoration: none; /* Remove underline */
-            padding: 15px; /* Add padding to make the button bigger */
-            text-align: center; /* Center the text inside the button */
-            width: 100%; /* Ensure the anchor takes the full width of the card */
-            height: 100%; /* Ensure it takes the full height of the card */
-        }
-
-        .sidebar .card a:hover {
-            background-color: #0056b3; /* Optional: change color on hover */
-        }
-
-        .sidebar-toggle-btn {
-            position: absolute;
-            top: 20px;
-            left: 250px;
-            font-size: 1.5rem;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px;
-            cursor: pointer;
-            z-index: 1000;
-            transition: left 0.3s ease;
-            border-radius: 10%;
-        }
-
-
-
-        .collapsed-sidebar {
-            width: 0;
-            overflow: hidden;
-        }
-
-        .collapsed-sidebar .card {
-            display: none;
-        }
-
-        .content {
-            margin-left: 270px;
-            padding: 20px;
-            transition: margin-left 0.3s ease;
-        }
-
-        .content.collapsed {
-            margin-left: 10px;
-        }
-
-        /* Header Styling for Top-Right Links */
-        .top-right-header {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 1rem;
-        }
-
-        .top-right-header a {
-            margin-left: 10px;
-            color: #007bff;
-            text-decoration: none;
-        }
-
-        .top-right-header a:hover {
-            text-decoration: underline;
-            background-color: #0056b3;
-        }
-    </style>
 </head>
 <body>
     {% if user.is_authenticated %}
@@ -178,15 +71,15 @@
     <!-- Main Content -->
     <!-- <div id="content" class="content"> -->
         <div class="page-header">
-            <h1 class="text-center text-primary fw-bold">Item and Vendor Management</h1>
+            <h1 class="text-center"> Dashboard</h1>
         </div>
         <div class="container mt-5">
             <div class="row g-4 justify-content-center">
     
                 <!-- Start and End Date Filters -->
-                <div class="col-lg-4 col-md-6 d-flex flex-column">
+                <div class="col-lg-4 col-md-6 col-12">
                     <div class="card shadow-sm border-0 p-4">
-                        <div class="card-body">
+                        <div class="card-body ">
                             <h5 class="card-title text-center text-dark fw-bold mb-4">Filter Items</h5>
                             
                            <!-- Start Date -->
@@ -206,7 +99,7 @@
     
                             <!-- Filter Button -->
                             <div class="d-flex justify-content-center">
-                                <button id="filterBtn" class="btn btn-primary px-4 mt-3">
+                                <button id="filterBtn" class="btn btn-primary px-4 mt-3" style="background-color: teal;">
                                     <i class="bi bi-funnel"></i> Filter Items
                                 </button>
                             </div>
@@ -218,8 +111,8 @@
                 <div class="col-lg-4 col-md-6 d-flex flex-column">
                     <div class="card shadow-sm border-0 p-4 flex-fill">
                         <div class="card-body text-center">
-                            <h5 class="card-title text-danger fw-bold">Payments Pending</h5>
-                            <p id="pendingCard" class="card-text display-5 fw-bold text-primary">
+                            <h5 class="card-title fw-bold">Payments Pending</h5>
+                            <p id="pendingCard" class="card-text display-5 fw-bold" style="color: teal;">
                                 {{ pending_payments.bool_col }}
                             </p>
                         </div>
@@ -227,8 +120,8 @@
     
                     <div class="card shadow-sm border-0 p-4 flex-fill mt-4">
                         <div class="card-body text-center">
-                            <h5 class="card-title text-success fw-bold">Stock Worth</h5>
-                            <p id="stockWorthCard" class="card-text display-5 fw-bold text-primary">
+                            <h5 class="card-title fw-bold">Stock Worth</h5>
+                            <p id="stockWorthCard" class="card-text display-5 fw-bold" style="color: teal;">
                                 ₹ {{ total_stock_worth.total_product }}
                             </p>
                         </div>
@@ -285,10 +178,15 @@
             <!-- </div> -->
             <div class="row mt-4">
                 <div class="col-md-3">
-                    <div class="card bg-primary text-white shadow">
-                        <div class="card-body">
-                            <h5 class="card-title">Total Wastage</h5>
-                            <p id="wastageCard" class="card-text display-6">Rs. {{ total_wastage.wastage_amount__sum|floatformat:2 }} </p>
+                    <div class="card bg-primary text-white shadow" style="background-color: teal;">
+                        <div class="card-body" style="background-color: teal;">
+                            <h5 class="card-title" style="background-color: teal;">Total Wastage</h5>
+                            <p id="wastageCard" class="card-text display-6" style="background-color: teal;">Rs. {% if total_wastage.wastage_amount__sum %}
+                                {{ total_wastage.wastage_amount__sum|floatformat:2 }}
+                            {% else %}
+                                0.00
+                            {% endif %}
+                        </p>
                         </div>
                     </div>
                 </div>
@@ -322,8 +220,8 @@
 
             <!-- <div class="row"> -->
                 <div class="col-md-3">
-                    <div class="card bg-primary text-white shadow">
-                        <div class="card-body">
+                    <div class="card bg-primary text-white shadow" style="background-color: teal;">
+                        <div class="card-body" style="background-color: teal;">
                             <h5 class="card-title">Purchase made</h5>
                             <p id="purchaseCard" class="card-text display-6">Rs. {{ total_purchase.total_difference|floatformat:2}} </p>
                         </div>
@@ -359,8 +257,8 @@
             </script>
 
             <div class="col-md-3">
-                <div class="card bg-primary text-white shadow">
-                    <div class="card-body">
+                <div class="card bg-primary text-white shadow" style="background-color: teal;">
+                    <div class="card-body" style="background-color: teal;">
                         <h5 class="card-title">Total GST paid</h5>
                         <p id="gstCard" class="card-text display-6">Rs. {{ total_gst.gst_amount__sum |floatformat:2}} </p>
                     </div>
@@ -397,7 +295,7 @@
 
             <div class="col-md-3">
                 <div class="card bg-primary text-white shadow">
-                    <div class="card-body">
+                    <div class="card-body" style="background-color: teal;">
                         <h5 class="card-title">Total cost of goods used</h5>
                         <p id="expenseCard" class="card-text display-6">Rs. {{ total_expenditure.outward_spent_amount__sum |floatformat:2}} </p>
                     </div>
@@ -430,8 +328,8 @@
                 });
             });
             </script>
-            <div class="card mt-4 p-4 shadow-lg border-0 rounded">
-                <h4 class="text-center text-primary fw-bold">Bill details</h4>
+            <div class="card mt-4 p-4 shadow-lg border-0 rounded" style="overflow: auto;">
+                <h4 class="text-center fw-bold">Bill details</h4>
                 <div class="table-responsive mt-3">
                     <table id="billTable" class="table table-hover table-striped align-middle text-center">
                         <thead class="table-dark">
@@ -501,7 +399,8 @@
                                     });
                                     tableBody.append(`
                                         <tr>
-                                            <td class="fw-semibold"> ${item.bill_id}</td>
+                                            <td class="fw-semibold"> <a href="/bill_details/${encodeURIComponent(item.bill_id)}">
+${item.bill_id}</td>
                                             <td>${item.vendor}</td>
                                             <td class="fw-bold">${item.is_paid}</td>
                                             <td><span class="badge bg-info text-dark">${formattedDate}</span></td>
@@ -522,7 +421,7 @@
                 });
             </script>
             <div class="card mt-4 p-4 shadow-lg border-0 rounded">
-                <h4 class="text-center text-primary fw-bold">Inward Items</h4>
+                <h4 class="text-center fw-bold">Inward Items</h4>
                 <div class="table-responsive mt-3">
                     <table id="itemsTable" class="table table-hover table-striped align-middle text-center">
                         <thead class="table-dark">
@@ -543,7 +442,7 @@
                                         <td>{{ item.vendor.vendor_name }}</td>
                                         <td class="fw-bold text-success">{{ item.quantity }}</td>
                                         <td>₹ {{ item.price }}</td>
-                                        <td class="text-primary fw-bold">₹ {{ item.total_price }}</td>
+                                        <td class="fw-bold">₹ {{ item.total_price }}</td>
                                         <td><span class="badge bg-info text-dark">{{ item.date.date }}</span></td>
                                     </tr>
                                 {% endfor %}
@@ -618,7 +517,7 @@
                 });
             </script>
             <div class="card mt-4 p-4 shadow-lg border-0 rounded">
-                <h4 class="text-center text-primary fw-bold"> Outward Items</h4>
+                <h4 class="text-center fw-bold"> Outward Items</h4>
                 <div class="table-responsive mt-3">
                     <table id="itemsTableOut" class="table table-hover table-striped align-middle text-center">
                         <thead class="table-dark">
@@ -634,7 +533,7 @@
                                 {% for item in outwardstocks %}
                                     <tr>
                                         <td class="fw-semibold">{{ item.item_id.name }}</td>
-                                        <td class="text-primary">{{ item.department }}</td>
+                                        <td class="">{{ item.department }}</td>
                                         <td class="fw-bold text-success">{{ item.quantity }}</td>
                                         <td><span class="badge bg-info text-dark">{{ item.date.date }}</span></td>
                                     </tr>
