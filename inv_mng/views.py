@@ -688,6 +688,22 @@ def get_stock_quantity(request):
     return JsonResponse({'total_quantity': 0})
 
 
+def item_insights(request):
+    items = Item.objects.all()
+    items_data = []
+
+    for item in items.values("item_id", "name", "company"):
+        item_rec = Stock.objects.filter(item_id=item['item_id'])
+        
+        quantity_left = item_rec.aggregate((Sum('total_quantity')))
+        items_data.append({
+        "item_name": item["name"],
+        "company": item["company"], 
+        "stock_left": quantity_left
+
+        })
+
+    return render(request, 'inv_mng/item_insights.html', {'itemdetails':items_data})
 
 def notifications_list(request):
     """Fetch unread notifications for the logged-in user."""

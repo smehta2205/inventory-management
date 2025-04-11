@@ -30,6 +30,8 @@ urlpatterns = [
     path('get_stock_quantity/', views.get_stock_quantity, name='get_stock_quantity'),
     path('notifications/', views.notifications_list, name='notification_list'),
     path('notifications/mark_as_read/<int:notification_id>/', views.mark_as_read, name='mark_as_read'),
+    path('item_insights/', views.item_insights, name='item_insights'),
+
 
 
     # path('get_items_from_stock/', views.get_items_from_stock, name='get_items_from_stock'),
