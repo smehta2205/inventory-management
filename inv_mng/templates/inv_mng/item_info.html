@@ -78,7 +78,7 @@
     
                 <!-- Start and End Date Filters -->
                 <div class="col-lg-4 col-md-6 col-12">
-                    <div class="card shadow-sm border-0 p-4">
+                    <div class="card shadow border-1 p-4">
                         <div class="card-body ">
                             <h5 class="card-title text-center text-dark fw-bold mb-4">Filter Items</h5>
                             
@@ -99,7 +99,7 @@
     
                             <!-- Filter Button -->
                             <div class="d-flex justify-content-center">
-                                <button id="filterBtn" class="btn btn-primary px-4 mt-3" style="background-color: teal;">
+                                <button id="filterBtn" class="btn btn-primary px-4 mt-3" style="background-color: #08C6CD;">
                                     <i class="bi bi-funnel"></i> Filter Items
                                 </button>
                             </div>
@@ -109,19 +109,19 @@
     
                 <!-- Left Column: Payments Pending & Stock Worth -->
                 <div class="col-lg-4 col-md-6 d-flex flex-column">
-                    <div class="card shadow-sm border-0 p-4 flex-fill">
+                    <div class="card shadow border-1 p-4 flex-fill">
                         <div class="card-body text-center">
                             <h5 class="card-title fw-bold">Payments Pending</h5>
-                            <p id="pendingCard" class="card-text display-5 fw-bold" style="color: teal;">
+                            <p id="pendingCard" class="card-text display-5 text-danger fw-bold">
                                 {{ pending_payments.bool_col }}
                             </p>
                         </div>
                     </div>
     
-                    <div class="card shadow-sm border-0 p-4 flex-fill mt-4">
+                    <div class="card shadow border-1 p-4 flex-fill mt-4">
                         <div class="card-body text-center">
                             <h5 class="card-title fw-bold">Stock Worth</h5>
-                            <p id="stockWorthCard" class="card-text display-5 fw-bold" style="color: teal;">
+                            <p id="stockWorthCard" class="card-text text-success display-5 fw-bold" >
                                 ₹ {{ total_stock_worth.total_product }}
                             </p>
                         </div>
@@ -130,7 +130,7 @@
     
                 <!-- Pie Chart Card: Stock Distribution -->
                 <div class="col-lg-4 col-md-6 d-flex align-items-stretch">
-                    <div class="card shadow-sm border-0 p-4 flex-fill h-100">
+                    <div class="card shadow border-1 p-4 flex-fill h-100">
                         <div class="card-body text-center d-flex flex-column">
                             <h5 class="card-title text-dark fw-bold">Stock Distribution</h5>
                             <!-- Chart Container with Fixed Height -->
@@ -169,7 +169,7 @@
                     });
                 </script>
             </div>
-            <div class="card mt-4 p-4 shadow-sm">
+            <div class="card mt-4 p-4 shadow border-1">
             <!-- <div class="card p-4 shadow-sm">-->
                 <!-- <h5 class="text-center mb-3">Select Date Range</h4>  -->
         
@@ -178,10 +178,10 @@
             <!-- </div> -->
             <div class="row mt-4">
                 <div class="col-md-3">
-                    <div class="card bg-primary text-white shadow" style="background-color: teal;">
-                        <div class="card-body" style="background-color: teal;">
-                            <h5 class="card-title" style="background-color: teal;">Total Wastage</h5>
-                            <p id="wastageCard" class="card-text display-6" style="background-color: teal;">Rs. {% if total_wastage.wastage_amount__sum %}
+                    <div class="card text-white shadow" style="background-color: #7B1EEF;">
+                        <div class="card-body" style="background-color: #7B1EEF;">
+                            <h5 class="card-title" style="background-color: #7B1EEF;">Total Wastage</h5>
+                            <p id="wastageCard" class="card-text display-6" style="background-color: #7B1EEF;">Rs. {% if total_wastage.wastage_amount__sum %}
                                 {{ total_wastage.wastage_amount__sum|floatformat:2 }}
                             {% else %}
                                 0.00
@@ -220,10 +220,14 @@
 
             <!-- <div class="row"> -->
                 <div class="col-md-3">
-                    <div class="card bg-primary text-white shadow" style="background-color: teal;">
-                        <div class="card-body" style="background-color: teal;">
+                    <div class="card text-white shadow" style="background-color: #FE41AF;">
+                        <div class="card-body" style="background-color: #FE41AF;">
                             <h5 class="card-title">Purchase made</h5>
-                            <p id="purchaseCard" class="card-text display-6">Rs. {{ total_purchase.total_difference|floatformat:2}} </p>
+                            <p id="purchaseCard" class="card-text display-6">Rs. {% if  total_purchase.total_difference  %}
+                                {{ total_purchase.total_difference|floatformat:2}}
+                            {% else %}
+                                0.00
+                            {% endif %} </p>
                         </div>
                     </div>
                 </div>
@@ -257,10 +261,14 @@
             </script>
 
             <div class="col-md-3">
-                <div class="card bg-primary text-white shadow" style="background-color: teal;">
-                    <div class="card-body" style="background-color: teal;">
+                <div class="card text-white shadow" style="background-color: teal;">
+                    <div class="card-body" style="background-color: #F5CB27;">
                         <h5 class="card-title">Total GST paid</h5>
-                        <p id="gstCard" class="card-text display-6">Rs. {{ total_gst.gst_amount__sum |floatformat:2}} </p>
+                        <p id="gstCard" class="card-text display-6">Rs. {% if  total_gst.gst_amount__sum %}
+                            {{ total_gst.gst_amount__sum |floatformat:2}}
+                        {% else %}
+                            0.00
+                        {% endif %} </p>
                     </div>
                 </div>
             </div>
@@ -294,10 +302,14 @@
 
 
             <div class="col-md-3">
-                <div class="card bg-primary text-white shadow">
-                    <div class="card-body" style="background-color: teal;">
+                <div class="card text-white shadow">
+                    <div class="card-body" style="background-color: #08C6CD;">
                         <h5 class="card-title">Total cost of goods used</h5>
-                        <p id="expenseCard" class="card-text display-6">Rs. {{ total_expenditure.outward_spent_amount__sum |floatformat:2}} </p>
+                        <p id="expenseCard" class="card-text display-6">Rs. {% if  total_expenditure.outward_spent_amount__sum  %}
+                            {{  total_expenditure.outward_spent_amount__sum |floatformat:2}}
+                        {% else %}
+                            0.00
+                        {% endif %} </p>
                     </div>
                 </div>
             </div>
@@ -348,7 +360,7 @@
                                     <td class="fw-semibold"><a href="{% url 'bill_details' bill_id=item.bill_id|urlencode %}">{{ item.bill_id }}</a></td>
                                     <td>{{ item.vendor.vendor_name }}</td>
                                     <td class="fw-bold">{{ item.is_paid }}</td>
-                                    <td><span class="badge bg-info text-dark">{{ item.bill_date }}</span></td>
+                                    <td><span class="badge text-white" style="background-color: #08C6CD;">{{ item.bill_date }}</span></td>
                                 </tr>
                                 {% endfor %}
                             {% else %}
@@ -403,7 +415,7 @@
 ${item.bill_id}</td>
                                             <td>${item.vendor}</td>
                                             <td class="fw-bold">${item.is_paid}</td>
-                                            <td><span class="badge bg-info text-dark">${formattedDate}</span></td>
+                                            <td><span class="badge text-white" style="background-color: #08C6CD;">${formattedDate}</span></td>
                                         </tr>
                                     `);
                                 });
@@ -443,7 +455,7 @@ ${item.bill_id}</td>
                                         <td class="fw-bold text-success">{{ item.quantity }}</td>
                                         <td>₹ {{ item.price }}</td>
                                         <td class="fw-bold">₹ {{ item.total_price }}</td>
-                                        <td><span class="badge bg-info text-dark">{{ item.date.date }}</span></td>
+                                        <td><span class="badge text-white" style="background-color: #08C6CD;">{{ item.date.date }}</span></td>
                                     </tr>
                                 {% endfor %}
                             {% else %}
@@ -499,7 +511,7 @@ ${item.bill_id}</td>
                                             <td  class="fw-bold text-success">${item.quantity}</td>
                                             <td>${item.price}</td>
                                             <td class="text-primary fw-bold">${item.total_price}</td>
-                                            <td><span class="badge bg-info text-dark">${formattedDate}</span></td>
+                                            <td><span class="badge text-white" style="background-color: #08C6CD;">${formattedDate}</span></td>
                                         </tr>
                                     `);
                                 });
@@ -535,7 +547,7 @@ ${item.bill_id}</td>
                                         <td class="fw-semibold">{{ item.item_id.name }}</td>
                                         <td class="">{{ item.department }}</td>
                                         <td class="fw-bold text-success">{{ item.quantity }}</td>
-                                        <td><span class="badge bg-info text-dark">{{ item.date.date }}</span></td>
+                                        <td><span class="badge text-white" style="background-color: #08C6CD;">{{ item.date.date }}</span></td>
                                     </tr>
                                 {% endfor %}
                             {% else %}
@@ -588,7 +600,7 @@ ${item.bill_id}</td>
                                             <td class="fw-semibold">${item.item_name}</td>
                                             <td class="text-primary">${item.department}</td>
                                             <td class="fw-bold text-success">${item.quantity}</td>
-                                            <td><span class="badge bg-info text-dark">${formattedDate}</span></td>
+                                            <td><span class="badge text-white" style="background-color: #08C6CD;">${formattedDate}</span></td>
                                         </tr>
                                     `);
                                 });
