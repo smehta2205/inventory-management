@@ -18,55 +18,13 @@
 
 </head>
 <body>
-    {% if user.is_authenticated %}
+    
+    <!-- {% if user.is_authenticated %}
     <div class="top-right-header">
         <p>Welcome, {{ user.username }}! 
         <a href="{% url 'logout' %}">Logout</a></p>
-    </div>
-
-    <!-- Sidebar -->
-    <!-- <div id="sidebar" class="sidebar">
-        <div class="card">
-            <div class="card-body">
-                <a href="{% url 'add_item' %}" class="btn-custom">Add Item</a>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-body">
-                <a href="{% url 'add_conversion_metric' %}" class="btn-custom">Conversion Metric</a>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-body">
-                <a href="{% url 'add_vendor' %}" class="btn-custom">Add Vendor</a>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-body">
-                <a href="{% url 'add_department' %}" class="btn-custom">Add Department</a>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-body">
-                <a href="{% url 'inward_stock' %}" class="btn-custom">Add Inward Stock</a>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-body">
-                <a href="{% url 'outward_stock' %}" class="btn-custom">Add Outward Stock</a>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-body">
-                <a href="{% url 'log_wastage' %}" class="btn-custom">Log wastage</a>
-            </div>
-        </div>
     </div> -->
-
-    <!-- Sidebar Toggle Button -->
-    <!-- <button id="sidebarToggleBtn" class="sidebar-toggle-btn">
-        &#9776;
-    </button> -->
+    
 
     <!-- Main Content -->
     <!-- <div id="content" class="content"> -->
@@ -619,10 +577,10 @@ ${item.bill_id}</td>
             </script>
         </div>
     <!-- </div> -->
-    {% else %}
+    <!-- {% else %}
         <a href="{% url 'login' %}">Login</a> | 
         <a href="{% url 'signup' %}">Sign Up</a>
-    {% endif %}
+    {% endif %} -->
 
     <!-- Bootstrap JS and dependencies (optional for interactivity like dropdowns) -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>

@@ -206,11 +206,16 @@
 </head>
 <body>
     <!-- Top-right header -->
+    <!-- <div class="top-right-header"> -->
+            {% if user.is_authenticated %}
     <div class="top-right-header">
         <p>Welcome, {{ user.username }}! 
-        <a href="{% url 'logout' %}">Logout</a></p>
-        <a href="{% url 'notification_list' %}">Notifications ({% unread_notifications_count request.user %})</a>
+            <a href="{% url 'logout' %}">Logout</a></p>
+            <a href="{% url 'notification_list' %}">Notifications ({% unread_notifications_count request.user %})</a>
     </div>
+
+       
+    <!-- </div> -->
 
     <!-- Sidebar -->
     <div class="d-flex">
@@ -274,7 +279,10 @@
     </button>
 
     <div id="overlay"></div>
-
+    {% else %}
+    <a href="{% url 'login' %}">Login</a> | 
+    <a href="{% url 'signup' %}">Sign Up</a>
+{% endif %}
     <div id="content" class="content">
         {% block content %}{% endblock %}
     </div>
