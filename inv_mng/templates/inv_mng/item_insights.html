@@ -36,7 +36,7 @@
                         {% for item in itemdetails %}
                         
                         <tr>
-                            <td class="fw-semibold">{{ item.item_name }}</a></td>
+                            <td class="fw-semibold"><a href="{% url 'item_details' item_id=item.item_id|urlencode %}">{{ item.item_name }}</a></td>
                             <td>{{ item.company }}</td>
                             <td>{{ item.stock_left.total_quantity__sum }}</td>
                             

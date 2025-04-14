@@ -24,6 +24,7 @@ urlpatterns = [
     path('get_total_expense/', views.get_total_expense, name='get_total_expense'),
     path('filter_bills/', views.filter_bills, name='filter_bills'),
     path('bill_details/<path:bill_id>/', views.bill_details, name='bill_details'),
+    path('item-details/<path:item_id>/', views.item_details, name='item_details'),
     path('generate_reports/', views.generate_reports, name='generate_reports'),
     path('get_vendor_report/', views.get_vendor_report, name='get_vendor_report'),
     path('download-report/', views.download_report, name='download_report'),
