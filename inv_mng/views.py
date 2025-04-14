@@ -611,70 +611,90 @@ def get_vendor_report(request):
         return JsonResponse({"items": items_data})
 
     return JsonResponse({"error": "Invalid request"}, status=400)
-
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import inch
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib import colors
+from datetime import datetime
+from django.http import HttpResponse
+import json
 
 def download_report(request):
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="report.pdf"'
 
-    # 🔹 Load JSON data from AJAX request
     data = json.loads(request.body)
     items = data.get("items", [])
-    report_type = data.get("reportType", "inward").lower()  # Default to "inward"
+    report_type = data.get("reportType", "inward").lower()
 
-    # 🔹 Define column headers and data keys
+    # Define columns and keys
     columns = {
         "inward": ["Item Name", "Vendor", "Quantity", "Price (Rs.)", "Total Price (Rs.)", "Date"],
         "vendor": ["Item Name", "Quantity", "Price (Rs.)", "Total Price (Rs.)", "Bill ID", "Date"],
     }
-
     data_keys = {
         "inward": ["item_name", "vendor_name", "quantity", "price", "total_price", "date"],
         "vendor": ["item_name", "quantity", "price", "total_price", "bill_id", "date"],
     }
 
-    headers = columns.get(report_type, ["Column 1", "Column 2"])  # Default headers
+    headers = columns.get(report_type, ["Column 1", "Column 2"])
     keys = data_keys.get(report_type, [])
 
-    # 🔹 Create PDF document
-    pdf = SimpleDocTemplate(response, pagesize=letter)
+    pdf = SimpleDocTemplate(response, pagesize=letter, rightMargin=30, leftMargin=30, topMargin=30, bottomMargin=30)
     content = []
 
-    # 🔹 Report Title
+    # Title
     styles = getSampleStyleSheet()
-    title = Paragraph(f"<b>{report_type.replace('_', ' ').title()} Report</b>", styles["Title"])
+    title_style = ParagraphStyle(name='CenterTitle', parent=styles['Title'], alignment=1, spaceAfter=20)
+    title = Paragraph(f"<b>{report_type.replace('_', ' ').title()} Report</b>", title_style)
     content.append(title)
 
-    # 🔹 Prepare Table Data (Headers + Data Rows)
-    table_data = [headers]  # Start with column headers
+    # Spacer
+    content.append(Spacer(1, 0.25 * inch))
 
-    for item in items:
+    # Table Data
+    table_data = [headers]
+    for idx, item in enumerate(items):
         row = []
         for key in keys:
             value = item.get(key, "")
             if key == "date" and value:
-                value = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%fZ").strftime("%Y-%m-%d")  # Convert datetime to date
+                try:
+                    value = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%fZ").strftime("%Y-%m-%d")
+                except:
+                    pass  # keep original
             row.append(str(value))
         table_data.append(row)
 
-    # 🔹 Create Table with Styling
-    table = Table(table_data, colWidths=[100] * len(headers))  # Adjust column width as needed
-    table.setStyle(TableStyle([
-        ("BACKGROUND", (0, 0), (-1, 0), colors.grey),  # Header background color
-        ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),  # Header text color
-        ("ALIGN", (0, 0), (-1, -1), "CENTER"),  # Center align all text
-        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),  # Bold font for headers
-        ("BOTTOMPADDING", (0, 0), (-1, 0), 8),  # Padding for headers
-        ("GRID", (0, 0), (-1, -1), 1, colors.black),  # Table grid
-    ]))
+    # Table and Style
+    col_count = len(headers)
+    col_widths = [480 / col_count] * col_count  # Adjust for page width
 
-    # 🔹 Add Table to Content
+    table = Table(table_data, colWidths=col_widths, hAlign='CENTER')
+    style = TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), colors.darkblue),
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+        ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+        ("FONTSIZE", (0, 0), (-1, -1), 10),
+        ("BOTTOMPADDING", (0, 0), (-1, 0), 10),
+        ("TOPPADDING", (0, 1), (-1, -1), 6),
+        ("BOTTOMPADDING", (0, 1), (-1, -1), 6),
+        ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
+    ])
+
+    # Zebra striping
+    for i in range(1, len(table_data)):
+        if i % 2 == 0:
+            style.add("BACKGROUND", (0, i), (-1, i), colors.whitesmoke)
+
+    table.setStyle(style)
     content.append(table)
 
-    # 🔹 Build PDF
     pdf.build(content)
-
     return response
+
 
 
 def get_stock_quantity(request):
