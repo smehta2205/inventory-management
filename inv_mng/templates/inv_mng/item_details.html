@@ -116,10 +116,42 @@
                             </table>
                         </div>
                     </div>
+                    <div class="card mt-4 p-4 shadow-lg border-0 rounded" style="overflow: auto;">
+                        <canvas id="myChart" width="400" height="200"></canvas>
+                    </div>
                 </div>
             </div> 
         </div>
     </div>
 </body>
+<script>
+    const ctx = document.getElementById('myChart').getContext('2d');
+    const stockData = JSON.parse('{{ inwardstocks|safe }}');
+
+    const labels = stockData.map(entry => entry.date);
+    const prices = stockData.map(entry => entry.price);
+
+    console.log(labels);
+    console.log(prices);
+
+    const myChart = new Chart(ctx, {
+        type: 'line', // can be 'bar', 'pie', etc.
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Stock Price Over Time',
+                data: prices,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+  </script>
+  
 {% endblock %}
 </html>

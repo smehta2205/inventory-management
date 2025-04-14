@@ -21,6 +21,8 @@ import json
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
+from django.core.serializers import serialize
+
 
 
 # Create your views here.
@@ -712,11 +714,22 @@ def item_details(request, item_id):
     quantity_left = stocks.aggregate((Sum('total_quantity')))
 
     vendors = stocks.values_list('vendor', flat=True).distinct()
+    inward_stocks = InwardStock.objects.filter(item_id=item.item_id).order_by('date')
+
+    # Create a list of dictionaries (each one representing a point)
+    stock_data = [
+        {
+            'date': stock.date.strftime('%Y-%m-%d'),
+            'price': stock.price
+        }
+        for stock in inward_stocks
+    ]
     vendor_list=[]
     for vendor in vendors:
         vendor_obj = Vendor.objects.get(id = vendor)
         vendor_list.append(vendor_obj.vendor_name)
-    return render(request, 'inv_mng/item_details.html', {'item': item, 'stocks':stocks, 'vendors':vendor_list, 'stock_left':quantity_left})
+    return render(request, 'inv_mng/item_details.html', {'item': item, 'stocks':stocks, 'vendors':vendor_list, 'stock_left':quantity_left, 'inwardstocks':json.dumps(stock_data)}
+    )
 
 def notifications_list(request):
     """Fetch unread notifications for the logged-in user."""
