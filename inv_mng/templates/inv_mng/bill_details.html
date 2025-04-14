@@ -9,6 +9,8 @@
     <title>Item and Vendor Management</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
 
     <!-- Bootstrap CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -20,7 +22,15 @@
     </div>
     <div class="container mt-5">
         <div class="row g-4 justify-content-center">
+            <div>
+                <button id="downloadReport" class="btn btn-primary mt-3">Download PDF</button>
+
+            </div>
+            <div id="bill-content" class="container mt-5">
             <div class="card shadow-sm border-0 p-4">
+                
+                <!-- <div id="bill-content" class="container mt-5"> -->
+                
                 <div class="card-body">
                     <div class="mb-3">
                         <label for="billId" class="form-label"></label>
@@ -36,7 +46,8 @@
                     </div>
                     <div class="mb-3">
                         <label for="billImage" class="form-label"></label>
-                        <p><b>Bill image:</b> <img src=" http://localhost:8000/media/{{bill.bill_image}}"></p>
+                        <p><b>Bill image:</b><img src="{{ bill.bill_image.url }}" style="max-width: 100%;" crossorigin="anonymous">
+                        </p>
                     </div>
                 </div>
             </div>  
@@ -75,8 +86,23 @@
                     </table>
                 </div>
             </div>
+            </div>
         </div>
     </div>
 </body>
+<script>
+document.getElementById('downloadReport').addEventListener('click', function () {
+    const element = document.getElementById('bill-content');
+    const opt = {
+        margin:       0.5,
+        filename:     'Bill_{{ bill.bill_id }}.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true  },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+    html2pdf().from(element).set(opt).save();
+});
+</script>
+
 </html>
 {% endblock %}
