@@ -317,7 +317,8 @@
                                 <tr>
                                     <td class="fw-semibold"><a href="{% url 'bill_details' bill_id=item.bill_id|urlencode %}">{{ item.bill_id }}</a></td>
                                     <td>{{ item.vendor.vendor_name }}</td>
-                                    <td class="fw-bold">{{ item.is_paid }}</td>
+                                    <td class="fw-bold">  {% if item.is_paid %}Yes{% else %}No{% endif %}
+                                    </td>
                                     <td><span class="badge text-white" style="background-color: #08C6CD;">{{ item.bill_date }}</span></td>
                                 </tr>
                                 {% endfor %}
@@ -372,7 +373,7 @@
                                             <td class="fw-semibold"> <a href="/bill_details/${encodeURIComponent(item.bill_id)}">
 ${item.bill_id}</td>
                                             <td>${item.vendor}</td>
-                                            <td class="fw-bold">${item.is_paid}</td>
+                                            <td class="fw-bold">${item.is_paid ? 'Yes' : 'No'}</td>
                                             <td><span class="badge text-white" style="background-color: #08C6CD;">${formattedDate}</span></td>
                                         </tr>
                                     `);

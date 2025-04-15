@@ -23,9 +23,14 @@
     <div class="container mt-5">
         <div class="row g-4 justify-content-center">
             <div>
+                <button onclick="window.location.href='/'" class="back-button">← Back</button>
+
+            </div>
+            <div>
                 <button id="downloadReport" class="btn btn-primary mt-3">Download PDF</button>
 
             </div>
+            
             <div id="bill-content" class="container mt-5">
             <div class="card shadow-sm border-0 p-4">
                 
@@ -42,7 +47,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="paidStatus" class="form-label"></label>
-                        <p><b>Is paid?:</b> {{bill.is_paid}}</p>
+                        <p><b>Is paid?:</b> {% if bill.is_paid %}Yes{% else %}No{% endif %}</p>
                     </div>
                     <div class="mb-3">
                         <label for="billImage" class="form-label"></label>
@@ -52,13 +57,12 @@
                 </div>
             </div>  
             <div class="card mt-4 p-4 shadow-lg border-0 rounded">
-                <h4 class="text-center text-primary fw-bold">Inward Items</h4>
+                <!-- <h4 class="text-center text-primary fw-bold">Inward Items</h4> -->
                 <div class="table-responsive mt-3">
                     <table id="itemsTable" class="table table-hover table-striped align-middle text-center">
                         <thead class="table-dark">
                             <tr>
                                 <th>Item Name</th>
-                                <th>Vendor</th>
                                 <th>Quantity</th>
                                 <th>Price/Unit (₹)</th>
                                 <th>Total Price (₹)</th>
@@ -70,7 +74,6 @@
                                 {% for item in inwardstocks %}
                                     <tr>
                                         <td class="fw-semibold">{{ item.item_id.name }}</td>
-                                        <td>{{ item.vendor.vendor_name }}</td>
                                         <td class="fw-bold text-success">{{ item.quantity }}</td>
                                         <td>₹ {{ item.price }}</td>
                                         <td class="text-primary fw-bold">₹ {{ item.total_price }}</td>
