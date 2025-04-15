@@ -32,35 +32,36 @@
             </div>
             
             <div id="bill-content" class="container mt-5">
-            <div class="card shadow-sm border-0 p-4">
+                <div class="card shadow-sm border-0 p-3">
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Left column: Text info -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <p><b>Bill ID:</b> {{ bill.bill_id }}</p>
+                                </div>
+                                <div class="mb-3">
+                                    <p><b>Vendor:</b> {{ bill.vendor }}</p>
+                                </div>
+                                <div class="mb-3">
+                                    <p><b>Is paid?:</b> {% if bill.is_paid %}Yes{% else %}No{% endif %}</p>
+                                </div>
+                            </div>
                 
-                <!-- <div id="bill-content" class="container mt-5"> -->
-                
-                <div class="card-body">
-                    <div class="mb-3">
-                        <label for="billId" class="form-label"></label>
-                        <p><b>Bill ID:</b> {{bill.bill_id}}</p>
-                    </div>
-                    <div class="mb-3">
-                        <label for="vendor" class="form-label"></label>
-                        <p><b>Vendor:</b> {{bill.vendor}}</p>
-                    </div>
-                    <div class="mb-3">
-                        <label for="paidStatus" class="form-label"></label>
-                        <p><b>Is paid?:</b> {% if bill.is_paid %}Yes{% else %}No{% endif %}</p>
-                    </div>
-                    <div class="mb-3">
-                        <label for="billImage" class="form-label"></label>
-                        <p><b>Bill image:</b><img src="{{ bill.bill_image.url }}" style="max-width: 100%;" crossorigin="anonymous">
-                        </p>
+                            <!-- Right column: Image -->
+                            <div class="col-md-6 ">
+                                <!-- <p><b>Bill image:</b></p> -->
+                                <img src="{{ bill.bill_image.url }}" style="max-width: 100%;" crossorigin="anonymous" class="img-fluid rounded shadow">
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>  
-            <div class="card mt-4 p-4 shadow-lg border-0 rounded">
+                
+            <div class="card mt-4 p-3 shadow-lg border-0 rounded">
                 <!-- <h4 class="text-center text-primary fw-bold">Inward Items</h4> -->
                 <div class="table-responsive mt-3">
-                    <table id="itemsTable" class="table table-hover table-striped align-middle text-center">
-                        <thead class="table-dark">
+                    <table id="itemsTable" class="table table-hover align-middle text-center">
+                        <thead class="table-bordered ">
                             <tr>
                                 <th>Item Name</th>
                                 <th>Quantity</th>
@@ -73,11 +74,11 @@
                             {% if inwardstocks %}
                                 {% for item in inwardstocks %}
                                     <tr>
-                                        <td class="fw-semibold">{{ item.item_id.name }}</td>
+                                        <td class="">{{ item.item_id.name }}</td>
                                         <td class="fw-bold text-success">{{ item.quantity }}</td>
                                         <td>₹ {{ item.price }}</td>
                                         <td class="text-primary fw-bold">₹ {{ item.total_price }}</td>
-                                        <td><span class="badge bg-info text-dark">{{ item.date.date }}</span></td>
+                                        <td><span class="badge bg-info text-white">{{ item.date.date }}</span></td>
                                     </tr>
                                 {% endfor %}
                             {% else %}
@@ -88,14 +89,22 @@
                         </tbody>
                     </table>
                 </div>
+                <div id="total-amount-block" style="width: 100%; padding: 10px 0;">
+                    <p style="text-align: right; font-weight: bold; color: #0d6efd; font-size: 1.25rem; min-height: 60px;">
+                        Total Amount: ₹ {{ total_amount.total_price__sum|default:"0.00" }}
+                    </p>
+                </div>
+                
             </div>
             </div>
         </div>
     </div>
 </body>
 <script>
-document.getElementById('downloadReport').addEventListener('click', function () {
+document.getElementById('downloadReport').addEventListener('click', async function () {
     const element = document.getElementById('bill-content');
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
     const opt = {
         margin:       0.5,
         filename:     'Bill_{{ bill.bill_id }}.pdf',

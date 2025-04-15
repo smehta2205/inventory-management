@@ -567,7 +567,8 @@ def filter_bills(request):
 def bill_details(request, bill_id):
     bill = get_object_or_404(InwardBill, bill_id=bill_id)  # Fetch the bill by ID
     inwardstocks = InwardStock.objects.filter(bill_id=bill.bill_id)
-    return render(request, 'inv_mng/bill_details.html', {'bill': bill, 'inwardstocks':inwardstocks})
+    total_amount = inwardstocks.aggregate((Sum('total_price')))
+    return render(request, 'inv_mng/bill_details.html', {'bill': bill, 'inwardstocks':inwardstocks, 'total_amount':total_amount})
 
 
 def generate_reports(request):
