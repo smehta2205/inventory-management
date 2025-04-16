@@ -286,8 +286,11 @@
 
     <div id="overlay"></div>
     {% else %}
-    <a href="{% url 'login' %}">Login</a> | 
-    <a href="{% url 'signup' %}">Sign Up</a>
+    <!-- <a href="{% url 'login' %}">Login</a> | 
+    <a href="{% url 'signup' %}">Sign Up</a> -->
+    <script>
+        window.location.href = "{% url 'login' %}";
+    </script>
 {% endif %}
     <div id="content" class="content">
         {% block content %}{% endblock %}
