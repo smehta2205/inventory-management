@@ -18,7 +18,7 @@
 </head>
 <body>
     <div class="page-header">
-        <h1 class="text-center text-primary fw-bold">Bill information</h1>
+        <!-- <h1 class="text-center text-primary fw-bold">Bill information</h1> -->
     </div>
     <div class="container mt-5">
         <div class="row g-4 justify-content-center">
@@ -32,11 +32,11 @@
             </div>
             
             <div id="bill-content" class="container mt-5">
-                <div class="card shadow-sm border-0 p-3">
-                    <div class="card-body">
-                        <div class="row">
-                            <!-- Left column: Text info -->
-                            <div class="col-md-6">
+                <div class="card shadow-sm border-0 p-0">
+                    <div class="d-flex justify-content-center mt-4">
+                        <div class="card shadow-sm border-0 p-4 text-center" style="max-width: 500px; width: 100%;">
+                            <div class="card-body">
+                                <!-- Bill Details -->
                                 <div class="mb-3">
                                     <p><b>Bill ID:</b> {{ bill.bill_id }}</p>
                                 </div>
@@ -46,15 +46,14 @@
                                 <div class="mb-3">
                                     <p><b>Is paid?:</b> {% if bill.is_paid %}Yes{% else %}No{% endif %}</p>
                                 </div>
-                            </div>
-                
-                            <!-- Right column: Image -->
-                            <div class="col-md-6 ">
-                                <!-- <p><b>Bill image:</b></p> -->
-                                <img src="{{ bill.bill_image.url }}" style="max-width: 100%;" crossorigin="anonymous" class="img-fluid rounded shadow">
+                    
+                                <!-- Image below -->
+                                <img src="{{ bill.bill_image.url }}" alt="Bill Image" class="img-fluid rounded shadow mt-3" style="max-width: 100%;" crossorigin="anonymous">
                             </div>
                         </div>
                     </div>
+                    
+                    
                 </div>
                 
             <div class="card mt-4 p-3 shadow-lg border-0 rounded">
