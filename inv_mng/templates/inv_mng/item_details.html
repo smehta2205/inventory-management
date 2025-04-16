@@ -45,56 +45,45 @@
                 </div>
 
                 <div class="card-body">
-                    <div class="mb-3">
-                        <label for="itemId" class="form-label"></label>
-                        <p><b>Item Name:</b> {{item.name}}</p>
-                    </div>
-                    <div class="mb-3">
-                        <label for="company" class="form-label"></label>
-                        <p><b>Company:</b> {{item.company}}</p>
-                    </div>
-                    <div class="mb-3">
-                        <label for="qLeft" class="form-label"></label>
-                        <p><b>Stock left:</b> {{stock_left.total_quantity__sum}}</p>
-                    </div>
-                    <div class="card mt-4 p-4 shadow-lg border-0 rounded" style="overflow: auto;">
-                        <!-- <h4 class="text-center fw-bold">Vendors</h4> -->
-                        <div class="table-responsive mt-3">
-                            <table id="itemTable" class="table table-hover table-striped align-middle text-center">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th>Vendors</th>
-                                        
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% if stocks %}
-                                        {% for vendor in vendors %}
-                                        <tr>
-                                            <td>{{ vendor }}</td>
-                                        </tr>
-                                        {% endfor %}
-                                    {% else %}
-                                        <tr>
-                                            <td colspan="6" class="text-center text-danger fw-bold">No items available</td>
-                                        </tr>
-                                    {% endif %}
-                                </tbody>
-                            </table>
+                    <!-- <div class="row"> -->
+                        <!-- Item Details -->
+                        <div class="col-md-12 mb-4">
+                            <div class="border rounded p-3 shadow-sm text-center">
+                                <!-- <h5 class="fw-bold text-primary mb-3">Item Details</h5> -->
+                                <h5 class="fw-bold">{{ item.name }} <span class="text-muted">({{ item.company }})</span></h5>
+                                <!-- <p><b>Company:</b> {{ item.company }}</p> -->
+                                <p><b>Stock Left: {{ stock_left.total_quantity__sum }}</b></p>
+                            </div>
                         </div>
-                    </div>
+                
+                        <!-- Vendors -->
+                        <!-- <div class="col-md-6 mb-4">
+                            <div class="border rounded p-3 shadow-sm">
+                                <h5 class="fw-bold text-primary mb-3">Vendors</h5>
+                                {% if stocks %}
+                                    <ul class="list-group list-group-flush">
+                                        {% for vendor in vendors %}
+                                        <li class="list-group-item">{{ vendor }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <p class="text-danger fw-bold">No vendors available</p>
+                                {% endif %}
+                            </div>
+                        </div> -->
+                    <!-- </div> -->
+                
+                    <!-- Stock Entries -->
                     <div class="card mt-4 p-4 shadow-lg border-0 rounded" style="overflow: auto;">
-                        <h4 class="text-center fw-bold">Stock entries</h4>
+                        <h4 class="text-center fw-bold">Stock Entries</h4>
                         <div class="table-responsive mt-3">
-                            <table id="itemTable" class="table table-hover table-striped align-middle text-center">
+                            <table class="table table-hover table-striped align-middle text-center">
                                 <thead class="table-dark">
                                     <tr>
                                         <th>Vendor</th>
-                                        <th>Expiry date</th>
-                                        <th>Total quantity left</th>
-                                        <th>Purchase price per unit</th>
-
-                                        
+                                        <th>Expiry Date</th>
+                                        <th>Total Quantity Left</th>
+                                        <th>Purchase Price/Unit</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -109,17 +98,20 @@
                                         {% endfor %}
                                     {% else %}
                                         <tr>
-                                            <td colspan="6" class="text-center text-danger fw-bold">No items available</td>
+                                            <td colspan="4" class="text-center text-danger fw-bold">No stock entries</td>
                                         </tr>
                                     {% endif %}
                                 </tbody>
                             </table>
                         </div>
                     </div>
+                
+                    <!-- Chart -->
                     <div class="card mt-4 p-4 shadow-lg border-0 rounded" style="overflow: auto;">
                         <canvas id="myChart" width="400" height="200"></canvas>
                     </div>
                 </div>
+                
             </div> 
         </div>
     </div>
