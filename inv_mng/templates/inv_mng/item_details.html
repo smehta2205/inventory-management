@@ -153,12 +153,14 @@
             const startDate = document.getElementById("startDate").value;
             const endDate = document.getElementById("endDate").value;
 
+
             $.ajax({
-                url: "{% url 'filter_items_inward' %}",
+                url: "{% url 'filter_for_item' %}",
                 type: "POST",
                 data: {
                     start_date: startDate,
                     end_date: endDate,
+                    item_id : "{{item.item_id}}",
                     csrfmiddlewaretoken: "{{ csrf_token }}"
                 },
                 dataType: "json",

@@ -32,6 +32,7 @@ urlpatterns = [
     path('notifications/', views.notifications_list, name='notification_list'),
     path('notifications/mark_as_read/<int:notification_id>/', views.mark_as_read, name='mark_as_read'),
     path('item_insights/', views.item_insights, name='item_insights'),
+    path('filter_for_item/', views.filter_for_item, name='filter_for_item'),
 
 
 

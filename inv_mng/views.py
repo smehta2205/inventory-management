@@ -734,6 +734,25 @@ def item_insights(request):
 
     return render(request, 'inv_mng/item_insights.html', {'itemdetails':items_data})
 
+def filter_for_item(request):
+    if request.method == "POST":
+        start_date = request.POST.get("start_date")
+        end_date = request.POST.get("end_date")
+        item_id = request.POST.get("item_id")
+        print(item_id)
+        items = InwardStock.objects.filter(item_id=item_id)
+        items = filter_items(items, start_date, end_date)
+        stock_data = [
+        {
+            'date': stock.date.strftime('%Y-%m-%d'),
+            'price': stock.price
+        }
+        for stock in items
+        ]
+        print(stock_data)
+        return JsonResponse({'items': stock_data})
+        
+
 def item_details(request, item_id):
     item = get_object_or_404(Item, item_id=item_id)
     start_date = (date.today() - timedelta(days=30)).strftime('%Y-%m-%d')
