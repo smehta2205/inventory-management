@@ -203,7 +203,12 @@
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false
+                maintainAspectRatio: false,
+                scales: {
+        y: {
+            beginAtZero: true  // <- this line makes y-axis start from 0
+        }
+    }
             }
         });
     }
