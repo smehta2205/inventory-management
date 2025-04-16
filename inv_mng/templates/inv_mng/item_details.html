@@ -72,7 +72,7 @@
                             </div>
                         </div> -->
                     <!-- </div> -->
-                
+                    
                     <!-- Stock Entries -->
                     <div class="card mt-4 p-4 shadow-lg border-0 rounded" style="overflow: auto;">
                         <h4 class="text-center fw-bold">Stock Entries</h4>
@@ -105,7 +105,33 @@
                             </table>
                         </div>
                     </div>
-                
+                    <div class="card shadow border-1 p-4">
+                        <div class="card-body ">
+                            <h5 class="card-title text-center text-dark fw-bold mb-4">Filter Items</h5>
+                            
+                           <!-- Start Date -->
+                            <div class="mb-3">
+                                <label for="startDate" class="form-label">Start Date:</label>
+                                <input type="date" id="startDate" class="form-control"
+                                    value="{{ default_start_date}}">
+                            </div>
+
+                            <!-- End Date -->
+                            <div class="mb-3">
+                                <label for="endDate" class="form-label">End Date:</label>
+                                <input type="date" id="endDate" class="form-control"
+                                    value="{{ default_end_date}}">
+                            </div>
+
+    
+                            <!-- Filter Button -->
+                            <div class="d-flex justify-content-center">
+                                <button id="filterBtn" class="btn btn-primary px-4 mt-3" style="background-color: #08C6CD;">
+                                    <i class="bi bi-funnel"></i> Filter Items
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                     <!-- Chart -->
                     <div class="card mt-4 p-4 shadow-lg border-0 rounded" style="overflow: auto;">
                         <canvas id="myChart" width="400" height="200"></canvas>
@@ -116,34 +142,77 @@
         </div>
     </div>
 </body>
+
 <script>
-    const ctx = document.getElementById('myChart').getContext('2d');
-    const stockData = JSON.parse('{{ inwardstocks|safe }}');
+    let myChart = null;
 
-    const labels = stockData.map(entry => entry.date);
-    const prices = stockData.map(entry => entry.price);
+    document.addEventListener("DOMContentLoaded", function () {
+        populateChart(); // initial chart load
 
-    console.log(labels);
-    console.log(prices);
+        document.getElementById("filterBtn").addEventListener("click", function () {
+            const startDate = document.getElementById("startDate").value;
+            const endDate = document.getElementById("endDate").value;
 
-    const myChart = new Chart(ctx, {
-        type: 'line', // can be 'bar', 'pie', etc.
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Stock Price Over Time',
-                data: prices,
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false
-        }
+            $.ajax({
+                url: "{% url 'filter_items_inward' %}",
+                type: "POST",
+                data: {
+                    start_date: startDate,
+                    end_date: endDate,
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                dataType: "json",
+                success: function (data) {
+                    updateChart(data.items); // items is assumed to be a list of { date, price }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error fetching data:", error);
+                    alert("Something went wrong while fetching the data.");
+                }
+            });
+        });
     });
-  </script>
+
+    function populateChart() {
+        const stockData = JSON.parse('{{ inwardstocks|safe }}');
+        renderChart(stockData);
+    }
+
+    function renderChart(data) {
+        const ctx = document.getElementById('myChart').getContext('2d');
+        const labels = data.map(entry => entry.date);
+        const prices = data.map(entry => entry.price);
+
+        if (myChart) {
+            myChart.destroy(); // avoid duplicate charts
+        }
+
+        myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Stock Price Over Time',
+                    data: prices,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    }
+
+    function updateChart(filteredData) {
+        renderChart(filteredData); // reuse same rendering logic
+    }
+</script>
+
   
 {% endblock %}
 </html>

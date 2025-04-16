@@ -568,7 +568,12 @@ def bill_details(request, bill_id):
     bill = get_object_or_404(InwardBill, bill_id=bill_id)  # Fetch the bill by ID
     inwardstocks = InwardStock.objects.filter(bill_id=bill.bill_id)
     total_amount = inwardstocks.aggregate((Sum('total_price')))
-    return render(request, 'inv_mng/bill_details.html', {'bill': bill, 'inwardstocks':inwardstocks, 'total_amount':total_amount})
+    
+    return render(request, 'inv_mng/bill_details.html', 
+                  {'bill': bill, 
+                    'inwardstocks':inwardstocks, 
+                    'total_amount':total_amount
+                    })
 
 
 def generate_reports(request):
@@ -731,12 +736,16 @@ def item_insights(request):
 
 def item_details(request, item_id):
     item = get_object_or_404(Item, item_id=item_id)
+    start_date = (date.today() - timedelta(days=30)).strftime('%Y-%m-%d')
+    end_date = date.today().strftime('%Y-%m-%d')
     stocks = Stock.objects.filter(item_id=item.item_id)
+    # stocks = filter_items(stocks, start_date, end_date)
     quantity_left = stocks.aggregate((Sum('total_quantity')))
-
     vendors = stocks.values_list('vendor', flat=True).distinct()
-    inward_stocks = InwardStock.objects.filter(item_id=item.item_id).order_by('date')
-
+    inward_stocks = InwardStock.objects.filter(item_id=item.item_id)
+    print(inward_stocks)
+    inward_stocks = filter_items(inward_stocks, start_date, end_date)
+    print(inward_stocks)
     # Create a list of dictionaries (each one representing a point)
     stock_data = [
         {
@@ -749,7 +758,15 @@ def item_details(request, item_id):
     for vendor in vendors:
         vendor_obj = Vendor.objects.get(id = vendor)
         vendor_list.append(vendor_obj.vendor_name)
-    return render(request, 'inv_mng/item_details.html', {'item': item, 'stocks':stocks, 'vendors':vendor_list, 'stock_left':quantity_left, 'inwardstocks':json.dumps(stock_data)}
+    return render(request, 'inv_mng/item_details.html', 
+                  {'item': item, 
+                   'stocks':stocks, 
+                   'vendors':vendor_list, 
+                   'stock_left':quantity_left, 
+                   'inwardstocks':json.dumps(stock_data), 
+                   'default_start_date':start_date, 
+                   'default_end_date':end_date
+                   }
     )
 
 def notifications_list(request):
