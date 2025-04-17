@@ -16,9 +16,9 @@
     <!-- Link to External CSS -->
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
-<body>
-    <h2>Add closing stock</h2>
-    <form class = "wastage-form" method="POST">
+<body style="background-color: #F5F5F5;">
+    <h2 class="text-center fw-bold mb-4 text-dark">Add closing stock</h2>
+    <form class = "wastage-form shadow-none border-0" method="POST" style="background-color: #F5F5F5;">
         {% csrf_token %}
         
         {{ formset.management_form }}

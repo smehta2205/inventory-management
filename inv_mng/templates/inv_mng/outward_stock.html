@@ -17,11 +17,11 @@
     <!-- Link to External CSS -->
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
-<body>
-    <h2>Outward Stock Entry</h2>
-    <form class = "outward-form" method="POST" style="padding: 20px;">
+<body style="background-color: #F5F5F5;">
+    <h2 class="text-center fw-bold mb-4 text-dark">Outward Stock Entry</h2>
+    <form class = "outward-form shadow-none border-0" method="POST"  style="padding: 20px; background-color: #F5F5F5;">
         {% csrf_token %}
-        <div class="form-group">
+        <div class="form-group" >
             <label for="id_department">Select Department:</label>
             {{ department_form.department }}
         </div>

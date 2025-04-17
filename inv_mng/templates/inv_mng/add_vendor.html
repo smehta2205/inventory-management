@@ -15,14 +15,14 @@
     <!-- Link to External CSS -->
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
-<body>
+<body style="background-color: #f5f5f5;">
 
-    <div class="container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="container d-flex justify-content-center align-items-center min-vh-100 shadow-none border-0" style="background-color: #F5F5F5;">
         
-        <div class="card shadow-sm" style="width: 100%; ">
-            <div class="card-body">
-                <h2 class="text-center fw-bold mb-4 text-primary">Add Vendor</h2>
-                <form method="POST" class="vendor-form">
+        <div class="card shadow-none border-0" style="width: 100%; background-color: #F5F5F5;">
+            <div class="card-body shadow-none border-0" style="background-color: #F5F5F5;">
+                <h2 class="text-center fw-bold mb-4 text-dark">Add Vendor</h2>
+                <form method="POST" class="vendor-form shadow-none border-0" style="background-color: #F5F5F5;">
                     {% csrf_token %}
                     {{ form.as_p }}
                     <button type="submit" class="btn btn-primary w-100 mt-3">Save</button>

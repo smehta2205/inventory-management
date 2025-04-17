@@ -130,10 +130,13 @@ h2 {
 
 /* Ensure consistent alignment of labels and inputs */
 .item-form label, .vendor-form label, .department-form label, .conversion-metric-form label, .inward-form label, .outward-form label, .wastage-form label {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     font-weight: bold;
     margin-bottom: 8px;
+    padding: 12px 12px 12px 0;
+
     display: inline-block;
+
 }
 
 /* Make sure form elements align properly */
@@ -170,11 +173,15 @@ h2 {
 .wastage-form input[type="number"],
 .wastage-form textarea,
 .wastage-form select {
+    padding: 16px 32px;
     width: 100%;
     padding: 12px;
     font-size: 1rem;
     border-radius: 8px;
     border: 1px solid #ccc;
+    margin: 4px 2px;
+    resize: vertical;
+    /* padding-left: 20px; */
     margin-bottom: 15px;
     box-sizing: border-box;
 }

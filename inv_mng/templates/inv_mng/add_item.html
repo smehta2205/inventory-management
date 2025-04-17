@@ -16,19 +16,17 @@
     <!-- Link to External CSS -->
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
-<body>
+<body style="background-color: #F5F5F5;">
 
-    <div class="container d-flex justify-content-center align-items-center min-vh-100">
-        <div class="card shadow-sm" style="width: 100%;">
-            <div class="card-body">
-                <h2 class="text-center fw-bold mb-4 text-primary">Add Item</h2>
-                <form method="POST" class="item-form">
+    <div class="container d-flex justify-content-center align-items-center min-vh-100 border-0 shadow-none" style="background-color: #F5F5F5;">
+        <div class="card border-0 shadow-none" style="width: 100%; background-color: #F5F5F5;">
+                <h2 class="text-center fw-bold mb-4 text-dark">Add Item</h2>
+                <form method="POST" class="item-form border-0 shadow-none" style="background-color:#F5F5F5;">
                     {% csrf_token %}
                     {{ form.as_p }}
                     <button type="submit" class="btn btn-primary w-100 mt-3">Save</button>
                 </form>
             </div>
-        </div>
     </div>
 
     <!-- Optional Bootstrap JS (for things like modals or dropdowns) -->
