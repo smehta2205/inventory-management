@@ -31,19 +31,19 @@
 
             </div>
             
-            <div id="bill-content" class="container mt-5" style="background-color: #F5F5F5;">
+            <div id="bill-content" class="container mt-2" style="background-color: #F5F5F5;">
                 <div class="card shadow-none border-0 p-0" style="background-color: #F5F5F5;">
-                    <div class="d-flex justify-content-center mt-4" style="background-color: #F5F5F5;">
-                        <div class="card shadow-none border-0 p-4 text-center" style="max-width: 500px; width: 100%; background-color: #F5F5F5;">
+                    <div class="d-flex justify-content-center" style="background-color: #F5F5F5;">
+                        <div class="card shadow-none border-0 p-1 text-center" style="max-width: 500px; width: 100%; background-color: #F5F5F5;">
                             <div class="card-body">
                                 <!-- Bill Details -->
-                                <div class="mb-3">
+                                <div class="mb-3" style="font-size: 1.2em;">
                                     <p><b>Bill ID:</b> {{ bill.bill_id }}</p>
                                 </div>
-                                <div class="mb-3">
+                                <div class="mb-3" style="font-size: 1.2em;">
                                     <p><b>Vendor:</b> {{ bill.vendor }}</p>
                                 </div>
-                                <div class="mb-3">
+                                <div class="mb-3" style="font-size: 1.2em;">
                                     <p><b>Is paid?:</b> {% if bill.is_paid %}Yes{% else %}No{% endif %}</p>
                                 </div>
                     
@@ -56,7 +56,7 @@
                     
                 </div>
                 
-            <div class="card mt-4 p-3 shadow-none  border-0 rounded" style="background-color: #F5F5F5;">
+            <div class="card mt-4 p-2 shadow-none  border-0 rounded" style="background-color: #F5F5F5;">
                 <!-- <h4 class="text-center text-primary fw-bold">Inward Items</h4> -->
                 <div class="table-responsive mt-3">
                     <table id="itemsTable" class="table table-hover align-middle text-center">
