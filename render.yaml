@@ -5,6 +5,8 @@ services:
     plan: free
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn inventory_mngmt.wsgi:application
+    postdeployCommand: "python manage.py migrate"
+
     envVars:
       - key: DJANGO_SETTINGS_MODULE
         value: inventory_mngmt.settings
