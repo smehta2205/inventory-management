@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: inventory-management
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn inventory_mngmnt.wsgi:application
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: inventory_mngmnt.settings
+      - key: SECRET_KEY
+        generateValue: true
