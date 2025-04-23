@@ -128,8 +128,11 @@
             </div>
         </div>
         
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" id="submitBtn" class="btn btn-primary">Submit</button>
     </form>
+    <div id="success-toast" class="alert alert-success position-fixed top-0 start-50 p-3" style="display:none; z-index: 9999;">
+        Saved successfully!
+    </div>
 </body>
 </html>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -185,49 +188,7 @@
 
             updateRemoveButtons();
             
-            // document.getElementById('calculate-total').addEventListener("click", function () {
-            //     // console.log("hello");
-            //     let totalAmount = 0;
-            //     const priceWithGst = document.querySelector('#id_price_with_gst').checked;
-            //     const formRows = document.querySelectorAll('.form-row');
-            //                 console.log(formRows.length);
-            //     formRows.forEach((row, index) => {
-            //         // Get all the input fields from the current row
-            //         const quantity = parseFloat(row.querySelector('input[name$="-quantity"]').value) || 0;
-            //         const price = parseFloat(row.querySelector('input[name$="-price"]').value) || 0;
-            //         const gst = parseFloat(row.querySelector('input[name$="-gst"]').value) || 0;
-
-            //         if (price <= 0 || quantity <= 0) {
-            //             return; // Skip invalid rows
-            //         }
-
-            //         let itemTotal, gstAmount;
-
-            //         if (priceWithGst) {
-            //             // Price includes GST - calculate base price first
-            //             const basePrice = price / (1 + (gst / 100));
-            //             gstAmount = (basePrice * quantity) * (gst / 100);
-            //             itemTotal = (basePrice * quantity) + gstAmount;
-            //         } else {
-            //             // Price doesn't include GST
-            //             const subtotal = price * quantity;
-            //             gstAmount = subtotal * (gst / 100);
-            //             itemTotal = subtotal + gstAmount;
-            //         }
-
-            //         totalAmount += itemTotal;
-            //         console.log(itemTotal);
-            //         // Update the GST amount and total price fields in the row if they exist
-            //         const gstAmountField = row.querySelector('input[name$="-gst_amount"]');
-            //         const totalPriceField = row.querySelector('input[name$="-total_price"]');
-                    
-            //         if (gstAmountField) gstAmountField.value = gstAmount.toFixed(2);
-            //         if (totalPriceField) totalPriceField.value = itemTotal.toFixed(2);
-            //     });
-
-            //     // Update the total amount display
-            //     document.getElementById('totalAmount').textContent = totalAmount.toFixed(2);
-            // });
+           
             // Function to update GST based on selected item
             function updateGST(form) {
                 let itemSelect = form.querySelector('.select-item');
@@ -400,5 +361,20 @@
                 updateNetAmount(form);
             });
         });
+        document.getElementById('submitBtn').addEventListener('click', function(event) {
+            event.preventDefault();
+
+        console.log("Saved!");
+        // Show toast
+        document.getElementById('success-toast').style.display = 'block';
+
+        // Submit the form (or redirect after delay)
+        setTimeout(() => {
+            document.querySelectorAll('.form-row').forEach(function (form) {
+                form.submit();
+            });
+        }, 500); // delay before redirect
+    });
+
     </script>
 {% endblock %}

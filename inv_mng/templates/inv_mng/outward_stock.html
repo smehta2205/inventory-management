@@ -62,8 +62,11 @@
         </table>
 
         <button type="button" id="add-form" class="btn btn-outline-secondary" style="padding-top: 10px;">➕ Add More</button>
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" id="submitBtn" class="btn btn-primary">Submit</button>
     </form>
+    <div id="success-toast" class="alert alert-success position-fixed top-0 start-50 p-3" style="display:none; z-index: 9999;">
+        Saved successfully!
+    </div>
 </body>
 </html>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -164,5 +167,18 @@
 
             updateRemoveButtons();
         });
+        document.getElementById('submitBtn').addEventListener('click', function(event) {
+            event.preventDefault();
+
+        console.log("Saved!");
+        // Show toast
+        document.getElementById('success-toast').style.display = 'block';
+
+        // Submit the form (or redirect after delay)
+        setTimeout(() => {
+            document.querySelector('.outward-form').submit();
+
+        }, 500); // delay before redirect
+    });
     </script>
 {% endblock %}
