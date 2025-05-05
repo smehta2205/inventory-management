@@ -30,6 +30,7 @@ DEBUG = False
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'inventory-management-47tz.onrender.com']
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/login/'
+AUTH_USER_MODEL = 'inv_mng.CustomUser'
 
 # Application definition
 
@@ -89,7 +90,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'inventory_management',
-        'USER': 'root',
+        'USER': 'postgres',
         'PASSWORD': 'root',
         'HOST': 'localhost',
         'PORT': '5432',

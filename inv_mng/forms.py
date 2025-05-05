@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.admin import widgets
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm
 from .models import InwardBill, Item, Vendor, Stock, InwardOutwardConv, Department, OutwardStock, InwardStock
 import datetime
@@ -157,13 +157,16 @@ class DepartmentForm(forms.ModelForm):
 class DepartmentSelectionForm(forms.Form):
     department = forms.ModelChoiceField(queryset=Department.objects.all(), label="Department", empty_label="Select a department")
 
+User = get_user_model()
+
 class RegisterForm(forms.ModelForm):
+
     password = forms.CharField(widget=forms.PasswordInput)
     confirm_password = forms.CharField(widget=forms.PasswordInput)
 
     class Meta:
         model = User
-        fields = ['username', 'password']
+        fields = ['username', 'org', 'password']
 
     def clean(self):
         cleaned_data = super().clean()
