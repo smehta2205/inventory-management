@@ -163,7 +163,7 @@ class RegisterForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password']
+        fields = ['username', 'password']
 
     def clean(self):
         cleaned_data = super().clean()
@@ -171,7 +171,7 @@ class RegisterForm(forms.ModelForm):
             self.add_error('confirm_password', "Passwords do not match.")
 
 class LoginForm(AuthenticationForm):
-    email = forms.CharField(widget=forms.TextInput())
+    username = forms.CharField(widget=forms.TextInput())
     password = forms.CharField(widget=forms.PasswordInput())
 
 
