@@ -4,8 +4,13 @@ from django.utils import timezone
 from django.core.validators import RegexValidator
 from django.contrib.auth.models import User, AbstractUser
 
+class Organization(models.Model):
+    name = models.CharField(max_length=255)
+    def __str__(self):
+        return f"{self.name}"
+
 class CustomUser(AbstractUser):
-    org = models.CharField(max_length=255)
+    org = models.ForeignKey(Organization, on_delete=models.CASCADE)
 
 
 class Vendor(models.Model):
