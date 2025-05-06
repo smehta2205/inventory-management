@@ -15,6 +15,7 @@ class CustomUser(AbstractUser):
 
 class Vendor(models.Model):
     id = models.AutoField(primary_key=True)
+    org = models.ForeignKey(Organization, on_delete=models.CASCADE, null=True)
     vendor_name = models.CharField(max_length=200)
     agency_name = models.CharField(max_length=200)
     gst_no = models.CharField(max_length=200)
@@ -32,6 +33,8 @@ class Item(models.Model):
     minimum_quantity = models.IntegerField(default=0)
     iw_unit = models.CharField(max_length=200)
     ow_unit = models.CharField(max_length=200)
+    org = models.ForeignKey(Organization, on_delete=models.CASCADE, null=True)
+
 
     def __str__(self):
         return f"{self.name} ({self.company})"

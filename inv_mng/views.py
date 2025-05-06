@@ -110,6 +110,7 @@ def add_item(request):
         form = ItemForm(request.POST)
         if form.is_valid():
             item = form.save()  # Save the new item
+            item.org = request.user.org
             # Redirect to the "Add Conversion Metric" page for this item
             return redirect('add_conversion_metric_with_id', item_id=item.item_id)
     else:
@@ -123,6 +124,7 @@ def add_vendor(request):
         form = VendorForm(request.POST)
         if form.is_valid():
             item = form.save(commit=False)
+            item.org = request.user.org
             item.save()
             return redirect('item_info')
     else:
