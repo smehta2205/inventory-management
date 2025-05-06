@@ -14,8 +14,10 @@ def check_stock_threshold(sender, instance, **kwargs):
     print(min_threshold)
 
     if instance.total_quantity < min_threshold:
-        staff_users = CustomUser.objects.filter(is_staff=True)
+        staff_users = CustomUser.objects.all()
+        print(staff_users)
         for user in staff_users:
+            print(user)
             Notification.objects.get_or_create(
                 user=user,
                 stock_entry=instance,
