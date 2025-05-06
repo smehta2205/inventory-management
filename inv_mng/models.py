@@ -2,7 +2,11 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.core.validators import RegexValidator
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AbstractUser
+
+class CustomUser(AbstractUser):
+    org = models.CharField(max_length=255)
+
 
 class Vendor(models.Model):
     id = models.AutoField(primary_key=True)
@@ -102,7 +106,7 @@ class WastageStock(models.Model):
 
 
 class Notification(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)  # Notify a user (or admin)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # Notify a user (or admin)
     stock_entry = models.ForeignKey(Stock, on_delete=models.CASCADE)  # Link to a specific stock entry
     message = models.TextField()
     is_read = models.BooleanField(default=False)

@@ -25,7 +25,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-md_2fk0bqcn)@ag-g_hq53+gx%o+4mfsmt7k+&8*6x9uq+prsg"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
+AUTH_USER_MODEL = 'inv_mng.CustomUser'
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'inventory-management-47tz.onrender.com']
 LOGIN_REDIRECT_URL = '/'
@@ -89,7 +90,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'inventory_management',
-        'USER': 'root',
+        'USER': 'postgres',
         'PASSWORD': 'root',
         'HOST': 'localhost',
         'PORT': '5432',
