@@ -370,10 +370,9 @@
 
         // Submit the form (or redirect after delay)
         setTimeout(() => {
-            document.querySelectorAll('.form-row').forEach(function (form) {
-                form.submit();
-            });
-        }, 500); // delay before redirect
+            document.querySelector('.inward-form').submit();
+
+        }, 500);// delay before redirect
     });
 
     </script>
