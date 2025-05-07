@@ -72,7 +72,15 @@ class StockForm(forms.ModelForm):
         }
 
 class VendorSelectionForm(forms.Form):
-    vendor = forms.ModelChoiceField(queryset=Vendor.objects.all(), label="Vendor", empty_label="Select a Vendor")
+    vendor = forms.ModelChoiceField(queryset=Vendor.objects.none())  # default to empty
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        print(user)
+        super().__init__(*args, **kwargs)
+
+        if user and hasattr(user, 'org'):
+            self.fields['vendor'].queryset = Vendor.objects.filter(org=user.org)
 
 class InwardBillForm(forms.ModelForm):
     class Meta:
@@ -156,7 +164,7 @@ class DepartmentForm(forms.ModelForm):
                 }
         
 class DepartmentSelectionForm(forms.Form):
-    department = forms.ModelChoiceField(queryset=Department.objects.all(), label="Department", empty_label="Select a department")
+    department = forms.ModelChoiceField(queryset=Department.objects.filter(), label="Department", empty_label="Select a department")
 
 User = get_user_model()
 class RegisterForm(forms.ModelForm):

@@ -31,6 +31,8 @@ def item_info(request):
     check_expiring_products()
     items = Item.objects.all()
     vendors = Vendor.objects.all()
+    if(not request.user.is_authenticated):
+        return redirect('login')
     user_org = request.user.org
     # inwardstocks = InwardStock.objects.all()
     # outwardstocks = OutwardStock.objects.all()
@@ -139,7 +141,7 @@ def inward_stock(request):
     StockFormSet = formset_factory(StockForm, extra=1)
     
     if request.method == "POST":
-        vendor_form = VendorSelectionForm(request.POST)
+        vendor_form = VendorSelectionForm(request.POST, user=request.user)
         bill_form = InwardBillForm(request.POST, request.FILES)
         formset = StockFormSet(request.POST)
 
@@ -200,7 +202,7 @@ def inward_stock(request):
                     stock.save()
             return redirect('item_info')
     else:
-        vendor_form = VendorSelectionForm()
+        vendor_form = VendorSelectionForm(user=request.user)
         bill_form = InwardBillForm()
         formset = StockFormSet()
 
