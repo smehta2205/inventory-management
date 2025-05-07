@@ -3,7 +3,7 @@ from django.forms import formset_factory
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from .models import InwardStock, Item, Notification, Stock, InwardOutwardConv, Vendor, OutwardStock, WastageStock, InwardBill, Department, CustomUser
-from .forms import ItemForm, LoginForm, RegisterForm, VendorForm, StockForm, OutwardStockForm, ConversionMetricForm, DepartmentForm, VendorSelectionForm, DepartmentSelectionForm, ConversionMetricFormWithoutId, InwardBillForm, WastageForm
+from .forms import ItemForm, LoginForm, RegisterForm, VendorForm, StockForm, OutwardStockForm, ConversionMetricForm, DepartmentForm, VendorSelectionForm, DepartmentSelectionForm, ConversionMetricFormWithoutId, InwardBillForm, WastageForm, BaseStockFormSet
 from django.shortcuts import redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -112,8 +112,10 @@ def add_item(request):
     if request.method == "POST":
         form = ItemForm(request.POST)
         if form.is_valid():
-            item = form.save()  # Save the new item
+            item = form.save(commit=False)
             item.org = request.user.org
+            item.save()  # Save the new item
+            
             # Redirect to the "Add Conversion Metric" page for this item
             return redirect('add_conversion_metric_with_id', item_id=item.item_id)
     else:
@@ -138,12 +140,12 @@ def add_vendor(request):
 
 def inward_stock(request):
     check_expiring_products()
-    StockFormSet = formset_factory(StockForm, extra=1)
+    StockFormSet = formset_factory(StockForm, formset=BaseStockFormSet, extra=1)
     
     if request.method == "POST":
         vendor_form = VendorSelectionForm(request.POST, user=request.user)
         bill_form = InwardBillForm(request.POST, request.FILES)
-        formset = StockFormSet(request.POST)
+        formset = StockFormSet(request.POST, user=request.user)
 
         
         if vendor_form.is_valid() and formset.is_valid() and bill_form.is_valid():
@@ -204,7 +206,7 @@ def inward_stock(request):
     else:
         vendor_form = VendorSelectionForm(user=request.user)
         bill_form = InwardBillForm()
-        formset = StockFormSet()
+        formset = StockFormSet(user=request.user)
 
     return render(request, 'inv_mng/inward_stock.html', {'vendor_form': vendor_form, 'bill_form': bill_form, 'formset': formset})
 

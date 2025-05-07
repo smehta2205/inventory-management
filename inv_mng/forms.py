@@ -5,6 +5,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm
 from .models import InwardBill, Item, Vendor, Stock, InwardOutwardConv, Department, OutwardStock, InwardStock
 import datetime
+from django.forms import BaseFormSet
+
 
 class ItemForm(forms.ModelForm):
     class Meta:
@@ -33,6 +35,14 @@ class VendorForm(forms.ModelForm):
         }
 
 
+class BaseStockFormSet(BaseFormSet):
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+
+    def _construct_form(self, i, **kwargs):
+        kwargs['user'] = self.user
+        return super()._construct_form(i, **kwargs)
 
 class StockForm(forms.ModelForm):
     expiry_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
@@ -49,7 +59,12 @@ class StockForm(forms.ModelForm):
         widget=forms.NumberInput(attrs={'class': 'form-control'})
     )
     def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)  # 👈 extract user
         super(StockForm, self).__init__(*args, **kwargs)
+        print("User")
+        print(user)
+        if user and hasattr(user, 'org'):
+            self.fields['item_id'].queryset = Item.objects.filter(org=user.org)
         self.fields['item_id'].widget.attrs.update({'class': 'form-control select-item'})
         self.fields['expiry_date'].widget.attrs.update({'class': 'form-control'})
         self.fields['quantity'].widget.attrs.update({'class': 'form-control quantity-field'})
