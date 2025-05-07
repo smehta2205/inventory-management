@@ -466,6 +466,7 @@ def log_wastage(request):
                             item_id=item,
                             quantity=quantity,
                             wastage_amount = stock_entry.price * quantity,
+                            org = request.user.org
                         )
                         wastage_stock.save()
 
