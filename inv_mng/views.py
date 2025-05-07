@@ -147,6 +147,7 @@ def inward_stock(request):
             vendor = vendor_form.cleaned_data['vendor']  # Get selected vendor
             bill = bill_form.save(commit=False)
             bill.vendor = vendor  # Assign vendor to the bill
+            bill.org = request.user.org
             bill_id = bill.bill_id
             bill_image_path = bill.bill_image.name if bill.bill_image else None
             bill_paid_status = bill.is_paid

@@ -108,6 +108,7 @@ class InwardBill(models.Model):
     is_paid = models.BooleanField(default=False)
     price_with_gst = models.BooleanField(default=False)
     bill_date = models.DateField(default=timezone.now)
+    org = models.ForeignKey(Organization, on_delete=models.CASCADE, null=True)
 
 
     def __str__(self):
