@@ -76,6 +76,8 @@ class OutwardStock(models.Model):
     quantity = models.IntegerField()
     date = models.DateTimeField(default=timezone.now)
     outward_spent_amount = models.IntegerField(default=0)
+    org = models.ForeignKey(Organization, on_delete=models.CASCADE, null=True)
+
     
 
 class InwardStock(models.Model):
