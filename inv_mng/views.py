@@ -31,20 +31,21 @@ def item_info(request):
     check_expiring_products()
     items = Item.objects.all()
     vendors = Vendor.objects.all()
+    user_org = request.user.org
     # inwardstocks = InwardStock.objects.all()
     # outwardstocks = OutwardStock.objects.all()
     # total_wastage = WastageStock.objects.aggregate(Sum('wastage_amount'))
     # total_purchase = InwardStock.objects.annotate(difference=F('total_price') - F('gst_amount')).aggregate(total_difference=Sum('difference'))
     # total_gst = InwardStock.objects.aggregate(Sum('gst_amount'))
     # total_expenditure = OutwardStock.objects.aggregate(Sum('outward_spent_amount'))
-    pending_payments = InwardBill.objects.aggregate(bool_col=Count(Case(When(is_paid=False, then=1))))
-    results = Stock.objects.values('item_id__name').annotate(count=Sum('total_quantity'))
+    pending_payments = InwardBill.objects.filter(org=user_org).aggregate(bool_col=Count(Case(When(is_paid=False, then=1))))
+    results = Stock.objects.filter(org=user_org).values('item_id__name').annotate(count=Sum('total_quantity'))
     item_names = [entry['item_id__name'] for entry in results]
     item_quantities = [entry['count'] for entry in results]
     items_json = json.dumps(item_names, cls=DjangoJSONEncoder)
     quantities_json = json.dumps(item_quantities, cls=DjangoJSONEncoder)
     total_stock_worth = (
-        Stock.objects.filter(total_quantity__gt=0)
+        Stock.objects.filter(org=user_org).filter(total_quantity__gt=0)
         .annotate(product=F('price') * F('quantity'))
         .aggregate(total_product=Sum('product'))
     )
@@ -61,23 +62,23 @@ def item_info(request):
         print(end_date)
 
     # Filter using these dates
-    items = InwardStock.objects.all()
+    items = InwardStock.objects.filter(org=user_org)
     inwardstocks = filter_items(items, start_date, end_date)
-    items = OutwardStock.objects.all()
+    items = OutwardStock.objects.filter(org=user_org)
     outwardstocks = filter_items(items, start_date, end_date)
-    items = InwardBill.objects.all()
+    items = InwardBill.objects.filter(org=user_org)
     billdetails = items.filter(bill_date__gte=start_date)
     billdetails = billdetails.filter(bill_date__lte=end_date)
-    items = WastageStock.objects.all()
+    items = WastageStock.objects.filter(org=user_org)
     items = filter_items(items, start_date, end_date)
     total_wastage = items.aggregate(Sum('wastage_amount'))
-    items = InwardStock.objects.all()    
+    items = InwardStock.objects.filter(org=user_org)    
     items = filter_items(items, start_date, end_date)
     total_purchase = items.annotate(difference=F('total_price') - F('gst_amount')).aggregate(total_difference=Sum('difference'))
-    items = InwardStock.objects.all()
+    items = InwardStock.objects.filter(org=user_org)
     items = filter_items(items, start_date, end_date)
     total_gst = items.aggregate(Sum('gst_amount'))
-    items = OutwardStock.objects.all()
+    items = OutwardStock.objects.filter(org=user_org)
     items = filter_items(items, start_date, end_date)
     total_expense = items.aggregate(Sum('outward_spent_amount'))
     unread_count = Notification.objects.filter(is_read=False).count
@@ -382,7 +383,9 @@ def filter_items_inward(request):
         start_date = request.POST.get("start_date")
         end_date = request.POST.get("end_date")
         print(start_date)
-        items = InwardStock.objects.all()
+        user_org = request.user.org
+
+        items = InwardStock.objects.filter(org=user_org)
         items = filter_items(items, start_date, end_date)
         items_data = []
     
@@ -412,8 +415,9 @@ def filter_items_outward(request):
     if request.method == "POST":
         start_date = request.POST.get("start_date")
         end_date = request.POST.get("end_date")
+        user_org = request.user.org
 
-        items = OutwardStock.objects.all()
+        items = OutwardStock.objects.filter(org=user_org)
         
         items = filter_items(items, start_date, end_date)
         items_data = []
@@ -492,7 +496,8 @@ def get_total_wastage(request):
         start_date = request.POST.get("start_date")
         end_date = request.POST.get("end_date")
         print(start_date)
-        items = WastageStock.objects.all()
+        user_org = request.user.org
+        items = WastageStock.objects.filter(org=user_org)
         
         items = filter_items(items, start_date, end_date)
         total_wastage = items.aggregate(Sum('wastage_amount'))
@@ -506,8 +511,9 @@ def get_total_purchase(request):
     if request.method == "POST":
         start_date = request.POST.get("start_date")
         end_date = request.POST.get("end_date")
+        user_org = request.user.org
 
-        items = InwardStock.objects.all()
+        items = InwardStock.objects.filter(org=user_org)
         
         items = filter_items(items, start_date, end_date)
         total_purchase = items.annotate(difference=F('total_price') - F('gst_amount')).aggregate(total_difference=Sum('difference'))
@@ -520,8 +526,9 @@ def get_total_gst(request):
     if request.method == "POST":
         start_date = request.POST.get("start_date")
         end_date = request.POST.get("end_date")
+        user_org = request.user.org
 
-        items = InwardStock.objects.all()
+        items = InwardStock.objects.filter(org=user_org)
         
         items = filter_items(items, start_date, end_date)
         total_gst = items.aggregate(Sum('gst_amount'))
@@ -534,8 +541,8 @@ def get_total_expense(request):
     if request.method == "POST":
         start_date = request.POST.get("start_date")
         end_date = request.POST.get("end_date")
-
-        items = OutwardStock.objects.all()
+        user_org = request.user.org
+        items = OutwardStock.objects.filter(org=user_org)
         
         items = filter_items(items, start_date, end_date)
         total_expense = items.aggregate(Sum('outward_spent_amount'))
@@ -547,8 +554,10 @@ def filter_bills(request):
     if request.method == "POST":
         start_date = request.POST.get("start_date")
         end_date = request.POST.get("end_date")
+        user_org = request.user.org
 
-        items = InwardBill.objects.all()
+
+        items = InwardBill.objects.filter(org=user_org)
         
         if start_date:
             items = items.filter(bill_date__gte=start_date)
@@ -574,7 +583,7 @@ def filter_bills(request):
 
 def bill_details(request, bill_id):
     bill = get_object_or_404(InwardBill, bill_id=bill_id)  # Fetch the bill by ID
-    inwardstocks = InwardStock.objects.filter(bill_id=bill.bill_id)
+    inwardstocks = InwardStock.objects.filter(org=request.user.org).filter(bill_id=bill.bill_id)
     total_amount = inwardstocks.aggregate((Sum('total_price')))
     
     return render(request, 'inv_mng/bill_details.html', 
@@ -585,7 +594,7 @@ def bill_details(request, bill_id):
 
 
 def generate_reports(request):
-    vendors = Vendor.objects.all()  # Fetch all vendors
+    vendors = Vendor.objects.filter(org=request.user.org)  # Fetch all vendors
 
     return render(request, 'inv_mng/generate_reports.html', {"vendors": vendors})
 
@@ -596,7 +605,7 @@ def get_vendor_report(request):
         end_date = request.POST.get("end_date")
         vendor = request.POST.get("vendor")
         print(start_date)
-        items = InwardStock.objects.all()
+        items = InwardStock.objects.filter(org=request.user.org)
         items = filter_items(items, start_date, end_date)
         # items = items.filter(vendor=vendor)
         items_data = []
