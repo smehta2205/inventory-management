@@ -2,7 +2,7 @@ from datetime import datetime
 from django.forms import formset_factory
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
-from .models import InwardStock, Item, Notification, Stock, InwardOutwardConv, Vendor, OutwardStock, WastageStock, InwardBill, Department
+from .models import InwardStock, Item, Notification, Stock, InwardOutwardConv, Vendor, OutwardStock, WastageStock, InwardBill, Department, CustomUser
 from .forms import ItemForm, LoginForm, RegisterForm, VendorForm, StockForm, OutwardStockForm, ConversionMetricForm, DepartmentForm, VendorSelectionForm, DepartmentSelectionForm, ConversionMetricFormWithoutId, InwardBillForm, WastageForm
 from django.shortcuts import redirect
 from django.contrib.auth import authenticate, login, logout
@@ -164,6 +164,7 @@ def inward_stock(request):
                     inward_stock_entry.bill_image_path = f"media/bills/{bill_image_path}" if bill_image_path else None
                     inward_stock_entry.is_paid = bill_paid_status
                     inward_stock_entry.price_with_gst = bill_price_with_gst
+                    inward_stock_entry.org = request.user.org
                     try:
                         conv_entry = InwardOutwardConv.objects.get(item_id=inward_stock_entry.item_id)
                         conversion_metric = conv_entry.outward_item_quantity
@@ -818,7 +819,7 @@ def check_expiring_products():
         message = f"Stock of {stock.item_id} from {stock.vendor} is expiring on {stock.expiry_date}."
 
         # Create notifications for all users (modify as needed)
-        for user in User.objects.all():
+        for user in CustomUser.objects.all():
             Notification.objects.get_or_create(user=user, 
                                                stock_entry=stock,
                                                message=message)

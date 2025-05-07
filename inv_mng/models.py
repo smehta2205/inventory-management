@@ -91,6 +91,8 @@ class InwardStock(models.Model):
     bill_id = models.CharField(max_length=50, default='')  # Bill Number
     bill_image_path = models.CharField(max_length=200, default='')  # Bill Image location
     price_with_gst = models.BooleanField(default=False)
+    org = models.ForeignKey(Organization, on_delete=models.CASCADE, null=True)
+
 
     
     def __str__(self):
