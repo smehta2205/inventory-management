@@ -227,7 +227,7 @@ class LoginForm(AuthenticationForm):
 
 class WastageForm(forms.Form):
     item = forms.ModelChoiceField(
-        queryset=Item.objects.all(),
+        queryset=Item.objects.none(),
         label="Item",
         empty_label="Select an Item",
         required=True
@@ -246,7 +246,12 @@ class WastageForm(forms.Form):
     quantity = forms.IntegerField(label="Quantity")
 
     def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)  # 👈 Get user from kwargs
         super().__init__(*args, **kwargs)
+
+        # Filter items by user's organization
+        if self.user:
+            self.fields['item'].queryset = Item.objects.filter(org=self.user.org)
         
         # Check if the form is bound (i.e., has data)
         if self.is_bound:

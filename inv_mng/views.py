@@ -458,8 +458,8 @@ def get_gst(request):
 
 def log_wastage(request):
     check_expiring_products()
-    WastageStockFormSet = formset_factory(WastageForm, extra=1)  # Allows adding multiple forms
-    formset = WastageStockFormSet(request.POST or None)
+    WastageStockFormSet = formset_factory(WastageForm, formset=BaseOutwardStockFormSet,  extra=1)  # Allows adding multiple forms
+    formset = WastageStockFormSet(request.POST or None, user=request.user)
 
     if request.method == "POST":
         if formset.is_valid():
