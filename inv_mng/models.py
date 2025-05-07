@@ -47,6 +47,7 @@ class Stock(models.Model):
     quantity = models.IntegerField()
     total_quantity = models.IntegerField(default=0)
     price = models.IntegerField()
+    org = models.ForeignKey(Organization, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return f"{self.item_id} {self.vendor} ({self.expiry_date})"

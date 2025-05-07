@@ -193,7 +193,8 @@ def inward_stock(request):
                         quantity=inward_stock_entry.quantity,
                         price = inward_stock_entry.price,
                         expiry_date = expiry_date,
-                        total_quantity = inward_stock_entry.quantity*conversion_metric
+                        total_quantity = inward_stock_entry.quantity*conversion_metric,
+                        org = request.user.org
                     )
                     stock.save()
             return redirect('item_info')
