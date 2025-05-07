@@ -216,7 +216,7 @@ def outward_stock(request):
     check_expiring_products()
     OutwardStockFormSet = formset_factory(OutwardStockForm, extra=1)  # Allows adding multiple forms
     formset = OutwardStockFormSet(request.POST or None)
-    department_form = DepartmentSelectionForm(request.POST or None)  # Define department_form for both GET and POST requests
+    department_form = DepartmentSelectionForm(request.POST or None, user=request.user)  # Define department_form for both GET and POST requests
 
     if request.method == "POST":
         if department_form.is_valid() and formset.is_valid():

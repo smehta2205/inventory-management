@@ -179,7 +179,17 @@ class DepartmentForm(forms.ModelForm):
                 }
         
 class DepartmentSelectionForm(forms.Form):
-    department = forms.ModelChoiceField(queryset=Department.objects.filter(), label="Department", empty_label="Select a department")
+    # department = forms.ModelChoiceField(queryset=Department.objects.filter(), label="Department", empty_label="Select a department")
+    department = forms.ModelChoiceField(queryset=Department.objects.none(), label="Department", empty_label="Select a department")  # default to empty
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        print(user)
+        super().__init__(*args, **kwargs)
+
+        if user and hasattr(user, 'org'):
+            self.fields['department'].queryset = Department.objects.filter(org=user.org)
+
 
 User = get_user_model()
 class RegisterForm(forms.ModelForm):
