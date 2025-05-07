@@ -59,7 +59,7 @@ def item_info(request):
     if not start_date or not end_date:
         # Default to 30 days ago and today if not provided
         start_date = (date.today() - timedelta(days=7)).strftime('%Y-%m-%d')
-        end_date = date.today().strftime('%Y-%m-%d')
+        end_date = (date.today() + timedelta(days=1)).strftime('%Y-%m-%d')
         print(start_date)
         print(end_date)
 
