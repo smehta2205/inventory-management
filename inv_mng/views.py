@@ -279,6 +279,7 @@ def add_department(request):
         form = DepartmentForm(request.POST)
         if form.is_valid():
             item = form.save(commit=False)
+            item.org = request.user.org
             item.save()
             return redirect('item_info')
     else:

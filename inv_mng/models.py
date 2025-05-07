@@ -64,6 +64,7 @@ class Department(models.Model):
     poc_name = models.CharField(max_length=200)
     phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$', message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
     poc_contact = models.CharField(validators=[phone_regex], max_length=17, blank=True)
+    org = models.ForeignKey(Organization, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return f"{self.department_name}"
@@ -75,6 +76,7 @@ class OutwardStock(models.Model):
     quantity = models.IntegerField()
     date = models.DateTimeField(default=timezone.now)
     outward_spent_amount = models.IntegerField(default=0)
+    
 
 class InwardStock(models.Model):
     item_id = models.ForeignKey(Item, on_delete=models.CASCADE)
@@ -89,6 +91,7 @@ class InwardStock(models.Model):
     bill_id = models.CharField(max_length=50, default='')  # Bill Number
     bill_image_path = models.CharField(max_length=200, default='')  # Bill Image location
     price_with_gst = models.BooleanField(default=False)
+
     
     def __str__(self):
         return f"{self.item_id}"
@@ -102,6 +105,7 @@ class InwardBill(models.Model):
     price_with_gst = models.BooleanField(default=False)
     bill_date = models.DateField(default=timezone.now)
 
+
     def __str__(self):
         return f"Bill {self.bill_id} - {self.vendor.vendor_name}"
     
@@ -111,6 +115,7 @@ class WastageStock(models.Model):
     quantity = models.IntegerField()
     date = models.DateTimeField(default=timezone.now)
     wastage_amount = models.IntegerField(default=0)
+
 
 
 class Notification(models.Model):
