@@ -110,6 +110,15 @@ class InwardBillForm(forms.ModelForm):
         if not self.instance.pk: 
             self.fields['bill_date'].initial = datetime.date.today()
 
+class BaseOutwardStockFormSet(BaseFormSet):
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+
+    def _construct_form(self, i, **kwargs):
+        kwargs['user'] = self.user
+        return super()._construct_form(i, **kwargs)
+
         
 class OutwardStockForm(forms.Form):
     # department = forms.ModelChoiceField(
@@ -120,7 +129,7 @@ class OutwardStockForm(forms.Form):
     # )
 
     item = forms.ModelChoiceField(
-        queryset=Item.objects.all(),
+        queryset=Item.objects.none(),
         label="Item",
         empty_label="Select an Item",
         required=True
@@ -135,8 +144,14 @@ class OutwardStockForm(forms.Form):
     quantity = forms.IntegerField(label="Quantity")
 
     def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)  # 👈 Get user from kwargs
         super().__init__(*args, **kwargs)
-        
+
+        # Filter items by user's organization
+        if self.user:
+            self.fields['item'].queryset = Item.objects.filter(org=self.user.org)
+
+
         # Check if the form is bound (i.e., has data)
         if self.is_bound:
             try:

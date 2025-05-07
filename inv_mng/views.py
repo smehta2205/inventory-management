@@ -3,7 +3,7 @@ from django.forms import formset_factory
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from .models import InwardStock, Item, Notification, Stock, InwardOutwardConv, Vendor, OutwardStock, WastageStock, InwardBill, Department, CustomUser
-from .forms import ItemForm, LoginForm, RegisterForm, VendorForm, StockForm, OutwardStockForm, ConversionMetricForm, DepartmentForm, VendorSelectionForm, DepartmentSelectionForm, ConversionMetricFormWithoutId, InwardBillForm, WastageForm, BaseStockFormSet
+from .forms import ItemForm, LoginForm, RegisterForm, VendorForm, StockForm, OutwardStockForm, ConversionMetricForm, DepartmentForm, VendorSelectionForm, DepartmentSelectionForm, ConversionMetricFormWithoutId, InwardBillForm, WastageForm, BaseStockFormSet, BaseOutwardStockFormSet
 from django.shortcuts import redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -214,8 +214,8 @@ def inward_stock(request):
 
 def outward_stock(request):
     check_expiring_products()
-    OutwardStockFormSet = formset_factory(OutwardStockForm, extra=1)  # Allows adding multiple forms
-    formset = OutwardStockFormSet(request.POST or None)
+    OutwardStockFormSet = formset_factory(OutwardStockForm, formset=BaseOutwardStockFormSet, extra=1)  # Allows adding multiple forms
+    formset = OutwardStockFormSet(request.POST or None, user=request.user)
     department_form = DepartmentSelectionForm(request.POST or None, user=request.user)  # Define department_form for both GET and POST requests
 
     if request.method == "POST":
