@@ -211,50 +211,63 @@ def inward_stock(request):
     return render(request, 'inv_mng/inward_stock.html', {'vendor_form': vendor_form, 'bill_form': bill_form, 'formset': formset})
 
 
-
 def outward_stock(request):
     check_expiring_products()
-    OutwardStockFormSet = formset_factory(OutwardStockForm, formset=BaseOutwardStockFormSet, extra=1)  # Allows adding multiple forms
+    OutwardStockFormSet = formset_factory(OutwardStockForm, formset=BaseOutwardStockFormSet, extra=1)
     formset = OutwardStockFormSet(request.POST or None, user=request.user)
-    department_form = DepartmentSelectionForm(request.POST or None, user=request.user)  # Define department_form for both GET and POST requests
-
+    department_form = DepartmentSelectionForm(request.POST or None, user=request.user)
+    
     if request.method == "POST":
         if department_form.is_valid() and formset.is_valid():
             department = department_form.cleaned_data['department']
+            all_valid = True  # Flag to track if all forms are valid
+            
             for form in formset:
-                if form.cleaned_data:  # Check if the form has data
-                    # Extract cleaned data from the form
+                if form.cleaned_data:  # Only process forms with data
                     item = form.cleaned_data['item']
                     stock_entry = form.cleaned_data['stock_entry']
                     quantity = form.cleaned_data['quantity']
 
-                    # Example: Create a new OutwardStock record
-                    if quantity <= stock_entry.total_quantity:
-                        # Create an OutwardStock record
-                        outward_stock = OutwardStock(
-                            department=department,
-                            item_id=item,
-                            # stock_entry=stock_entry,
-                            quantity=quantity,
-                            outward_spent_amount = stock_entry.price * quantity,
-                            org=request.user.org
-                        )
-                        outward_stock.save()
+                    if quantity <= 0:
+                        messages.error(request, f"Quantity must be positive for {item.name}.")
+                        all_valid = False
+                    elif quantity > stock_entry.total_quantity:
+                        messages.error(request, f"Only {stock_entry.total_quantity} in stock for {item.name}.")
+                        all_valid = False
+                    else:
+                        try:
+                            # Create an OutwardStock record
+                            outward_stock = OutwardStock(
+                                department=department,
+                                item_id=item,
+                                quantity=quantity,
+                                outward_spent_amount=stock_entry.price * quantity,
+                                org=request.user.org
+                            )
+                            outward_stock.save()
 
-                        # Deduct the quantity from the Stock entry
-                        stock_entry.total_quantity -= quantity
-                        stock_entry.save()
+                            # Deduct the quantity from the Stock entry
+                            stock_entry.total_quantity -= quantity
+                            stock_entry.save()
+                        except Exception as e:
+                            messages.error(request, f"Error processing {item.name}: {str(e)}")
+                            all_valid = False
 
-            return redirect('item_info')  # Redirect after successful submission
+            if all_valid:
+                messages.success(request, "Outward stock saved successfully!")
+                return redirect('item_info')
         else:
-            print("Form errors:", formset.errors)
-            print("Department form errors:", department_form.errors)
+            # Collect all form errors
+            for error in department_form.errors.values():
+                messages.error(request, error)
+            for form in formset:
+                for error in form.errors.values():
+                    messages.error(request, error)
 
     return render(request, "inv_mng/outward_stock.html", {
         "department_form": department_form,
         "formset": formset,
-    })    
-
+    })
 
 def get_stock_entries(request):
     item_id = request.GET.get("item_id")

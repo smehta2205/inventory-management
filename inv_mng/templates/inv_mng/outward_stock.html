@@ -29,6 +29,9 @@
     <h2 class="text-center fw-bold mb-4 text-dark">Outward Stock Entry</h2>
     <form class = "outward-form shadow-none border-0" method="POST"  style="padding: 20px; background-color: #F5F5F5;">
         {% csrf_token %}
+        
+
+
         <div class="form-group" >
             <label for="id_department">Select Department:</label>
             {{ department_form.department }}
@@ -47,6 +50,12 @@
             </thead>
             <tbody>
                 {% for form in formset %}
+                    {% if form.non_field_errors %}
+                    <div class="text-danger mb-2">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
                     <tr class="outward-stock-form">
                         <td>{{ form.item }}</td>
                         <td>{{ form.stock_entry }}</td>
@@ -64,9 +73,39 @@
         <button type="button" id="add-form" class="btn btn-outline-secondary" style="padding-top: 10px;">➕ Add More</button>
         <button type="submit" id="submitBtn" class="btn btn-primary">Submit</button>
     </form>
-    <div id="success-toast" class="alert alert-success position-fixed top-0 start-50 p-3" style="display:none; z-index: 9999;">
+    <!-- <div id="success-toast" class="alert alert-success position-fixed top-0 start-50 p-3" style="display:none; z-index: 9999;">
         Saved successfully!
+    </div> -->
+    <!-- In your outward_stock.html, replace the messages section with this: -->
+    {% if messages %}
+    <div class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 9999;">
+        {% for message in messages %}
+        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
     </div>
+    {% endif %}
+    <script>
+       document.addEventListener("DOMContentLoaded", function () {
+    // ... (keep all your existing JavaScript code) ...
+    
+    // Replace your current submit button handler with this:
+    document.querySelector('.outward-form').addEventListener('submit', function(e) {
+        // Let the form submit normally - don't prevent default
+        // The success message will be shown after the page reloads
+    });
+    
+    // Auto-hide alerts after 5 seconds
+    setTimeout(function() {
+        document.querySelectorAll('.alert').forEach(function(alert) {
+            alert.style.display = 'none';
+        });
+    }, 5000);
+});
+        </script>
+
 </body>
 </html>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -167,18 +206,18 @@
 
             updateRemoveButtons();
         });
-        document.getElementById('submitBtn').addEventListener('click', function(event) {
-            event.preventDefault();
+    //     document.getElementById('submitBtn').addEventListener('click', function(event) {
+    //         event.preventDefault();
 
-        console.log("Saved!");
-        // Show toast
-        document.getElementById('success-toast').style.display = 'block';
+    //     console.log("Saved!");
+    //     // Show toast
+    //     // document.getElementById('success-toast').style.display = 'block';
 
-        // Submit the form (or redirect after delay)
-        setTimeout(() => {
-            document.querySelector('.outward-form').submit();
+    //     // Submit the form (or redirect after delay)
+    //     setTimeout(() => {
+    //         document.querySelector('.outward-form').submit();
 
-        }, 500); // delay before redirect
-    });
+    //     }, 1000); // delay before redirect
+    // });
     </script>
 {% endblock %}

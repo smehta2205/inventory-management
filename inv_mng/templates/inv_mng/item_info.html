@@ -25,7 +25,16 @@
         <a href="{% url 'logout' %}">Logout</a></p>
     </div> -->
     
-
+    {% if messages %}
+<div class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 9999;">
+    {% for message in messages %}
+    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
     <!-- Main Content -->
     <!-- <div id="content" class="content"> -->
         <div class="page-header">
