@@ -14,7 +14,8 @@ def check_stock_threshold(sender, instance, **kwargs):
     print(min_threshold)
 
     if instance.total_quantity < min_threshold:
-        staff_users = CustomUser.objects.all()
+        staff_users = CustomUser.objects.filter(org=instance.org)
+        print(instance.org)
         print(staff_users)
         for user in staff_users:
             print(user)
